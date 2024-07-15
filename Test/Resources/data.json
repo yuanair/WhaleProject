@@ -1,0 +1,8 @@
+{
+	"toEncoding": "GBK",
+	"fromEncoding": "UTF8",
+	"windowData": {
+		"name": "鲸鱼测试"
+	},
+	"shader": "Data\\test.hlsl"
+}
