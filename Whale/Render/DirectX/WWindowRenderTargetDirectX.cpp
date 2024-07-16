@@ -1,0 +1,155 @@
+//
+// Created by admin on 2024/7/16.
+//
+
+#include "WWindowRenderTargetDirectX.hpp"
+#include "Whale/Render/Utility/WRenderer.hpp"
+#include "WRendererDirectX.hpp"
+
+namespace Whale
+{
+	
+	void WWindowRenderTargetDirectX::Create(const Win32::WWindow &window)
+	{
+		auto &renderer = WRenderer::GetRenderer<WRendererDirectX>();
+		
+		Microsoft::WRL::ComPtr<IDXGISwapChain1> pIDXGISwapChain;
+		
+		this->stScissorRect = CD3DX12_RECT{0, 0, (int32) window.GetRect().width, (int32) window.GetRect().height};
+		this->stViewPort = CD3DX12_VIEWPORT{
+			0.0f, 0.0f, static_cast<float>(this->stScissorRect.right), static_cast<float>(this->stScissorRect.bottom)
+		};
+		
+		// 创建交换链
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc
+			{
+				.Width = (uint32) this->stScissorRect.right,
+				.Height = (uint32) this->stScissorRect.bottom,
+				.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+				.Stereo = false,
+				.SampleDesc = {.Count = 1, .Quality = 0},
+				.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+				.BufferCount = this->nFrameBackBufCount,
+				.Scaling = DXGI_SCALING_STRETCH,
+				.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
+				.AlphaMode = DXGI_ALPHA_MODE_IGNORE,
+				.Flags = 0
+			};
+		
+		THROW_IF_FAILED(
+			renderer.pIDXGIFactory->CreateSwapChainForHwnd(
+				renderer.pID3D12CommandQueue.Get(),
+				(HWND) window.GetHWindow().handle,
+				&swapChainDesc,
+				nullptr,
+				nullptr,
+				&pIDXGISwapChain
+			)
+		);
+		THROW_IF_FAILED(
+			pIDXGISwapChain.As(&this->pIDXGISwapChain)
+		);
+		this->nFrameIndex = this->pIDXGISwapChain->GetCurrentBackBufferIndex();
+		
+		
+		// 创建RTV描述符堆和RTV描述符
+		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+		rtvHeapDesc.NumDescriptors = this->nFrameBackBufCount;
+		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		
+		THROW_IF_FAILED(
+			renderer.pID3D12Device->CreateDescriptorHeap(
+				&rtvHeapDesc, IID_PPV_ARGS(&this->pID3D12RTVHeap))
+		);
+		
+		this->pID3D12RenderTargets.resize(this->nFrameBackBufCount);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(this->pID3D12RTVHeap->GetCPUDescriptorHandleForHeapStart());
+		for (UINT i = 0; i < this->nFrameBackBufCount; i++)
+		{
+			THROW_IF_FAILED(
+				this->pIDXGISwapChain->GetBuffer(i, IID_PPV_ARGS(&this->pID3D12RenderTargets[i]))
+			);
+			renderer.pID3D12Device->CreateRenderTargetView(
+				this->pID3D12RenderTargets[i].Get(), nullptr, rtvHandle
+			);
+			rtvHandle.Offset(1, renderer.nRTVDescriptorSize);
+		}
+		
+		
+	}
+	
+	void WWindowRenderTargetDirectX::OnRender()
+	{
+		auto &renderer = WRenderer::GetRenderer<WRendererDirectX>();
+		renderer.pID3D12CommandList->SetGraphicsRootSignature(
+			renderer.pID3D12RootSignature.Get());
+		renderer.pID3D12CommandList->RSSetViewports(1, &this->stViewPort);
+		renderer.pID3D12CommandList->RSSetScissorRects(1, &this->stScissorRect);
+		
+		// 通过资源屏障判定后缓冲已经切换完毕可以开始渲染了
+		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			this->pID3D12RenderTargets[this->nFrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT,
+			D3D12_RESOURCE_STATE_RENDER_TARGET
+		);
+		renderer.pID3D12CommandList->ResourceBarrier(
+			1, &resourceBarrier
+		);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+			this->pID3D12RTVHeap->GetCPUDescriptorHandleForHeapStart(), this->nFrameIndex,
+			renderer.nRTVDescriptorSize
+		);
+		
+		//设置渲染目标
+		renderer.pID3D12CommandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+		// 继续记录命令，并真正开始新一帧的渲染
+		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
+		renderer.pID3D12CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		
+		// ...
+		for (auto &item: this->renderObjects)
+		{
+			item.lock()->OnRender();
+		}
+		
+		//又一个资源屏障，用于确定渲染已经结束可以提交画面去显示了
+		resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			this->pID3D12RenderTargets[this->nFrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PRESENT
+		);
+		renderer.pID3D12CommandList->ResourceBarrier(
+			1, &resourceBarrier
+		);
+		//关闭命令列表，可以去执行了
+		THROW_IF_FAILED(renderer.pID3D12CommandList->Close());
+		//执行命令列表
+		ID3D12CommandList *ppCommandLists[] = {renderer.pID3D12CommandList.Get()};
+		renderer.pID3D12CommandQueue->ExecuteCommandLists(1, ppCommandLists);
+		
+		//提交画面
+		THROW_IF_FAILED(this->pIDXGISwapChain->Present(1, 0));
+		//开始同步GPU与CPU的执行，先记录围栏标记值
+		const uint64 fence = renderer.n64FenceValue;
+		THROW_IF_FAILED(renderer.pID3D12CommandQueue->Signal(renderer.pID3D12Fence.Get(), fence));
+		renderer.n64FenceValue++;
+		
+		// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
+		if (renderer.pID3D12Fence->GetCompletedValue() < fence)
+		{
+			THROW_IF_FAILED(
+				renderer.pID3D12Fence->SetEventOnCompletion(fence, renderer.hFenceEvent));
+			WaitForSingleObject(renderer.hFenceEvent, INFINITE);
+		}
+		
+		//到这里说明一个命令队列完整的执行完了，在这里就代表我们的一帧已经渲染完了，接着准备执行下一帧//渲染
+		//获取新的后缓冲序号，因为Present真正完成时后缓冲的序号就更新了
+		this->nFrameIndex = this->pIDXGISwapChain->GetCurrentBackBufferIndex();
+		//命令分配器先Reset一下
+		THROW_IF_FAILED(renderer.pID3D12CommandAllocator->Reset());
+		//Reset命令列表，并重新指定命令分配器和PSO对象
+		THROW_IF_FAILED(
+			renderer.pID3D12CommandList->Reset(renderer.pID3D12CommandAllocator.Get(), nullptr));
+		//GRS_TRACE(_T("第%u帧渲染结束.\n"), nFrame++);
+	}
+	
+} // Whale

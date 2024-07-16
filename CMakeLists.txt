@@ -1,8 +1,10 @@
 ﻿cmake_minimum_required(VERSION 3.27)
-project(WhaleProject)
+project(WhaleProject LANGUAGES CXX)
 
+# C++
 set(CMAKE_CXX_STANDARD 20)
 
+# Compiler
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 
     #    set(BOOST_ROOT "D:/boost_1_85_0/")    # 指定Boost库的根目录
@@ -40,13 +42,20 @@ else ()
     message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif ()
 
+# Wall
 add_compile_options(-Wall)
+
+# UNICODE
 add_definitions("-DUNICODE" "-D_UNICODE")
 
+# output
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
+# include
 include_directories(".")
 
-add_subdirectory("Test")
-add_subdirectory("Whale")
+# sub
+add_subdirectory(GLAD)
+add_subdirectory(Test)
+add_subdirectory(Whale)

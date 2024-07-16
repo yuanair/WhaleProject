@@ -63,17 +63,16 @@ void LexerOut(const boost::json::value &a, const std::string &fileName)
 
 /*/
 
-#include <Whale/Win32/FMessageBox.hpp>
-#include <Whale/Win32/WWindow.hpp>
+#include <Whale/Core/Debug/FDebug.hpp>
+#include <Whale/Core/Object/WProgram.hpp>
+#include <Whale/Core/Container/FTUniquePtr.hpp>
+#include <Whale/Render/Win32/WWindow.hpp>
+#include <Whale/Render/Utility/WRenderer.hpp>
+
+#include <boost/json.hpp>
 
 #include <memory>
-#include <boost/json.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include "Whale/Core/FDebug.hpp"
-#include "Whale/Core/WProgram.hpp"
-#include "Whale/Render/WRenderer.hpp"
-#include "Whale/Render/WShader.hpp"
-#include "Whale/Render/WStaticMesh.hpp"
+#include <fstream>
 
 using namespace Whale;
 
@@ -144,11 +143,7 @@ public:
 		
 	}
 	
-	void InitDirectX()
-	{
-		pRenderTarget = std::make_shared<WWindowRenderTargetDirectX>();
-		pRenderTarget->Create(*this);
-	}
+	void InitDirectX();
 
 protected:
 	
@@ -179,43 +174,46 @@ public:
 	
 	void InitData()
 	{
-		pWindowClass = std::make_unique<Win32::WWindow::WWindowClass>(
+		pWindowClass = MakeUnique<Win32::WWindow::WWindowClass>(
 			Win32::FCore::GetInstance(), WHALE_WIDE("WhaleTestWindowClass")
 		);
 		if (!pWindowClass->Register())
 		{
-			FDebug::Fatal((
-							  L"Register Window Class Failed!\r\nError: " +
-							  Win32::FCore::MessageToStringW(Win32::FCore::GetLastError())).c_str());
+			FDebug::Fatal(
+				data.windowData.name.c_str(), (
+					"Register Window Class Failed!\r\nError: " +
+					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
 			throw;
 		}
 		
-		pWindow = std::make_unique<MyWindow>(*this);
+		pWindow = MakeUnique<MyWindow>(*this);
 		pWindow->Create(*pWindowClass, WHALE_WIDE("Whale Test"));
 		if (pWindow->GetHWindow().handle == nullptr)
 		{
-			FDebug::Fatal((
-							  L"Create Window Failed!\r\nError: " +
-							  Win32::FCore::MessageToStringW(Win32::FCore::GetLastError())).c_str());
+			FDebug::Fatal(
+				data.windowData.name.c_str(), (
+					"Create Window Failed!\r\nError: " +
+					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
 			throw;
 		}
 		pWindow->ShowAndUpdate();
 		
-		pWindow2 = std::make_unique<MyWindow2>(*this);
+		pWindow2 = MakeUnique<MyWindow2>(*this);
 		pWindow2->Create(*pWindowClass, WHALE_WIDE("Whale Test 2"));
 		if (pWindow2->GetHWindow().handle == nullptr)
 		{
-			FDebug::Fatal((
-							  L"Create Window Failed!\r\nError: " +
-							  Win32::FCore::MessageToStringW(Win32::FCore::GetLastError())).c_str());
+			FDebug::Fatal(
+				data.windowData.name.c_str(), (
+					"Create Window Failed!\r\nError: " +
+					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
 			throw;
 		}
 		pWindow2->ShowAndUpdate();
 		
-		boost::filesystem::ifstream dataFile{"./Data/data.json"};
+		std::ifstream dataFile{"./Data/data.json"};
 		if (!dataFile.is_open())
 		{
-			FDebug::Fatal(L"cannot to open \"./Data/data.json\"");
+			FDebug::Fatal(data.windowData.name.c_str(), "cannot to open \"./Data/data.json\"");
 			throw;
 		}
 		boost::json::object dataObject;
@@ -223,7 +221,7 @@ public:
 			boost::json::value dataValue = boost::json::parse(dataFile);
 			if (!dataValue.is_object())
 			{
-				FDebug::Fatal(L"data isn't a [JSON object]");
+				FDebug::Fatal(data.windowData.name.c_str(), "data isn't a [JSON object]");
 				throw;
 			}
 			dataObject = dataValue.as_object();
@@ -241,9 +239,9 @@ public:
 	
 	void InitDirectX()
 	{
-		pRender.reset(WRenderer::NewRenderer(Whale::WRenderer::DirectX));
-		pShader = std::make_unique<WShaderDirectX12>();
-		pMesh = std::make_unique<WStaticMeshDirectX12>();
+		pRender = WRenderer::CreateRenderer(ERendererTypeDirectX);
+		pShader.reset(pRender->CreateShader().Release());
+		pMesh.reset(pRender->CreateStaticMesh().Release());
 		pRender->Create();
 		pShader->CreateFromFile(WLocale::ToUTFString(data.shader, data.fromEncoding));
 		pMesh->SetVertexes(
@@ -305,13 +303,13 @@ private:
 		std::string shader;
 	} data;
 	
-	std::unique_ptr<MyWindow> pWindow;
+	FTUniquePtr<MyWindow> pWindow;
 	
-	std::unique_ptr<MyWindow2> pWindow2;
+	FTUniquePtr<MyWindow2> pWindow2;
 	
-	std::unique_ptr<Win32::WWindow::WWindowClass> pWindowClass;
+	FTUniquePtr<Win32::WWindow::WWindowClass> pWindowClass;
 	
-	std::unique_ptr<WRenderer> pRender;
+	FTUniquePtr<WRenderer> pRender;
 	
 	std::shared_ptr<WShader> pShader;
 	
@@ -319,41 +317,29 @@ private:
 
 public:
 	
-	[[nodiscard]]
-	const struct Data &GetData() const
-	{
-		return data;
-	}
+	[[nodiscard]]const auto &GetData() const { return data; }
 	
-	[[nodiscard]]
-	const std::unique_ptr<MyWindow> &GetPWindow() const
-	{
-		return pWindow;
-	}
+	[[nodiscard]]const auto &GetPWindow() const { return pWindow; }
 	
-	[[nodiscard]]
-	const std::unique_ptr<Win32::WWindow::WWindowClass> &GetPWindowClass() const
-	{
-		return pWindowClass;
-	}
+	[[nodiscard]]const auto &GetPWindowClass() const { return pWindowClass; }
 	
-	[[nodiscard]]
-	const std::unique_ptr<WRenderer> &GetPRender() const
-	{
-		return pRender;
-	}
+	[[nodiscard]]const auto &GetPRender() const { return pRender; }
 	
-	[[nodiscard]]
-	const std::shared_ptr<WShader> &GetPShader() const
-	{
-		return pShader;
-	}
+	[[nodiscard]]const auto &GetPShader() const { return pShader; }
+	
+	[[nodiscard]]const auto &GetPMesh() const { return pMesh; }
 	
 };
 
 void MyWindow::InitDirectX()
 {
-	pRenderTarget = std::make_shared<WWindowRenderTargetDirectX>();
+	pRenderTarget.reset(program.GetPRender()->CreateWindowRenderTarget().Release());
+	pRenderTarget->Create(*this);
+}
+
+void MyWindow2::InitDirectX()
+{
+	pRenderTarget.reset(program.GetPRender()->CreateWindowRenderTarget().Release());
 	pRenderTarget->Create(*this);
 }
 
@@ -366,10 +352,9 @@ void MyWindow::OnTick(float deltaTIme)
 int main()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
-	Program program;
-	return program.Run();
+	return Program().Run();
 }
 
-#include <Whale/Win32/FWinMain.hpp>
+#include <Whale/Render/Win32/FWinMain.hpp>
 //*/
 

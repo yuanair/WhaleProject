@@ -1,23 +1,23 @@
-﻿cmake_minimum_required(VERSION 3.27)
-
+﻿
 add_executable(Test WIN32 main.cpp)
 
-add_library(NDKTest SHARED NDKTest.cpp)
-
-target_link_libraries(NDKTest PRIVATE
-        android
-        log
-        EGL
-        GLESv2
+target_link_libraries(Test
+        PUBLIC WhaleCore
+        PUBLIC WhaleLanguage
+        PUBLIC WhaleRender
+        PUBLIC WhaleTool
 )
 
-target_link_libraries(Test PUBLIC Whale)
+target_include_directories(Test PUBLIC "../../boost_1_85_0")
 
-# Resource
+target_link_directories(Test PUBLIC "../../boost_1_85_0/stage/lib/")
+
 add_custom_command(TARGET Test
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/bin/Data
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Data
         COMMAND ${CMAKE_COMMAND} -E
         copy_directory
         ${PROJECT_SOURCE_DIR}/Test/Resources
-        ${PROJECT_BINARY_DIR}/bin/Data
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Data
 )
+
+
