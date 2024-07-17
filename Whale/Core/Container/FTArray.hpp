@@ -86,7 +86,7 @@ namespace Whale
 			return length;
 		}
 		
-		inline ElemT *GetPtr() const noexcept
+		inline const ElemT *GetPtr() const noexcept
 		{
 			return ptr;
 		}

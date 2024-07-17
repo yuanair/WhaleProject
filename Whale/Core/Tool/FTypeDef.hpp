@@ -30,37 +30,65 @@
 namespace Whale
 {
 	
-	using int8 = char;
+	#define WHALE_COMPILER_TYPE_UNKNOWN 0
+	#define WHALE_COMPILER_TYPE_MSVC 1
+	#define WHALE_COMPILER_TYPE_MINGW 2
+	#define WHALE_COMPILER_TYPE_GCC 3
 	
-	using int16 = short;
+	#define WHALE_COMPILER_UNKNOWN_BIT 0
+	#define WHALE_COMPILER_32_BIT 32
+	#define WHALE_COMPILER_64_BIT 64
+
+#if false
+#elif defined(_MSC_VER)
+	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MSVC
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MINGW
+#elif defined(__GNUC__)
+	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_GCC
+#else
+	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_UNKNOWN
+#endif
+
+#ifdef _WIN32
+#ifdef _WIN64
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_64_BIT
+#else
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_32_BIT
+#endif
+#else
+#ifdef __x86_64__
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_64_BIT
+#elif __i386__
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_32_BIT
+#else
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_UNKNOWN_BIT
+#endif
+#endif
 	
-	using int32 = int;
+	using Byte = char;
 	
-	using int64 = long long;
+	using Short = short;
 	
-	using uint8 = unsigned char;
+	using Int = int;
 	
-	using uint16 = unsigned short;
+	using Long = long;
 	
-	using uint32 = unsigned int;
+	using LongLong = long long;
 	
-	using uint64 = unsigned long long;
+	using UByte = unsigned char;
 	
-	using intptr = int64;
+	using UShort = unsigned short;
 	
-	using uintptr = uint64;
+	using UInt = unsigned int;
+	
+	using ULong = unsigned long;
+	
+	using ULongLong = unsigned long long;
 	
 	using Char = char;
 	
 	using WChar = wchar_t;
-
-#ifdef UNICODE
-	using TChar = WChar;
-#else
-	using TChar = Char;
-#endif
-	
-	using SizeT = uint64;
 	
 	using Float = float;
 	
@@ -68,7 +96,53 @@ namespace Whale
 	
 	using Bool = bool;
 	
-	using NullPtrT = decltype(__nullptr);
+	using NullPtrT = decltype(nullptr);
+	
+	using int8 = __int8;
+	
+	using int16 = __int16;
+	
+	using int32 = __int32;
+	
+	using int64 = __int64;
+	
+	using uint8 = unsigned __int8;
+	
+	using uint16 = unsigned __int16;
+	
+	using uint32 = unsigned __int32;
+	
+	using uint64 = unsigned __int64;
+	
+	#if WHALE_COMPILER_BIT == WHALE_COMPILER_64_BIT
+	
+	using IntPointer = int64;
+	
+	using UIntPointer = uint64;
+	
+	using LongPointer = int64;
+	
+	using ULongPointer = uint64;
+	
+	#elif WHALE_COMPILER_BIT == WHALE_COMPILER_32_BIT
+	
+	using IntPointer = Int;
+	
+	using UIntPointer = UInt;
+	
+	using LongPointer = Long;
+	
+	using ULongPointer = ULong;
+	
+	#endif
+	
+	using SizeT = uint64;
+
+#if defined(UNICODE) || defined(_UNICODE)
+	using TChar = WChar;
+#else
+	using TChar = Char;
+#endif
 
 
 #pragma region RemoveConst
@@ -443,7 +517,7 @@ namespace Whale
 		
 		///
 		/// \return 位置
-		inline TPoint2<T> GetPoint() const noexcept { return TPoint2<T>{x, y}; }
+		inline TPoint2<T> GetPoint() const noexcept { return TPoint2 < T > {x, y}; }
 		
 		///
 		/// \param point 位置
@@ -455,7 +529,10 @@ namespace Whale
 		
 		///
 		/// \return 中心点
-		inline TPoint2<T> GetCenterPoint() const noexcept { return TPoint2<T>{x + width / T{2}, y + height / T{2}}; }
+		inline TPoint2<T> GetCenterPoint() const noexcept
+		{
+			return TPoint2 < T > {x + width / T{2}, y + height / T{2}};
+		}
 		
 		///
 		/// \param centerPoint 中心点
@@ -467,7 +544,7 @@ namespace Whale
 		
 		///
 		/// \return 大小
-		inline TSize2<T> GetSize() const noexcept { return TSize2<T>{width, height}; }
+		inline TSize2<T> GetSize() const noexcept { return TSize2 < T > {width, height}; }
 		
 		///
 		/// \param size 位置

@@ -28,7 +28,7 @@ namespace Whale
 		
 		// 遍历适配器
 		for (UINT adapterIndex = 0;
-			 DXGI_ERROR_NOT_FOUND != this->pIDXGIFactory->EnumAdapters1(adapterIndex, &pIAdapter); ++adapterIndex)
+		     DXGI_ERROR_NOT_FOUND != this->pIDXGIFactory->EnumAdapters1(adapterIndex, &pIAdapter); ++adapterIndex)
 		{
 			DXGI_ADAPTER_DESC1 desc{};
 			pIAdapter->GetDesc1(&desc);
@@ -93,7 +93,7 @@ namespace Whale
 		
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC stRootSignatureDesc;
 		stRootSignatureDesc.Init_1_1(_countof(stRootParameters), stRootParameters, 1, &stSamplerDesc,
-									 D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
+		                             D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
 		);
 		
 		Microsoft::WRL::ComPtr<ID3DBlob> pISignatureBlob;
@@ -162,7 +162,7 @@ namespace Whale
 	{
 		for (auto &ptr: this->renderTargets)
 		{
-			ptr.lock()->OnRender();
+			ptr.Lock()->OnRender();
 		}
 	}
 	

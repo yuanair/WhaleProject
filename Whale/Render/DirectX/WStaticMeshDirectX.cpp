@@ -40,7 +40,7 @@ namespace Whale
 		auto &renderer = WRenderer::GetRenderer<WRendererDirectX>();
 		for (auto &shader: this->GetPShaders())
 		{
-			shader.lock()->Use();
+			shader.Lock()->Use();
 			renderer.pID3D12CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			renderer.pID3D12CommandList->IASetVertexBuffers(0, 1, &this->vertexBufferView);
 			renderer.pID3D12CommandList->DrawInstanced(

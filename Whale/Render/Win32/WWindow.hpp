@@ -291,20 +291,20 @@ namespace Whale::Win32
 		///
 		/// \return 窗口名
 		[[nodiscard]]
-		std::string GetNameA() const;
+		FTStringA GetNameA() const;
 		
 		///
 		/// \return 窗口名
 		[[nodiscard]]
-		std::wstring GetNameW() const;
+		FTStringW GetNameW() const;
 		
 		///
 		/// \param name 窗口名
-		void SetName(const std::string &name);
+		void SetName(const FTStringA &name);
 		
 		///
 		/// \param name 窗口名
-		void SetName(const std::wstring &name);
+		void SetName(const FTStringW &name);
 		
 		///
 		/// \return 窗口矩形

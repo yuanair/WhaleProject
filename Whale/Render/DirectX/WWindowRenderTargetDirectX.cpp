@@ -109,7 +109,7 @@ namespace Whale
 		// ...
 		for (auto &item: this->renderObjects)
 		{
-			item.lock()->OnRender();
+			item.Lock()->OnRender();
 		}
 		
 		//又一个资源屏障，用于确定渲染已经结束可以提交画面去显示了

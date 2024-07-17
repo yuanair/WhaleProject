@@ -345,9 +345,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-/cmake-build-debug-mingw/
-/cmake-build-debug-ndk/
-/cmake-build-debug-visual-studio/
-/cmake-build-release-mingw/
-/cmake-build-release-ndk/
-/cmake-build-release-visual-studio/
+# Cmake Build
+cmake-build*/

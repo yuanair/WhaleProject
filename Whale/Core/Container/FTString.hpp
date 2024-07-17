@@ -47,7 +47,7 @@ namespace Whale
 			return this->array.GetLength() - 1;
 		}
 		
-		inline CharT *CStr() const noexcept
+		inline const CharT *CStr() const noexcept
 		{
 			return FTArray<CharT>::GetPtr();
 		}

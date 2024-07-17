@@ -6,12 +6,11 @@
 
 
 #include "Whale/Render/DirectX/WRendererDirectX.hpp"
-#include "Whale/Core/Container/FTUniquePtr.hpp"
 
 namespace Whale
 {
 	
-	bool WShaderDirectX::CreateFromFile(const std::wstring &fileName)
+	bool WShaderDirectX::CreateFromFile(const FTStringW &fileName)
 	{
 		auto &renderer = WRenderer::GetRenderer<WRendererDirectX>();
 		
@@ -26,7 +25,7 @@ namespace Whale
 		
 		bool isFailed = false;
 		auto hr = D3DCompileFromFile(
-			fileName.c_str(), nullptr, nullptr, "vertex", "vs_5_0", compileFlags, 0, &pVertexShader, &pErrorMsgs
+			fileName.CStr(), nullptr, nullptr, "vertex", "vs_5_0", compileFlags, 0, &pVertexShader, &pErrorMsgs
 		);
 		if (FAILED(hr))
 		{
@@ -42,7 +41,7 @@ namespace Whale
 		}
 		
 		hr = D3DCompileFromFile(
-			fileName.c_str(), nullptr, nullptr, "pixel", "ps_5_0", compileFlags, 0, &pPixelShader, &pErrorMsgs
+			fileName.CStr(), nullptr, nullptr, "pixel", "ps_5_0", compileFlags, 0, &pPixelShader, &pErrorMsgs
 		);
 		if (FAILED(hr))
 		{

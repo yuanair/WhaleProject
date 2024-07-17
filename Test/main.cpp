@@ -1,77 +1,12 @@
 ﻿
-/*
-
-#include <WhaleLanguage/Lexer/Lexer.h>
-
-#include <boost/make_shared.hpp>
-#include <boost/json/src.hpp>
-#include <boost/format.hpp>
-using namespace Whale;
-
-void LexerOut(const boost::json::value &a, const std::string &fileName);
-
-void LexerIn(std::list<boost::shared_ptr<Token>> &list, const std::string &fileName);
-
-void LexerToJson(std::list<boost::shared_ptr<Token>> &list, boost::json::object &a);
-
-int main()
-{
-	
-	std::list<boost::shared_ptr<Token>> list;
-	LexerIn(list, "./Data/code.cs");
-	
-	boost::json::object a;
-	LexerToJson(list, a);
-	
-	LexerOut(a, "lexer.json");
-	
-	//system("pause");
-	
-	return 0;
-}
-
-void LexerToJson(std::list<boost::shared_ptr<Token>> &list, boost::json::object &a)
-{
-	size_t count = 0;
-	for (auto& item: list)
-	{
-		boost::json::object obj;
-		obj["type"] = item->GetTypeName();
-		obj["str"] = item->str;
-		obj["pos"] = (boost::format("(%d, %d)") % item->pos.line % item->pos.ch).str();
-		a[std::to_string(++count)] = obj;
-	}
-}
-
-void LexerIn(std::list<boost::shared_ptr<Token>> &list, const std::string &fileName)
-{
-	boost::filesystem::ifstream fileStream(fileName);
-	
-	boost::shared_ptr<Lexer> lexer = boost::make_shared<Lexer>(fileStream);
-	
-	
-	list = lexer->NextTokens();
-	fileStream.close();
-}
-
-void LexerOut(const boost::json::value &a, const std::string &fileName)
-{
-	boost::filesystem::ofstream fileStream(fileName);
-	fileStream << boost::json::serialize(a);
-	fileStream.close();
-}
-
-/*/
-
 #include <Whale/Core/Debug/FDebug.hpp>
 #include <Whale/Core/Object/WProgram.hpp>
-#include <Whale/Core/Container/FTUniquePtr.hpp>
+#include <Whale/Core/Container/FMemory.hpp>
 #include <Whale/Render/Win32/WWindow.hpp>
 #include <Whale/Render/Utility/WRenderer.hpp>
 
 #include <boost/json.hpp>
 
-#include <memory>
 #include <fstream>
 
 using namespace Whale;
@@ -92,21 +27,6 @@ public:
 
 protected:
 	
-	uint64 OnChar(const TChar &input) override
-	{
-		return WWindow::OnChar(input);
-	}
-	
-	uint64 OnString(const FTString<TChar> &input) override
-	{
-		return WWindow::OnString(input);
-	}
-	
-	uint64 OnKeyDown(const EventKeyArgs &args) override
-	{
-		return WWindow::OnKeyDown(args);
-	}
-	
 	void OnTick(float deltaTIme) override;
 	
 	uint64 OnDestroy() override
@@ -119,15 +39,11 @@ public:
 	
 	class Program &program;
 	
-	[[nodiscard]]
-	const std::shared_ptr<WWindowRenderTarget> &GetPRenderTarget() const
-	{
-		return pRenderTarget;
-	}
+	[[nodiscard]]auto &GetPRenderTarget() const { return pRenderTarget; }
 
 private:
 	
-	std::shared_ptr<WWindowRenderTarget> pRenderTarget;
+	FTSharedPtr<WWindowRenderTarget> pRenderTarget;
 	
 };
 
@@ -156,15 +72,11 @@ public:
 	
 	class Program &program;
 	
-	[[nodiscard]]
-	const std::shared_ptr<WWindowRenderTarget> &GetPRenderTarget() const
-	{
-		return pRenderTarget;
-	}
+	[[nodiscard]]auto &GetPRenderTarget() const { return pRenderTarget; }
 
 private:
 	
-	std::shared_ptr<WWindowRenderTarget> pRenderTarget;
+	FTSharedPtr<WWindowRenderTarget> pRenderTarget;
 	
 };
 
@@ -180,7 +92,7 @@ public:
 		if (!pWindowClass->Register())
 		{
 			FDebug::Fatal(
-				data.windowData.name.c_str(), (
+				data.windowData.name, (
 					"Register Window Class Failed!\r\nError: " +
 					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
 			throw;
@@ -191,7 +103,7 @@ public:
 		if (pWindow->GetHWindow().handle == nullptr)
 		{
 			FDebug::Fatal(
-				data.windowData.name.c_str(), (
+				data.windowData.name, (
 					"Create Window Failed!\r\nError: " +
 					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
 			throw;
@@ -203,7 +115,7 @@ public:
 		if (pWindow2->GetHWindow().handle == nullptr)
 		{
 			FDebug::Fatal(
-				data.windowData.name.c_str(), (
+				data.windowData.name, (
 					"Create Window Failed!\r\nError: " +
 					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
 			throw;
@@ -213,7 +125,8 @@ public:
 		std::ifstream dataFile{"./Data/data.json"};
 		if (!dataFile.is_open())
 		{
-			FDebug::Fatal(data.windowData.name.c_str(), "cannot to open \"./Data/data.json\"");
+			FDebug::Fatal(data.windowData.name, "cannot to open \"./Data/data.json\"");
+			std::shared_ptr<int> a;
 			throw;
 		}
 		boost::json::object dataObject;
@@ -221,37 +134,37 @@ public:
 			boost::json::value dataValue = boost::json::parse(dataFile);
 			if (!dataValue.is_object())
 			{
-				FDebug::Fatal(data.windowData.name.c_str(), "data isn't a [JSON object]");
+				FDebug::Fatal(data.windowData.name, "data isn't a [JSON object]");
 				throw;
 			}
 			dataObject = dataValue.as_object();
 		}
-		this->data.toEncoding = dataObject["toEncoding"].as_string();
-		this->data.fromEncoding = dataObject["fromEncoding"].as_string();
-		this->data.windowData.name = dataObject["windowData"].as_object()["name"].as_string();
+		this->data.toEncoding = dataObject["toEncoding"].as_string().c_str();
+		this->data.fromEncoding = dataObject["fromEncoding"].as_string().c_str();
+		this->data.windowData.name = dataObject["windowData"].as_object()["name"].as_string().c_str();
 		this->data.windowData.name = WLocale::Between(
 			this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
 		);
-		this->data.shader = dataObject["shader"].as_string();
+		this->data.shader = dataObject["shader"].as_string().c_str();
 		this->pWindow->SetName(this->data.windowData.name);
-		this->pWindow2->SetName(this->data.windowData.name + " II");
+		this->pWindow2->SetName(this->data.windowData.name);
 	}
 	
 	void InitDirectX()
 	{
 		pRender = WRenderer::CreateRenderer(ERendererTypeDirectX);
-		pShader.reset(pRender->CreateShader().Release());
-		pMesh.reset(pRender->CreateStaticMesh().Release());
+		pShader = pRender->CreateShader();
+		pMesh = pRender->CreateStaticMesh();
 		pRender->Create();
 		pShader->CreateFromFile(WLocale::ToUTFString(data.shader, data.fromEncoding));
 		pMesh->SetVertexes(
 			{
 				FVertex{{0.0f, 0.25f, 0.0f, 1.0f},
-						{1.0f, 0.0f,  0.0f, 1.0f}},
+				        {1.0f, 0.0f,  0.0f, 1.0f}},
 				FVertex{{0.25f, -0.25f, 0.0f, 1.0f},
-						{0.0f,  1.0f,   0.0f, 1.0f}},
+				        {0.0f,  1.0f,   0.0f, 1.0f}},
 				FVertex{{-0.25f, -0.25f, 0.0f, 1.0f},
-						{0.0f,   0.0f,   1.0f, 1.0f}}
+				        {0.0f,   0.0f,   1.0f, 1.0f}}
 			}
 		);
 		pMesh->SetPShader({pShader});
@@ -294,13 +207,13 @@ private:
 	
 	struct Data
 	{
-		std::string toEncoding;
-		std::string fromEncoding;
+		FTStringA toEncoding;
+		FTStringA fromEncoding;
 		struct WindowData
 		{
-			std::string name;
+			FTStringA name;
 		} windowData;
-		std::string shader;
+		FTStringA shader;
 	} data;
 	
 	FTUniquePtr<MyWindow> pWindow;
@@ -311,35 +224,35 @@ private:
 	
 	FTUniquePtr<WRenderer> pRender;
 	
-	std::shared_ptr<WShader> pShader;
+	FTSharedPtr<WShader> pShader;
 	
-	std::shared_ptr<WStaticMesh> pMesh;
+	FTSharedPtr<WStaticMesh> pMesh;
 
 public:
 	
-	[[nodiscard]]const auto &GetData() const { return data; }
+	[[nodiscard]]auto &GetData() const { return data; }
 	
-	[[nodiscard]]const auto &GetPWindow() const { return pWindow; }
+	[[nodiscard]]auto &GetPWindow() const { return pWindow; }
 	
-	[[nodiscard]]const auto &GetPWindowClass() const { return pWindowClass; }
+	[[nodiscard]]auto &GetPWindowClass() const { return pWindowClass; }
 	
-	[[nodiscard]]const auto &GetPRender() const { return pRender; }
+	[[nodiscard]]auto &GetPRender() const { return pRender; }
 	
-	[[nodiscard]]const auto &GetPShader() const { return pShader; }
+	[[nodiscard]]auto &GetPShader() const { return pShader; }
 	
-	[[nodiscard]]const auto &GetPMesh() const { return pMesh; }
+	[[nodiscard]]auto &GetPMesh() const { return pMesh; }
 	
 };
 
 void MyWindow::InitDirectX()
 {
-	pRenderTarget.reset(program.GetPRender()->CreateWindowRenderTarget().Release());
+	pRenderTarget = program.GetPRender()->CreateWindowRenderTarget();
 	pRenderTarget->Create(*this);
 }
 
 void MyWindow2::InitDirectX()
 {
-	pRenderTarget.reset(program.GetPRender()->CreateWindowRenderTarget().Release());
+	pRenderTarget = program.GetPRender()->CreateWindowRenderTarget();
 	pRenderTarget->Create(*this);
 }
 

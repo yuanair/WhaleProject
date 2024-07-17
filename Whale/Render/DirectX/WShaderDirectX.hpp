@@ -16,7 +16,7 @@ namespace Whale
 	{
 	public:
 		
-		bool CreateFromFile(const std::wstring &fileName) override;
+		bool CreateFromFile(const FTStringW &fileName) override;
 		
 		void Use() override;
 	

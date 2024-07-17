@@ -6,6 +6,7 @@
 
 #include "Whale/Core/Tool/FTypeDef.hpp"
 #include "Whale/Core/Object/WObject.hpp"
+#include "Whale/Core/Container/FTString.hpp"
 
 namespace Whale
 {
@@ -16,12 +17,11 @@ namespace Whale
 	{
 	public:
 		
-		static std::string
-		Between(const std::string &text, const std::string &to_encoding, const std::string &from_encoding);
+		static FTStringA Between(const FTStringA &text, const FTStringA &toEncoding, const FTStringA &fromEncoding);
 		
-		static std::wstring ToUTFString(const std::string &text, const std::string &from_encoding);
+		static FTStringW ToUTFString(const FTStringA &text, const FTStringA &fromEncoding);
 		
-		static std::string UTFToString(const std::wstring &text, const std::string &to_encoding);
+		static FTStringA UTFToString(const FTStringW &text, const FTStringA &toEncoding);
 
 //		static constexpr void CharToWChar(const Char *from, WChar *to, SizeT to_size);
 //

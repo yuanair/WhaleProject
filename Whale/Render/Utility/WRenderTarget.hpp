@@ -5,10 +5,10 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 
 #include "Whale/Core/Object/WObject.hpp"
 #include "Whale/Render/Win32/WWindow.hpp"
+#include "Whale/Core/Container/FMemory.hpp"
 #include "WRenderObject.hpp"
 
 namespace Whale
@@ -23,7 +23,7 @@ namespace Whale
 	
 	public:
 		
-		std::vector<std::weak_ptr<WRenderObject>> renderObjects;
+		std::vector<FTWeakPtr<WRenderObject>> renderObjects;
 		
 	};
 	

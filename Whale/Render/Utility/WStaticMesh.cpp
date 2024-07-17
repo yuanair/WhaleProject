@@ -6,16 +6,6 @@
 
 namespace Whale
 {
-	
-	void WStaticMesh::SetVertexes(const std::vector<Vertex> &vertexesArg)
-	{
-		WStaticMesh::vertexes = vertexesArg;
-	}
-	
-	SizeT WStaticMesh::GetByteSize() const
-	{
-		return sizeof(Vertex) * this->vertexes.size();
-	}
-	
+
 	
 } // Whale

@@ -7,7 +7,7 @@
 #include "Whale/Core/Object/WObject.hpp"
 #include "Whale/Core/Object/WProgram.hpp"
 #include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Container/FTUniquePtr.hpp"
+#include "Whale/Core/Container/FMemory.hpp"
 #include "WRenderTarget.hpp"
 #include "WShader.hpp"
 #include "WStaticMesh.hpp"
@@ -118,7 +118,7 @@ namespace Whale
 	
 	public:
 		
-		std::vector<std::weak_ptr<WRenderTarget>> renderTargets;
+		std::vector<FTWeakPtr<WRenderTarget>> renderTargets;
 	
 	private:
 		

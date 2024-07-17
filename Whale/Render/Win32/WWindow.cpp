@@ -9,7 +9,6 @@
 #include "Whale/Core/Debug/FDebug.hpp"
 #include "Whale/Core/Object/WProgram.hpp"
 
-#include <format>
 
 #include <windows.h>
 #include <windowsx.h>
@@ -260,7 +259,7 @@ namespace Whale::Win32
 					ImmGetCompositionString(hIMC, GCS_RESULTSTR, lpstr, dwSize);
 					ImmReleaseContext((HWND) hWindow.handle, hIMC);
 					
-					uint64 result;
+					uint64 result = 0;
 					// add this string into text buffer of application
 					if (lpstr != nullptr) result = OnString(lpstr);
 					
@@ -295,34 +294,34 @@ namespace Whale::Win32
 		}
 	}
 	
-	std::string WWindow::GetNameA() const
+	FTStringA WWindow::GetNameA() const
 	{
 		int32 length = ::GetWindowTextLengthA((HWND) this->hWindow.handle);
-		auto *buffer = WHALE_DBG_NEW char[length];
+		auto *buffer = WHALE_DBG_NEW Char[length];
 		::GetWindowTextA((HWND) this->hWindow.handle, buffer, length);
-		std::string result = buffer;
+		FTStringA result = buffer;
 		delete[] buffer;
 		return result;
 	}
 	
-	std::wstring WWindow::GetNameW() const
+	FTStringW WWindow::GetNameW() const
 	{
 		int32 length = ::GetWindowTextLengthW((HWND) this->hWindow.handle);
-		auto *buffer = WHALE_DBG_NEW wchar_t[length];
+		auto *buffer = WHALE_DBG_NEW WChar[length];
 		::GetWindowTextW((HWND) this->hWindow.handle, buffer, length);
-		std::wstring result = buffer;
+		FTStringW result = buffer;
 		delete[] buffer;
 		return result;
 	}
 	
-	void WWindow::SetName(const std::string &name)
+	void WWindow::SetName(const FTStringA &name)
 	{
-		::SetWindowTextA((HWND) this->hWindow.handle, name.c_str());
+		::SetWindowTextA((HWND) this->hWindow.handle, name.CStr());
 	}
 	
-	void WWindow::SetName(const std::wstring &name)
+	void WWindow::SetName(const FTStringW &name)
 	{
-		::SetWindowTextW((HWND) this->hWindow.handle, name.c_str());
+		::SetWindowTextW((HWND) this->hWindow.handle, name.CStr());
 	}
 	
 	HWindow WWindow::DesktopWindow()

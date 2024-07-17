@@ -5,10 +5,10 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 
 #include "WRenderObject.hpp"
 #include "Whale/Tool/Math/TMath.hpp"
+#include "Whale/Core/Container/FMemory.hpp"
 #include "WShader.hpp"
 
 namespace Whale
@@ -34,7 +34,7 @@ namespace Whale
 		///
 		/// \return 获取网格体数据字节大小
 		[[nodiscard]]
-		SizeT GetByteSize() const;
+		SizeT GetByteSize() const { return sizeof(Vertex) * this->vertexes.size(); }
 		
 		///
 		/// 加载网格体
@@ -47,20 +47,20 @@ namespace Whale
 	public:
 		
 		[[nodiscard]]
-		const std::vector<Vertex> &GetVertexes() const { return vertexes; }
+		const std::vector<Vertex> &GetVertexes() const { return this->vertexes; }
 		
-		void SetVertexes(const std::vector<Vertex> &vertexesArg);
+		void SetVertexes(const std::vector<Vertex> &vertexesArg) { this->vertexes = vertexesArg; }
 		
 		[[nodiscard]]
-		const std::vector<std::weak_ptr<WShader>> &GetPShaders() const { return pShaders; }
+		const std::vector<FTWeakPtr<WShader>> &GetPShaders() const { return this->pShaders; }
 		
-		void SetPShader(const std::vector<std::weak_ptr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
+		void SetPShader(const std::vector<FTWeakPtr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
 	
 	private:
 		
 		std::vector<Vertex> vertexes;
 		
-		std::vector<std::weak_ptr<WShader>> pShaders;
+		std::vector<FTWeakPtr<WShader>> pShaders;
 		
 	};
 	
