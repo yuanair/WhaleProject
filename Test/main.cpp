@@ -20,7 +20,8 @@ public:
 	{
 		//this->bEnableOnChar = true;
 		//this->bEnableOnString = true;
-		
+		std::bad_exception a;
+		//throw std::exception("");
 	}
 	
 	void InitDirectX();
@@ -29,7 +30,7 @@ protected:
 	
 	void OnTick(float deltaTIme) override;
 	
-	uint64 OnDestroy() override
+	Win32::LResult OnDestroy() override
 	{
 		Win32::FCore::Exit();
 		return WWindow::OnDestroy();
@@ -86,42 +87,6 @@ public:
 	
 	void InitData()
 	{
-		pWindowClass = MakeUnique<Win32::WWindow::WWindowClass>(
-			Win32::FCore::GetInstance(), WHALE_WIDE("WhaleTestWindowClass")
-		);
-		if (!pWindowClass->Register())
-		{
-			FDebug::Fatal(
-				data.windowData.name, (
-					"Register Window Class Failed!\r\nError: " +
-					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
-			throw;
-		}
-		
-		pWindow = MakeUnique<MyWindow>(*this);
-		pWindow->Create(*pWindowClass, WHALE_WIDE("Whale Test"));
-		if (pWindow->GetHWindow().handle == nullptr)
-		{
-			FDebug::Fatal(
-				data.windowData.name, (
-					"Create Window Failed!\r\nError: " +
-					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
-			throw;
-		}
-		pWindow->ShowAndUpdate();
-		
-		pWindow2 = MakeUnique<MyWindow2>(*this);
-		pWindow2->Create(*pWindowClass, WHALE_WIDE("Whale Test 2"));
-		if (pWindow2->GetHWindow().handle == nullptr)
-		{
-			FDebug::Fatal(
-				data.windowData.name, (
-					"Create Window Failed!\r\nError: " +
-					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
-			throw;
-		}
-		pWindow2->ShowAndUpdate();
-		
 		std::ifstream dataFile{"./Data/data.json"};
 		if (!dataFile.is_open())
 		{
@@ -146,8 +111,46 @@ public:
 			this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
 		);
 		this->data.shader = dataObject["shader"].as_string().c_str();
-		this->pWindow->SetName(this->data.windowData.name);
-		this->pWindow2->SetName(this->data.windowData.name);
+		
+		pWindowClass = MakeUnique<Win32::WWindow::WWindowClassW>(
+			Win32::FCore::GetInstance(), WHALE_WIDE("WhaleTestWindowClass")
+		);
+		if (!pWindowClass->Register())
+		{
+			FDebug::Fatal(
+				data.windowData.name, (
+					"Register Window Class Failed!\r\nError: " +
+					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
+			throw;
+		}
+		
+		pWindow = MakeUnique<MyWindow>(*this);
+		pWindow->Create(*pWindowClass, L"");
+		pWindow->SetName(this->data.windowData.name);
+		if (pWindow->GetHWindow().handle == nullptr)
+		{
+			FDebug::Fatal(
+				data.windowData.name, (
+					"Create Window Failed!\r\nError: " +
+					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
+			throw;
+		}
+		pWindow->ShowAndUpdate();
+		
+		pWindow2 = MakeUnique<MyWindow2>(*this);
+		pWindow2->Create(*pWindowClass, L"");
+		pWindow2->SetName(this->data.windowData.name);
+		if (pWindow2->GetHWindow().handle == nullptr)
+		{
+			FDebug::Fatal(
+				data.windowData.name, (
+					"Create Window Failed!\r\nError: " +
+					Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str());
+			throw;
+		}
+		pWindow2->ShowAndUpdate();
+		
+		
 	}
 	
 	void InitDirectX()
@@ -174,10 +177,10 @@ public:
 		pWindow2->InitDirectX();
 		
 		
-		pRender->renderTargets.push_back(pWindow->GetPRenderTarget());
-		pRender->renderTargets.push_back(pWindow2->GetPRenderTarget());
+		pRender->renderTargets.emplace_back(pWindow->GetPRenderTarget());
+		pRender->renderTargets.emplace_back(pWindow2->GetPRenderTarget());
 		
-		pWindow->GetPRenderTarget()->renderObjects.push_back(pMesh);
+		pWindow->GetPRenderTarget()->renderObjects.emplace_back(pMesh);
 	}
 
 protected:
@@ -220,7 +223,7 @@ private:
 	
 	FTUniquePtr<MyWindow2> pWindow2;
 	
-	FTUniquePtr<Win32::WWindow::WWindowClass> pWindowClass;
+	FTUniquePtr<Win32::WWindow::WWindowClassW> pWindowClass;
 	
 	FTUniquePtr<WRenderer> pRender;
 	

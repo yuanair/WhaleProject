@@ -6,9 +6,24 @@
 
 #include "Whale/Core/Tool/FTypeDef.hpp"
 #include "Whale/Core/Container/FTString.hpp"
+#include "Whale/Core/Tool/FSourceLocation.hpp"
+#include "Whale/Core/FException/FException.hpp"
 
 namespace Whale
 {
+	
+	class FDirectXResultException : public FException
+	{
+	public:
+		
+		FDirectXResultException()
+			: FException() {}
+		
+		explicit FDirectXResultException(const Char *message)
+			: FException(message) {}
+		
+	};
+	
 	///
 	/// HResult
 	class WHALE_API FDirectXResult
@@ -32,9 +47,9 @@ namespace Whale
 		
 		///
 		/// 输出到日志并抛异常
-		void Throw(const FTStringA &message) const;
+		void Throw(const FTStringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 		
-		void Throw(const FTStringW &message) const;
+		void Throw(const FTStringW &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 		
 		///
 		/// \return 是否是失败值
@@ -48,9 +63,11 @@ namespace Whale
 		
 		///
 		/// 如果失败则调用Throw()
-		void ThrowIfFailed(const FTStringA &message) const;
+		void ThrowIfFailed(const FTStringA &message,
+		                   const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 		
-		void ThrowIfFailed(const FTStringW &message) const;
+		void ThrowIfFailed(const FTStringW &message,
+		                   const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 	
 	public:
 		

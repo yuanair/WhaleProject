@@ -17,14 +17,14 @@ namespace Whale::Win32
 	public:
 		
 		// 窗口类
-		class WHALE_API WWindowClass : public WObject
+		class WHALE_API WWindowClassA : public WObject
 		{
 		public:
 			
+			explicit WWindowClassA(const HInstance &hInstance, FTStringA name)
+				: hInstance(hInstance), name(Move(name)) {}
 			
-			explicit WWindowClass(const HInstance &hInstance, FTStringT name);
-			
-			~WWindowClass() override;
+			~WWindowClassA() override { Unregister(); }
 		
 		public:
 			
@@ -36,17 +36,51 @@ namespace Whale::Win32
 			
 			// 获取窗口类名
 			[[nodiscard]]
-			const FTStringT &GetName() const;
+			const FTStringA &GetName() const { return this->name; }
 			
 			// 获取应用实例
 			[[nodiscard]]
-			const HInstance &GetHInstance() const;
+			const HInstance &GetHInstance() const { return this->hInstance; }
 		
 		private:
 			
 			const HInstance hInstance;
 			
-			const FTStringT name;
+			const FTStringA name;
+			
+		};
+		
+		// 窗口类
+		class WHALE_API WWindowClassW : public WObject
+		{
+		public:
+			
+			explicit WWindowClassW(const HInstance &hInstance, FTStringW name)
+				: hInstance(hInstance), name(Move(name)) {}
+			
+			~WWindowClassW() override { Unregister(); }
+		
+		public:
+			
+			// 注册窗口类
+			Bool Register(HIcon hIcon = {}, HIcon hIconSm = {});
+			
+			// 取消注册
+			Bool Unregister();
+			
+			// 获取窗口类名
+			[[nodiscard]]
+			const FTStringW &GetName() const { return this->name; }
+			
+			// 获取应用实例
+			[[nodiscard]]
+			const HInstance &GetHInstance() const { return this->hInstance; }
+		
+		private:
+			
+			const HInstance hInstance;
+			
+			const FTStringW name;
 			
 		};
 		
@@ -132,7 +166,7 @@ namespace Whale::Win32
 	
 	public:
 		
-		static int64 DefaultWindowProc(HWindow hWnd, uint32 msg, uint64 wParam, uint64 lParam);
+		static LResult DefaultWindowProc(HWindow hWnd, UInt msg, WParam wParam, LParam lParam);
 		
 		///
 		/// \return 桌面窗口
@@ -142,7 +176,13 @@ namespace Whale::Win32
 		
 		// 创建窗口
 		void Create(
-			const WWindowClass &windowClass, const FTStringT &windowName,
+			const WWindowClassA &windowClass, const FTStringA &windowName,
+			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
+		);
+		
+		// 创建窗口
+		void Create(
+			const WWindowClassW &windowClass, const FTStringW &windowName,
 			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
 		);
 		
@@ -189,49 +229,49 @@ namespace Whale::Win32
 		/// 按下按键事件
 		///
 		/// \param args 参数
-		virtual uint64 OnKeyDown(const EventKeyArgs &args) { return 0; }
+		virtual LResult OnKeyDown(const EventKeyArgs &args) { return 0; }
 		
 		///
 		/// 松开按键事件
 		///
 		/// \param args 参数
-		virtual uint64 OnKeyUp(const EventKeyArgs &args) { return 0; }
+		virtual LResult OnKeyUp(const EventKeyArgs &args) { return 0; }
 		
 		///
 		/// 鼠标移动事件
 		///
 		/// \param args 参数
-		virtual uint64 OnMouseMoved(const EventOnMouseMoveArgs &args) { return 0; }
+		virtual LResult OnMouseMoved(const EventOnMouseMoveArgs &args) { return 0; }
 		
 		///
 		/// 窗口移动事件
 		///
 		/// \param args 参数
-		virtual uint64 OnMove(const EventOnMoveArgs &args) { return 0; }
+		virtual LResult OnMove(const EventOnMoveArgs &args) { return 0; }
 		
 		///
 		/// 创建窗口事件
 		///
 		/// \param args 参数
-		virtual uint64 OnCreate() { return 0; }
+		virtual LResult OnCreate() { return 0; }
 		
 		///
 		/// 窗口大小改变事件
 		///
 		/// \param args 参数
-		virtual uint64 OnResize(const EventOnResizeArgs &args) { return 0; }
+		virtual LResult OnResize(const EventOnResizeArgs &args) { return 0; }
 		
 		///
 		/// 输入字符事件
 		///
 		/// \param input 输入的字符
-		virtual uint64 OnChar(const TChar &input) { return 0; }
+		virtual LResult OnChar(const TChar &input) { return 0; }
 		
 		///
 		/// 输入字符串事件，用于输入法
 		///
 		/// \param input 输入的字符串
-		virtual uint64 OnString(const FTStringT &input) { return 0; }
+		virtual LResult OnString(const FTStringT &input) { return 0; }
 		
 		///
 		/// Tick事件
@@ -242,28 +282,28 @@ namespace Whale::Win32
 		///
 		/// 活动事件
 		///
-		virtual uint64 OnInactive() { return 0; }
+		virtual LResult OnInactive() { return 0; }
 		
 		///
 		/// 窗口活动事件
 		///
-		virtual uint64 OnActive() { return 0; }
+		virtual LResult OnActive() { return 0; }
 		
 		///
 		/// 点击窗口使其活动事件
 		///
-		virtual uint64 OnClickActive() { return 0; }
+		virtual LResult OnClickActive() { return 0; }
 		
 		///
 		/// 拖放文件到窗口事件
 		///
 		/// \param hDropInfo 拖放的文件
-		virtual uint64 OnDropFiles(HDrop hDropInfo) { return 0; };
+		virtual LResult OnDropFiles(HDrop hDropInfo) { return 0; };
 		
 		///
 		/// 关闭事件
 		///
-		virtual uint64 OnClose()
+		virtual LResult OnClose()
 		{
 			Destroy();
 			return 0;
@@ -272,19 +312,19 @@ namespace Whale::Win32
 		///
 		/// 销毁事件
 		///
-		virtual uint64 OnDestroy() { return 0; }
+		virtual LResult OnDestroy() { return 0; }
 		
 		///
 		/// 询问关机事件
 		///
 		/// \return 是否可以关机
-		virtual uint64 OnQueryEndSession() { return true; }
+		virtual LResult OnQueryEndSession() { return true; }
 		
 		///
 		/// 关机事件
 		///
 		/// \return 是否可以关机
-		virtual uint64 OnEndSession() { return true; }
+		virtual LResult OnEndSession() { return true; }
 	
 	public:
 		
@@ -322,9 +362,9 @@ namespace Whale::Win32
 	
 	private:
 		
-		static uint64 WindowProc(void *hWnd, uint32 msg, uint64 wParam, int64 lParam);
+		static LResult WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam);
 		
-		uint64 OnMessage(uint32 msg, uint64 wParam, int64 lParam);
+		LResult OnMessage(UInt msg, WParam wParam, LParam lParam);
 	
 	protected:
 		

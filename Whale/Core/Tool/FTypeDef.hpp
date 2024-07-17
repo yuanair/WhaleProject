@@ -32,8 +32,8 @@ namespace Whale
 	
 	#define WHALE_COMPILER_TYPE_UNKNOWN 0
 	#define WHALE_COMPILER_TYPE_MSVC 1
-	#define WHALE_COMPILER_TYPE_MINGW 2
-	#define WHALE_COMPILER_TYPE_GCC 3
+	#define WHALE_COMPILER_TYPE_GCC 2
+	#define WHALE_COMPILER_TYPE_CLANG 3
 	
 	#define WHALE_COMPILER_UNKNOWN_BIT 0
 	#define WHALE_COMPILER_32_BIT 32
@@ -42,8 +42,6 @@ namespace Whale
 #if false
 #elif defined(_MSC_VER)
 	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MSVC
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MINGW
 #elif defined(__GNUC__)
 	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_GCC
 #else
@@ -98,6 +96,8 @@ namespace Whale
 	
 	using NullPtrT = decltype(nullptr);
 	
+	#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC || WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_CLANG
+	
 	using int8 = __int8;
 	
 	using int16 = __int16;
@@ -113,6 +113,25 @@ namespace Whale
 	using uint32 = unsigned __int32;
 	
 	using uint64 = unsigned __int64;
+	
+	#elif WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_GCC
+	using int8 = Byte;
+	
+	using int16 = Short;
+	
+	using int32 = Int;
+	
+	using int64 = LongLong;
+	
+	using uint8 = UByte;
+	
+	using uint16 = UShort;
+	
+	using uint32 = UInt;
+	
+	using uint64 = ULongLong;
+	
+	#endif
 	
 	#if WHALE_COMPILER_BIT == WHALE_COMPILER_64_BIT
 	
@@ -258,7 +277,7 @@ namespace Whale
 		using ValueType = ValueT;
 		using Type = IntegralConstant;
 		
-		constexpr operator ValueType() const noexcept
+		constexpr operator ValueType() const noexcept // NOLINT(*-explicit-constructor)
 		{
 			return value;
 		}

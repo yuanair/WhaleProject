@@ -12,21 +12,38 @@ namespace Whale
 	
 	struct FSourceLocation
 	{
+#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC || WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_CLANG
 		
 		static consteval FSourceLocation Current
 			(
-				const uint32 line = __builtin_LINE(), const uint32 column = __builtin_COLUMN(),
-				const Char *const file = __builtin_FILE(),
-				const Char *const function = __builtin_FUNCSIG()
-			) noexcept
-		{
-			FSourceLocation result{};
-			result.line = line;
-			result.column = column;
-			result.file = file;
-			result.function = function;
-			return result;
-		}
+				uint32 line = __builtin_LINE(),
+				uint32 column = __builtin_COLUMN(),
+				const Char *file = __builtin_FILE(),
+				const Char *function = __builtin_FUNCSIG()
+			) noexcept;
+
+#elif WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_GCC
+		
+		static consteval FSourceLocation Current
+			(
+				uint32 line = __builtin_LINE(),
+				uint32 column = 0,
+				const Char *file = __builtin_FILE(),
+				const Char *function = __builtin_FUNCTION()
+			) noexcept;
+
+#else
+		
+		static consteval FSourceLocation Current
+			(
+				uint32 line = __builtin_LINE(),
+				 uint32 column = 0,
+				const Char *file = __builtin_FILE(),
+				const Char *function = __builtin_FUNCTION()
+			) noexcept;
+
+#endif
+		
 		
 		constexpr FSourceLocation() noexcept = default;
 		
@@ -62,5 +79,16 @@ namespace Whale
 		const Char *function = "";
 		
 	};
+	
+	consteval FSourceLocation
+	FSourceLocation::Current(uint32 line, uint32 column, const Char *file, const Char *function) noexcept
+	{
+		FSourceLocation result{};
+		result.line = line;
+		result.column = column;
+		result.file = file;
+		result.function = function;
+		return result;
+	}
 	
 } // Whale

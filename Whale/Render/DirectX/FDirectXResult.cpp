@@ -49,27 +49,27 @@ namespace Whale
 			L"{}: (0x{:08X}): {}", message.CStr(), (uint32) hr, Win32::FCore::MessageToStringW(hr)).c_str();
 	}
 	
-	void FDirectXResult::Throw(const FTStringA &message) const
+	void FDirectXResult::Throw(const FTStringA &message, const FSourceLocation &sourceLocation) const
 	{
-		FDebug::LogFatal(WProgram::GetAppNameA(), ToString(message));
-		throw;
+		FDebug::LogFatal(WProgram::GetAppNameA(), ToString(message), sourceLocation);
+		throw FDirectXResultException();
 	}
 	
-	void FDirectXResult::Throw(const FTStringW &message) const
+	void FDirectXResult::Throw(const FTStringW &message, const FSourceLocation &sourceLocation) const
 	{
-		FDebug::LogFatal(WProgram::GetAppNameW(), ToString(message));
-		throw;
+		FDebug::LogFatal(WProgram::GetAppNameW(), ToString(message), sourceLocation);
+		throw FDirectXResultException();
 	}
 	
 	
-	void FDirectXResult::ThrowIfFailed(const FTStringA &message) const
+	void FDirectXResult::ThrowIfFailed(const FTStringA &message, const FSourceLocation &sourceLocation) const
 	{
-		if (IsFailed()) Throw(message);
+		if (IsFailed()) Throw(message, sourceLocation);
 	}
 	
-	void FDirectXResult::ThrowIfFailed(const FTStringW &message) const
+	void FDirectXResult::ThrowIfFailed(const FTStringW &message, const FSourceLocation &sourceLocation) const
 	{
-		if (IsFailed()) Throw(message);
+		if (IsFailed()) Throw(message, sourceLocation);
 	}
 	
 	bool FDirectXResult::IsThrowIfFailedAtDestructTime() const
@@ -81,4 +81,5 @@ namespace Whale
 	{
 		FDirectXResult::isThrowIfFailedAtDestructTime = isThrowIfFailedAtDestructTime;
 	}
+	
 } // Whale

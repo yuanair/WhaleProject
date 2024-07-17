@@ -18,22 +18,11 @@
 namespace Whale::Win32
 {
 	
-	WWindow::WWindowClass::WWindowClass(const HInstance &hInstance, FTStringT name)
-		: hInstance(hInstance), name(Move(name))
-	{
-	
-	}
-	
-	WWindow::WWindowClass::~WWindowClass()
-	{
-		Unregister();
-	}
-	
-	bool WWindow::WWindowClass::Register(HIcon hIcon, HIcon hIconSm)
+	bool WWindow::WWindowClassA::Register(HIcon hIcon, HIcon hIconSm)
 	{
 		if (hIcon.handle == nullptr) hIcon.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
 		if (hIconSm.handle == nullptr) hIconSm.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
-		WNDCLASSEX wnd
+		WNDCLASSEXA wnd
 			{
 				.cbSize = sizeof(wnd),
 				.style = CS_VREDRAW | CS_HREDRAW,
@@ -48,22 +37,39 @@ namespace Whale::Win32
 				.lpszClassName = name.CStr(),
 				.hIconSm = (HICON) hIconSm.handle,
 			};
-		return (bool) ::RegisterClassEx(&wnd);
+		return (bool) ::RegisterClassExA(&wnd);
 	}
 	
-	const FTStringT &WWindow::WWindowClass::GetName() const
+	Bool WWindow::WWindowClassA::Unregister()
 	{
-		return this->name;
+		return ::UnregisterClassA(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
 	}
 	
-	Bool WWindow::WWindowClass::Unregister()
+	bool WWindow::WWindowClassW::Register(HIcon hIcon, HIcon hIconSm)
 	{
-		return ::UnregisterClass(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
+		if (hIcon.handle == nullptr) hIcon.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
+		if (hIconSm.handle == nullptr) hIconSm.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
+		WNDCLASSEXW wnd
+			{
+				.cbSize = sizeof(wnd),
+				.style = CS_VREDRAW | CS_HREDRAW,
+				.lpfnWndProc = (WNDPROC) (&WWindow::WindowProc),
+				.cbClsExtra = 0,
+				.cbWndExtra = sizeof(WWindow *),
+				.hInstance = (HINSTANCE) hInstance.handle,
+				.hIcon = (HICON) hIcon.handle,
+				.hCursor = nullptr,
+				.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH),
+				.lpszMenuName = nullptr,
+				.lpszClassName = name.CStr(),
+				.hIconSm = (HICON) hIconSm.handle,
+			};
+		return (bool) ::RegisterClassExW(&wnd);
 	}
 	
-	const HInstance &WWindow::WWindowClass::GetHInstance() const
+	Bool WWindow::WWindowClassW::Unregister()
 	{
-		return hInstance;
+		return ::UnregisterClassW(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
 	}
 	
 	WWindow::WWindow()
@@ -79,14 +85,37 @@ namespace Whale::Win32
 	}
 	
 	void WWindow::Create(
-		const WWindowClass &windowClass, const FTStringT &windowName,
+		const WWindowClassA &windowClass, const FTStringA &windowName,
 		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
 	)
 	{
 		WWindow desktop;
 		desktop.Bind(DesktopWindow());
 		this->maxSize = desktop.GetRect().GetSize();
-		this->hWindow.handle = ::CreateWindowEx(
+		this->hWindow.handle = ::CreateWindowExA(
+			WS_EX_ACCEPTFILES,
+			windowClass.GetName().CStr(), windowName.CStr(),
+			WS_OVERLAPPEDWINDOW,
+			x,
+			y,
+			w,
+			h,
+			(HWND) hWndParent.handle,
+			nullptr,
+			(HINSTANCE) windowClass.GetHInstance().handle,
+			this
+		);
+	}
+	
+	void WWindow::Create(
+		const WWindowClassW &windowClass, const FTStringW &windowName,
+		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
+	)
+	{
+		WWindow desktop;
+		desktop.Bind(DesktopWindow());
+		this->maxSize = desktop.GetRect().GetSize();
+		this->hWindow.handle = ::CreateWindowExW(
 			WS_EX_ACCEPTFILES,
 			windowClass.GetName().CStr(), windowName.CStr(),
 			WS_OVERLAPPEDWINDOW,
@@ -123,12 +152,12 @@ namespace Whale::Win32
 	}
 	
 	
-	int64 WWindow::DefaultWindowProc(HWindow hWnd, uint32 msg, uint64 wParam, uint64 lParam)
+	LResult WWindow::DefaultWindowProc(HWindow hWnd, UInt msg, WParam wParam, LParam lParam)
 	{
 		return ::DefWindowProc((HWND) hWnd.handle, msg, wParam, lParam);
 	}
 	
-	uint64 WWindow::WindowProc(void *hWnd, uint32 msg, uint64 wParam, int64 lParam)
+	LResult WWindow::WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam)
 	{
 		WWindow *pThis;
 		
@@ -149,7 +178,7 @@ namespace Whale::Win32
 		return DefaultWindowProc({hWnd}, msg, wParam, lParam);
 	}
 	
-	uint64 WWindow::OnMessage(uint32 msg, uint64 wParam, int64 lParam)
+	LResult WWindow::OnMessage(UInt msg, WParam wParam, LParam lParam)
 	{
 		switch (msg)
 		{
@@ -259,7 +288,7 @@ namespace Whale::Win32
 					ImmGetCompositionString(hIMC, GCS_RESULTSTR, lpstr, dwSize);
 					ImmReleaseContext((HWND) hWindow.handle, hIMC);
 					
-					uint64 result = 0;
+					LResult result = 0;
 					// add this string into text buffer of application
 					if (lpstr != nullptr) result = OnString(lpstr);
 					

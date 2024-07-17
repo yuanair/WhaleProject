@@ -5,22 +5,20 @@
 #pragma once
 
 #include "Whale/Core/Tool/FTypeDef.hpp"
-#include <exception>
+#include <stdexcept>
 
 namespace Whale
 {
 	
 	///
 	/// 异常
-	class WHALE_API FException : public std::exception
+	class WHALE_API FException : public std::runtime_error
 	{
 	public:
 		
-		FException() : std::exception() {}
+		FException() : std::runtime_error("") {}
 		
-		explicit FException(const Char *message) : std::exception(message) {}
-		
-		FException(const Char *message, int) : std::exception(message, 0) {}
+		explicit FException(const Char *message) : std::runtime_error(message) {}
 		
 	};
 	

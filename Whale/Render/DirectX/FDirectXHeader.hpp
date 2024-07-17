@@ -13,5 +13,5 @@
 
 #include "FDirectXResult.hpp"
 
-#define THROW_IF_FAILED(hr) (Whale::FDirectXResult{hr}.ThrowIfFailed(__FUNCSIG__))
+#define THROW_IF_FAILED(hr) (Whale::FDirectXResult{hr}.ThrowIfFailed(""))
 
