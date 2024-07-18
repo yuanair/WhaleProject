@@ -14,7 +14,6 @@ namespace Whale
 	{
 		if (pRenderer != nullptr)
 		{
-			FDebug::Fatal(WProgram::GetAppNameW(), L"Multiple renderers were created!");
 			throw;
 		}
 		pRenderer = this;
@@ -25,7 +24,7 @@ namespace Whale
 		pRenderer = nullptr;
 	}
 	
-	FTUniquePtr<WRenderer> WRenderer::CreateRenderer(ERendererType type)
+	TFUniquePtr<WRenderer> WRenderer::CreateRenderer(ERendererType type)
 	{
 		switch (type)
 		{
@@ -43,7 +42,7 @@ namespace Whale
 	
 	WRenderer *WRenderer::pRenderer = nullptr;
 	
-	FTStringA WRenderer::ToStringA(ERendererType type)
+	StringA WRenderer::ToStringA(ERendererType type)
 	{
 		switch (type)
 		{
@@ -58,7 +57,7 @@ namespace Whale
 		}
 	}
 	
-	FTStringW WRenderer::ToStringW(ERendererType type)
+	StringW WRenderer::ToStringW(ERendererType type)
 	{
 		switch (type)
 		{

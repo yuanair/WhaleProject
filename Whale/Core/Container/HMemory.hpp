@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
 #include "Whale/Core/Tool/FIntrinsics.hpp"
 #include "Whale/Core/FException/FException.hpp"
 
@@ -14,17 +14,17 @@ namespace Whale
 	///
 	/// 独有指针
 	template<class ElemT>
-	class WHALE_API FTUniquePtr;
+	class WHALE_API TFUniquePtr;
 	
 	///
 	/// 共享指针
 	template<class ElemT>
-	class WHALE_API FTSharedPtr;
+	class WHALE_API TFSharedPtr;
 	
 	///
 	/// 观察指针
 	template<class ElemT>
-	class WHALE_API FTWeakPtr;
+	class WHALE_API TFWeakPtr;
 	
 	class FBadWeakPtrException : public FException
 	{
@@ -35,39 +35,39 @@ namespace Whale
 	};
 	
 	template<class ElemT>
-	class WHALE_API FTUniquePtr
+	class WHALE_API TFUniquePtr
 	{
 		
 		template<class> friend
-		class FTUniquePtr;
+		class TFUniquePtr;
 	
 	public:
 		
-		FTUniquePtr(const FTUniquePtr &other) = delete;
+		TFUniquePtr(const TFUniquePtr &other) = delete;
 		
-		FTUniquePtr &operator=(const FTUniquePtr &other) noexcept = delete;
+		TFUniquePtr &operator=(const TFUniquePtr &other) noexcept = delete;
 	
 	public:
 		
-		constexpr FTUniquePtr() noexcept: ptr(nullptr) {}
+		constexpr TFUniquePtr() noexcept: ptr(nullptr) {}
 		
-		constexpr FTUniquePtr(NullPtrT) noexcept: ptr(nullptr) {} // NOLINT(*-explicit-constructor)
+		constexpr TFUniquePtr(NullPtrT) noexcept: ptr(nullptr) {} // NOLINT(*-explicit-constructor)
 		
-		explicit FTUniquePtr(ElemT *ptr) noexcept: ptr(ptr) {}
+		explicit TFUniquePtr(ElemT *ptr) noexcept: ptr(ptr) {}
 		
-		FTUniquePtr(FTUniquePtr &&other) noexcept: ptr(other.Release()) {}
+		TFUniquePtr(TFUniquePtr &&other) noexcept: ptr(other.Release()) {}
 		
 		template<typename T>
-		FTUniquePtr(const FTUniquePtr<T> &other) noexcept: ptr(other.ptr) {} // NOLINT(*-explicit-constructor)
+		TFUniquePtr(const TFUniquePtr<T> &other) noexcept: ptr(other.ptr) {} // NOLINT(*-explicit-constructor)
 		
 		template<typename T>
-		FTUniquePtr(FTUniquePtr<T> &&other) noexcept: ptr(other.Release()) {} // NOLINT(*-explicit-constructor)
+		TFUniquePtr(TFUniquePtr<T> &&other) noexcept: ptr(other.Release()) {} // NOLINT(*-explicit-constructor)
 		
-		~FTUniquePtr() noexcept { Reset(); }
+		~TFUniquePtr() noexcept { Reset(); }
 	
 	public:
 		
-		FTUniquePtr &operator=(FTUniquePtr &&other) noexcept
+		TFUniquePtr &operator=(TFUniquePtr &&other) noexcept
 		{
 			Reset(other.Release());
 			return *this;
@@ -105,7 +105,7 @@ namespace Whale
 		///
 		/// 交换数据
 		/// \param other
-		void Swap(FTUniquePtr &other) noexcept { Whale::Swap(this->ptr, other.ptr); }
+		void Swap(TFUniquePtr &other) noexcept { Whale::Swap(this->ptr, other.ptr); }
 	
 	public:
 		
@@ -195,11 +195,11 @@ namespace Whale
 	};
 	
 	template<class ElemT>
-	class WHALE_API _FTUseCount : public _FUseCountBase // NOLINT(*-reserved-identifier)
+	class WHALE_API _TFUseCount : public _FUseCountBase // NOLINT(*-reserved-identifier)
 	{
 	public:
 		
-		explicit _FTUseCount(ElemT *ptrArg) : _FUseCountBase(), ptr(ptrArg) {}
+		explicit _TFUseCount(ElemT *ptrArg) : _FUseCountBase(), ptr(ptrArg) {}
 	
 	private:
 		
@@ -222,19 +222,19 @@ namespace Whale
 	///
 	/// 指针基类
 	template<class ElemT>
-	class WHALE_API _FTPtrBase // NOLINT(*-reserved-identifier)
+	class WHALE_API _TFPtrBase // NOLINT(*-reserved-identifier)
 	{
 	public:
 		
 		template<class> friend
-		class _FTPtrBase; // NOLINT(*-reserved-identifier)
+		class _TFPtrBase; // NOLINT(*-reserved-identifier)
 	
 	protected:
 		
-		constexpr _FTPtrBase() noexcept
+		constexpr _TFPtrBase() noexcept
 			: ptr(nullptr), useCount(nullptr) {}
 		
-		~_FTPtrBase() = default;
+		~_TFPtrBase() = default;
 	
 	public:
 		
@@ -255,7 +255,7 @@ namespace Whale
 	protected:
 		
 		template<class T>
-		void MoveConstructFrom(_FTPtrBase<T> &&other)
+		void MoveConstructFrom(_TFPtrBase<T> &&other)
 		{
 			this->ptr = other.ptr;
 			this->useCount = other.useCount;
@@ -264,7 +264,7 @@ namespace Whale
 		}
 		
 		template<class T>
-		void CopyConstructFrom(const _FTPtrBase<T> &other)
+		void CopyConstructFrom(const _TFPtrBase<T> &other)
 		{
 			other.IncrementUse();
 			this->ptr = other.ptr;
@@ -272,7 +272,7 @@ namespace Whale
 		}
 		
 		template<class T>
-		bool ConstructFromWeak(const FTWeakPtr<T> &other) noexcept
+		bool ConstructFromWeak(const TFWeakPtr<T> &other) noexcept
 		{
 			if (other.useCount && other.useCount->IncrementUseNoZero())
 			{
@@ -285,7 +285,7 @@ namespace Whale
 		}
 		
 		template<class T>
-		void WeaklyConstructFrom(const _FTPtrBase<T> &other) noexcept
+		void WeaklyConstructFrom(const _TFPtrBase<T> &other) noexcept
 		{
 			if (other.useCount)
 			{
@@ -307,7 +307,7 @@ namespace Whale
 		
 		void DecrementWeak() noexcept { if (this->useCount) this->useCount->DecrementWeak(); }
 		
-		void BaseSwap(_FTPtrBase &other) noexcept
+		void BaseSwap(_TFPtrBase &other) noexcept
 		{
 			Whale::Swap(this->ptr, other.ptr);
 			Whale::Swap(this->useCount, other.useCount);
@@ -326,42 +326,42 @@ namespace Whale
 	};
 	
 	template<class ElemT>
-	class WHALE_API FTSharedPtr : public _FTPtrBase<ElemT>
+	class WHALE_API TFSharedPtr : public _TFPtrBase<ElemT>
 	{
 	public:
 		
 		template<class> friend
-		class FTSharedPtr;
+		class TFSharedPtr;
 		
 		template<class> friend
-		class FTWeakPtr;
+		class TFWeakPtr;
 	
 	public:
 		
-		constexpr FTSharedPtr() noexcept = default;
+		constexpr TFSharedPtr() noexcept = default;
 		
-		constexpr FTSharedPtr(NullPtrT) noexcept {}; // NOLINT(*-explicit-constructor)
+		constexpr TFSharedPtr(NullPtrT) noexcept {}; // NOLINT(*-explicit-constructor)
 		
-		explicit FTSharedPtr(ElemT *ptr) { EnableShared(ptr); }
+		explicit TFSharedPtr(ElemT *ptr) { EnableShared(ptr); }
 		
-		FTSharedPtr(const FTSharedPtr &other) { this->CopyConstructFrom(other); }
+		TFSharedPtr(const TFSharedPtr &other) { this->CopyConstructFrom(other); }
 		
 		template<typename T>
-		FTSharedPtr(const FTSharedPtr<T> &other) noexcept // NOLINT(*-explicit-constructor)
+		TFSharedPtr(const TFSharedPtr<T> &other) noexcept // NOLINT(*-explicit-constructor)
 		{
 			this->CopyConstructFrom(other);
 		}
 		
-		FTSharedPtr(FTSharedPtr &&other) noexcept { this->MoveConstructFrom(Whale::Move(other)); }
+		TFSharedPtr(TFSharedPtr &&other) noexcept { this->MoveConstructFrom(Whale::Move(other)); }
 		
 		template<typename T>
-		FTSharedPtr(FTSharedPtr<T> &&other) noexcept // NOLINT(*-explicit-constructor)
+		TFSharedPtr(TFSharedPtr<T> &&other) noexcept // NOLINT(*-explicit-constructor)
 		{
 			this->MoveConstructFrom(Whale::Move(other));
 		}
 		
 		template<typename T>
-		explicit FTSharedPtr(const FTWeakPtr<T> &other)
+		explicit TFSharedPtr(const TFWeakPtr<T> &other)
 		{
 			if (!this->ConstructFromWeak(Whale::Move(other)))
 			{
@@ -370,7 +370,7 @@ namespace Whale
 		}
 		
 		template<typename T>
-		FTSharedPtr(FTUniquePtr<T> &&other) // NOLINT(*-explicit-constructor)
+		TFSharedPtr(TFUniquePtr<T> &&other) // NOLINT(*-explicit-constructor)
 		{
 			auto *ptr = other.GetPtr();
 			if (ptr)
@@ -380,40 +380,40 @@ namespace Whale
 			}
 		}
 		
-		~FTSharedPtr() noexcept { this->DecrementUse(); }
+		~TFSharedPtr() noexcept { this->DecrementUse(); }
 	
 	public:
 		
-		FTSharedPtr &operator=(const FTSharedPtr &other) noexcept
+		TFSharedPtr &operator=(const TFSharedPtr &other) noexcept
 		{
-			FTSharedPtr(other).Swap(*this);
+			TFSharedPtr(other).Swap(*this);
 			return *this;
 		}
 		
 		template<typename T>
-		FTSharedPtr &operator=(const FTSharedPtr<T> &other) noexcept
+		TFSharedPtr &operator=(const TFSharedPtr<T> &other) noexcept
 		{
-			FTSharedPtr(other).Swap(*this);
+			TFSharedPtr(other).Swap(*this);
 			return *this;
 		}
 		
-		FTSharedPtr &operator=(FTSharedPtr &&other) noexcept
+		TFSharedPtr &operator=(TFSharedPtr &&other) noexcept
 		{
-			FTSharedPtr(Whale::Move(other)).Swap(*this);
-			return *this;
-		}
-		
-		template<typename T>
-		FTSharedPtr &operator=(FTSharedPtr<T> &&other) noexcept
-		{
-			FTSharedPtr(Whale::Move(other)).Swap(*this);
+			TFSharedPtr(Whale::Move(other)).Swap(*this);
 			return *this;
 		}
 		
 		template<typename T>
-		FTSharedPtr &operator=(FTUniquePtr<T> &&other) noexcept
+		TFSharedPtr &operator=(TFSharedPtr<T> &&other) noexcept
 		{
-			FTSharedPtr(Whale::Move(other)).Swap(*this);
+			TFSharedPtr(Whale::Move(other)).Swap(*this);
+			return *this;
+		}
+		
+		template<typename T>
+		TFSharedPtr &operator=(TFUniquePtr<T> &&other) noexcept
+		{
+			TFSharedPtr(Whale::Move(other)).Swap(*this);
 			return *this;
 		}
 		
@@ -429,17 +429,17 @@ namespace Whale
 		
 		///
 		/// 重置
-		void Reset() noexcept { FTSharedPtr().Swap(*this); }
+		void Reset() noexcept { TFSharedPtr().Swap(*this); }
 		
 		///
 		/// 重置
 		/// \param ptrArg 指针
-		void Reset(ElemT *ptrArg) noexcept { FTSharedPtr(ptrArg).Swap(*this); }
+		void Reset(ElemT *ptrArg) noexcept { TFSharedPtr(ptrArg).Swap(*this); }
 		
 		///
 		/// 交换数据
 		/// \param other
-		void Swap(FTSharedPtr &other) noexcept { this->BaseSwap(other); }
+		void Swap(TFSharedPtr &other) noexcept { this->BaseSwap(other); }
 	
 	private:
 		
@@ -449,79 +449,79 @@ namespace Whale
 	};
 	
 	template<class ElemT>
-	class WHALE_API FTWeakPtr : public _FTPtrBase<ElemT>
+	class WHALE_API TFWeakPtr : public _TFPtrBase<ElemT>
 	{
 	public:
 		
 		template<class> friend
-		class FTWeakPtr;
+		class TFWeakPtr;
 	
 	public:
 		
-		constexpr FTWeakPtr() noexcept = default;
+		constexpr TFWeakPtr() noexcept = default;
 		
-		FTWeakPtr(const FTWeakPtr &other) noexcept
+		TFWeakPtr(const TFWeakPtr &other) noexcept
 		{
 			this->WeaklyConstructFrom(other);
 		}
 		
 		template<class T>
-		FTWeakPtr(const FTSharedPtr<T> &other) noexcept // NOLINT(*-explicit-constructor)
+		TFWeakPtr(const TFSharedPtr<T> &other) noexcept // NOLINT(*-explicit-constructor)
 		{
 			this->WeaklyConstructFrom(other);
 		}
 		
 		template<class T>
-		FTWeakPtr(const FTWeakPtr<T> &other) noexcept // NOLINT(*-explicit-constructor)
+		TFWeakPtr(const TFWeakPtr<T> &other) noexcept // NOLINT(*-explicit-constructor)
 		{
 			this->WeaklyConstructFrom(other);
 		}
 		
-		FTWeakPtr(FTWeakPtr &&other) noexcept
+		TFWeakPtr(TFWeakPtr &&other) noexcept
 		{
 			this->MoveConstructFrom(Whale::Move(other));
 		}
 		
 		template<class T>
-		FTWeakPtr(FTWeakPtr<T> &&other) noexcept // NOLINT(*-explicit-constructor)
+		TFWeakPtr(TFWeakPtr<T> &&other) noexcept // NOLINT(*-explicit-constructor)
 		{
 			this->MoveConstructFrom(Whale::Move(other));
 		}
 		
-		~FTWeakPtr() noexcept { this->DecrementWeak(); }
+		~TFWeakPtr() noexcept { this->DecrementWeak(); }
 	
 	public:
 		
-		FTWeakPtr &operator=(const FTWeakPtr &other) noexcept
+		TFWeakPtr &operator=(const TFWeakPtr &other) noexcept
 		{
-			FTWeakPtr(other).Swap(*this);
+			TFWeakPtr(other).Swap(*this);
 			return *this;
 		}
 		
 		template<typename T>
-		FTWeakPtr &operator=(const FTWeakPtr<T> &other) noexcept
+		TFWeakPtr &operator=(const TFWeakPtr<T> &other) noexcept
 		{
-			FTWeakPtr(other).Swap(*this);
+			TFWeakPtr(other).Swap(*this);
 			return *this;
 		}
 		
-		FTWeakPtr &operator=(FTWeakPtr &&other) noexcept
+		TFWeakPtr &operator=(TFWeakPtr &&other) noexcept
 		{
-			FTWeakPtr(Whale::Move(other)).Swap(*this);
-			return *this;
-		}
-		
-		template<typename T>
-		FTWeakPtr &operator=(FTWeakPtr<T> &&other) noexcept
-		{
-			FTWeakPtr(Whale::Move(other)).Swap(*this);
+			TFWeakPtr(Whale::Move(other)).Swap(*this);
 			return *this;
 		}
 		
 		template<typename T>
-		FTWeakPtr &operator=(FTSharedPtr<T> &&other) noexcept
+		TFWeakPtr &operator=(TFWeakPtr<T> &&other) noexcept
 		{
-			FTWeakPtr(Whale::Move(other)).Swap(*this);
+			TFWeakPtr(Whale::Move(other)).Swap(*this);
+			return *this;
+		}
+		
+		template<typename T>
+		TFWeakPtr &operator=(TFSharedPtr<T> &&other) noexcept
+		{
+			TFWeakPtr(Whale::Move(other)).Swap(*this);
 			return *this;
 		}
 	
@@ -529,12 +529,12 @@ namespace Whale
 		
 		///
 		/// 重置
-		void Reset() noexcept { FTWeakPtr{}.Swap(*this); }
+		void Reset() noexcept { TFWeakPtr{}.Swap(*this); }
 		
 		///
 		/// 交换数据
 		/// \param other
-		void Swap(FTWeakPtr &other) noexcept { this->BaseSwap(other); }
+		void Swap(TFWeakPtr &other) noexcept { this->BaseSwap(other); }
 		
 		///
 		/// \return 是否过期了
@@ -547,9 +547,9 @@ namespace Whale
 		///
 		/// \return 锁住资源
 		[[nodiscard]]
-		FTSharedPtr<ElemT> Lock() const noexcept
+		TFSharedPtr<ElemT> Lock() const noexcept
 		{
-			FTSharedPtr<ElemT> result;
+			TFSharedPtr<ElemT> result;
 			(void) result.ConstructFromWeak(*this);
 			return result;
 		}
@@ -559,4 +559,4 @@ namespace Whale
 	
 } // Whale
 
-#include "FMemory.inl"
+#include "HMemory.inl"

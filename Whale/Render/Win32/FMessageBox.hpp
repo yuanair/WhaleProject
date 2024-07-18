@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "FWinDef.hpp"
-#include "Whale/Core/Tool/FTypeDef.hpp"
-#include "Whale/Core/Container/FTString.hpp"
+#include "HWinDef.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale::Win32
 {
@@ -61,30 +61,12 @@ namespace Whale::Win32
 	public:
 		
 		// 显示消息框
-		static FMessageBoxResult Show(const FTStringA &message, const FTStringA &caption,
-									  uint32 type = FMessageBoxTypeOK | FMessageBoxIconNull | FMessageBoxButton1);
+		static FMessageBoxResult Show(const StringA &message, const StringA &caption,
+		                              uint32 type = FMessageBoxTypeOK | FMessageBoxIconNull | FMessageBoxButton1);
 		
 		// 显示消息框
-		static FMessageBoxResult Show(const FTStringW &message, const FTStringW &caption,
-									  uint32 type = FMessageBoxTypeOK | FMessageBoxIconNull | FMessageBoxButton1);
-		
-		// 显示消息框，默认标题
-		static FMessageBoxResult
-		Show(const FTStringA &message, uint32 type = FMessageBoxTypeOK | FMessageBoxIconNull | FMessageBoxButton1);
-		
-		// 显示消息框，默认标题
-		static FMessageBoxResult
-		Show(const FTStringW &message, uint32 type = FMessageBoxTypeOK | FMessageBoxIconNull | FMessageBoxButton1);
-	
-	public:
-		
-		///
-		/// 默认标题
-		static FTStringA defaultCaptionA;
-		
-		///
-		/// 默认标题
-		static FTStringW defaultCaptionW;
+		static FMessageBoxResult Show(const StringW &message, const StringW &caption,
+		                              uint32 type = FMessageBoxTypeOK | FMessageBoxIconNull | FMessageBoxButton1);
 		
 	};
 	

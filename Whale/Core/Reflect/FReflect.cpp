@@ -7,10 +7,10 @@
 namespace Whale
 {
 	
-	std::vector<const WClass *> FReflect::classes{};
+	std::vector<WClass> FReflect::classes{};
 	
-	std::vector<const WEnum *> FReflect::enums{};
+	std::vector<WEnum> FReflect::enums{};
 	
-	std::vector<const WUnion *> FReflect::unions{};
+	std::vector<WUnion> FReflect::unions{};
 	
 } // Whale

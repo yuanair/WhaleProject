@@ -7,7 +7,7 @@
 #include "Whale/Core/Object/WObject.hpp"
 #include "Whale/Core/Object/WProgram.hpp"
 #include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Container/FMemory.hpp"
+#include "Whale/Core/Container/HMemory.hpp"
 #include "WRenderTarget.hpp"
 #include "WShader.hpp"
 #include "WStaticMesh.hpp"
@@ -39,17 +39,17 @@ namespace Whale
 		///
 		/// 创建渲染器
 		/// \param type 类型
-		static FTUniquePtr<WRenderer> CreateRenderer(ERendererType type);
+		static TFUniquePtr<WRenderer> CreateRenderer(ERendererType type);
 		
 		///
 		/// \param type
 		/// \return
-		static FTStringA ToStringA(ERendererType type);
+		static StringA ToStringA(ERendererType type);
 		
 		///
 		/// \param type
 		/// \return
-		static FTStringW ToStringW(ERendererType type);
+		static StringW ToStringW(ERendererType type);
 		
 		///
 		/// 获取渲染器
@@ -69,14 +69,10 @@ namespace Whale
 		inline static T &GetRenderer()
 		{
 			if (auto ptr = GetPRenderer<T>()) return *ptr;
-			FDebug::Fatal(
-				WProgram::GetAppNameW(),
-				(
-					L"The renderer should be " + T::GetStaticNameW() + L", but it is " +
-					WRenderer::GetPRenderer()->GetNameW()
-				).c_str()
-			);
-			throw;
+			throw FInvalidCastException((
+				                            "The renderer should be " + T::GetStaticNameA() + ", but it is " +
+				                            WRenderer::GetPRenderer()->GetNameA()
+			                            ).c_str());
 		}
 	
 	public:
@@ -102,15 +98,15 @@ namespace Whale
 		
 		///
 		/// 创建窗口渲染目标
-		virtual FTUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() = 0;
+		virtual TFUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() = 0;
 		
 		///
 		/// 创建着色器
-		virtual FTUniquePtr<WShader> CreateShader() = 0;
+		virtual TFUniquePtr<WShader> CreateShader() = 0;
 		
 		///
 		/// 创建网格体
-		virtual FTUniquePtr<WStaticMesh> CreateStaticMesh() = 0;
+		virtual TFUniquePtr<WStaticMesh> CreateStaticMesh() = 0;
 		
 		///
 		/// 渲染
@@ -118,7 +114,7 @@ namespace Whale
 	
 	public:
 		
-		std::vector<FTWeakPtr<WRenderTarget>> renderTargets;
+		std::vector<TFWeakPtr<WRenderTarget>> renderTargets;
 	
 	private:
 		

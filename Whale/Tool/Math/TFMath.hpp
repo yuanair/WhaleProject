@@ -4,16 +4,31 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
 
 namespace Whale
 {
+	
+	WHALE_API void Test();
+	
 	///
 	/// 数学库
 	template<class T>
-	class WHALE_API TMath
+	class WHALE_API TFMath
 	{
 	public:
+		
+		///
+		/// \param x
+		/// \param y
+		/// \return x, y的最小值
+		inline static T Min(T x, T y);
+		
+		///
+		/// \param x
+		/// \param y
+		/// \return x, y的最大值
+		inline static T Max(T x, T y);
 		
 		///
 		/// 限制范围
@@ -41,8 +56,8 @@ namespace Whale
 		
 	};
 	
-	using MathF = TMath<float>;
-	using MathD = TMath<double>;
+	using MathF = TFMath<float>;
+	using MathD = TFMath<double>;
 	
 	template<class T>
 	class WHALE_API TVector2
@@ -176,20 +191,33 @@ namespace Whale
 	using float4 = TVector4<float>;
 	using double4 = TVector4<double>;
 	
+	
 	template<class T>
-	T TMath<T>::LerpUnclamped(T x, T y, T t)
+	T TFMath<T>::Min(T x, T y)
+	{
+		return x < y ? x : y;
+	}
+	
+	template<class T>
+	T TFMath<T>::Max(T x, T y)
+	{
+		return x > y ? x : y;
+	}
+	
+	template<class T>
+	T TFMath<T>::LerpUnclamped(T x, T y, T t)
 	{
 		return x * (T{0} - t) + y * t;
 	}
 	
 	template<class T>
-	T TMath<T>::Lerp(T x, T y, T t)
+	T TFMath<T>::Lerp(T x, T y, T t)
 	{
 		return LerpUnclamped(x, y, Clamp(t, T{0}, T{1}));
 	}
 	
 	template<class T>
-	inline T TMath<T>::Clamp(T x, T minValue, T maxValue)
+	inline T TFMath<T>::Clamp(T x, T minValue, T maxValue)
 	{
 		return x > maxValue ? maxValue : (x < minValue ? minValue : x);
 	}

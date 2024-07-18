@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
-#include "Whale/Core/Container/FTString.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/Container/TFString.hpp"
 #include "Whale/Core/Tool/FSourceLocation.hpp"
 #include "Whale/Core/FException/FException.hpp"
+#include "Whale/Render/Win32/HWinDef.hpp"
 
 namespace Whale
 {
@@ -30,7 +31,8 @@ namespace Whale
 	{
 	public:
 		
-		FDirectXResult(int32 hr); // NOLINT(*-explicit-constructor)
+		FDirectXResult(Win32::HResult hr) : hr(hr),
+		                                    isThrowIfFailedAtDestructTime(true) {} // NOLINT(*-explicit-constructor)
 		
 		~FDirectXResult();
 	
@@ -40,16 +42,16 @@ namespace Whale
 		/// \param message
 		/// \return 字符串
 		[[nodiscard]]
-		FTStringA ToString(const FTStringA &message) const;
+		StringA ToString(const StringA &message) const;
 		
 		[[nodiscard]]
-		FTStringW ToString(const FTStringW &message) const;
+		StringW ToString(const StringW &message) const;
 		
 		///
 		/// 输出到日志并抛异常
-		void Throw(const FTStringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
+		void Throw(const StringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 		
-		void Throw(const FTStringW &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
+		void Throw(const StringW &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 		
 		///
 		/// \return 是否是失败值
@@ -63,27 +65,30 @@ namespace Whale
 		
 		///
 		/// 如果失败则调用Throw()
-		void ThrowIfFailed(const FTStringA &message,
+		void ThrowIfFailed(const StringA &message,
 		                   const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 		
-		void ThrowIfFailed(const FTStringW &message,
+		void ThrowIfFailed(const StringW &message,
 		                   const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
 	
 	public:
 		
 		[[nodiscard]]
-		int32 GetHr() const;
+		Win32::HResult GetHr() const { return this->hr; }
 		
 		[[nodiscard]]
-		bool IsThrowIfFailedAtDestructTime() const;
+		bool IsThrowIfFailedAtDestructTime() const { return this->isThrowIfFailedAtDestructTime; }
 		
-		void SetIsThrowIfFailedAtDestructTime(bool isThrowIfFailedAtDestructTime);
+		void SetIsThrowIfFailedAtDestructTime(bool arg)
+		{
+			this->isThrowIfFailedAtDestructTime = arg;
+		}
 	
 	private:
 		
-		const int32 hr;
+		const Win32::HResult hr;
 		
-		bool isThrowIfFailedAtDestructTime = true;
+		bool isThrowIfFailedAtDestructTime;
 		
 	};
 	

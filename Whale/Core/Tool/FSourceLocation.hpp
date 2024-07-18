@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "FTypeDef.hpp"
-#include "Whale/Tool/Locale/WLocale.hpp"
+#include "HTypeDef.hpp"
+#include "WLocale.hpp"
 
 namespace Whale
 {

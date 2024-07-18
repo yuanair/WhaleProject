@@ -23,11 +23,11 @@ namespace Whale
 		
 		void Create() override;
 		
-		FTUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() override;
+		TFUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() override;
 		
-		FTUniquePtr<WShader> CreateShader() override;
+		TFUniquePtr<WShader> CreateShader() override;
 		
-		FTUniquePtr<WStaticMesh> CreateStaticMesh() override;
+		TFUniquePtr<WStaticMesh> CreateStaticMesh() override;
 		
 		void Render() override;
 	

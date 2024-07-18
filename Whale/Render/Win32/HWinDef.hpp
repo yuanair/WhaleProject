@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
 
 namespace Whale::Win32
 {

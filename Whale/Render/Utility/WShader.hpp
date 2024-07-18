@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Core/Object/WObject.hpp"
-#include "Whale/Core/Container/FTString.hpp"
+#include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale
 {
@@ -18,7 +18,7 @@ namespace Whale
 		///
 		/// \param fileName 文件名
 		/// \returns 是否成功
-		virtual bool CreateFromFile(const FTStringW &fileName) = 0;
+		virtual bool CreateFromFile(const StringW &fileName) = 0;
 		
 		///
 		/// 使用着色器

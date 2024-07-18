@@ -18,11 +18,11 @@
 namespace Whale::Win32
 {
 	
-	bool WWindow::WWindowClassA::Register(HIcon hIcon, HIcon hIconSm)
+	bool WWindow::WWindowClass::Register(HIcon hIcon, HIcon hIconSm)
 	{
 		if (hIcon.handle == nullptr) hIcon.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
 		if (hIconSm.handle == nullptr) hIconSm.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
-		WNDCLASSEXA wnd
+		WNDCLASSEX wnd
 			{
 				.cbSize = sizeof(wnd),
 				.style = CS_VREDRAW | CS_HREDRAW,
@@ -37,39 +37,12 @@ namespace Whale::Win32
 				.lpszClassName = name.CStr(),
 				.hIconSm = (HICON) hIconSm.handle,
 			};
-		return (bool) ::RegisterClassExA(&wnd);
+		return (bool) ::RegisterClassEx(&wnd);
 	}
 	
-	Bool WWindow::WWindowClassA::Unregister()
+	Bool WWindow::WWindowClass::Unregister()
 	{
-		return ::UnregisterClassA(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
-	}
-	
-	bool WWindow::WWindowClassW::Register(HIcon hIcon, HIcon hIconSm)
-	{
-		if (hIcon.handle == nullptr) hIcon.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
-		if (hIconSm.handle == nullptr) hIconSm.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
-		WNDCLASSEXW wnd
-			{
-				.cbSize = sizeof(wnd),
-				.style = CS_VREDRAW | CS_HREDRAW,
-				.lpfnWndProc = (WNDPROC) (&WWindow::WindowProc),
-				.cbClsExtra = 0,
-				.cbWndExtra = sizeof(WWindow *),
-				.hInstance = (HINSTANCE) hInstance.handle,
-				.hIcon = (HICON) hIcon.handle,
-				.hCursor = nullptr,
-				.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH),
-				.lpszMenuName = nullptr,
-				.lpszClassName = name.CStr(),
-				.hIconSm = (HICON) hIconSm.handle,
-			};
-		return (bool) ::RegisterClassExW(&wnd);
-	}
-	
-	Bool WWindow::WWindowClassW::Unregister()
-	{
-		return ::UnregisterClassW(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
+		return ::UnregisterClass(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
 	}
 	
 	WWindow::WWindow()
@@ -83,39 +56,39 @@ namespace Whale::Win32
 	{
 		Destroy();
 	}
+
+//	void WWindow::Create(
+//		const WWindowClass &windowClass, const StringA &windowName,
+//		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
+//	)
+//	{
+//		WWindow desktop;
+//		desktop.Bind(DesktopWindow());
+//		this->maxSize = desktop.GetRect().GetSize();
+//		this->hWindow.handle = ::CreateWindowExA(
+//			WS_EX_ACCEPTFILES,
+//			windowClass.GetName().CStr(), windowName.CStr(),
+//			WS_OVERLAPPEDWINDOW,
+//			x,
+//			y,
+//			w,
+//			h,
+//			(HWND) hWndParent.handle,
+//			nullptr,
+//			(HINSTANCE) windowClass.GetHInstance().handle,
+//			this
+//		);
+//	}
 	
 	void WWindow::Create(
-		const WWindowClassA &windowClass, const FTStringA &windowName,
+		const WWindowClass &windowClass, const StringT &windowName,
 		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
 	)
 	{
 		WWindow desktop;
 		desktop.Bind(DesktopWindow());
 		this->maxSize = desktop.GetRect().GetSize();
-		this->hWindow.handle = ::CreateWindowExA(
-			WS_EX_ACCEPTFILES,
-			windowClass.GetName().CStr(), windowName.CStr(),
-			WS_OVERLAPPEDWINDOW,
-			x,
-			y,
-			w,
-			h,
-			(HWND) hWndParent.handle,
-			nullptr,
-			(HINSTANCE) windowClass.GetHInstance().handle,
-			this
-		);
-	}
-	
-	void WWindow::Create(
-		const WWindowClassW &windowClass, const FTStringW &windowName,
-		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
-	)
-	{
-		WWindow desktop;
-		desktop.Bind(DesktopWindow());
-		this->maxSize = desktop.GetRect().GetSize();
-		this->hWindow.handle = ::CreateWindowExW(
+		this->hWindow.handle = ::CreateWindowEx(
 			WS_EX_ACCEPTFILES,
 			windowClass.GetName().CStr(), windowName.CStr(),
 			WS_OVERLAPPEDWINDOW,
@@ -323,32 +296,28 @@ namespace Whale::Win32
 		}
 	}
 	
-	FTStringA WWindow::GetNameA() const
+	StringA WWindow::GetNameA() const
 	{
-		int32 length = ::GetWindowTextLengthA((HWND) this->hWindow.handle);
-		auto *buffer = WHALE_DBG_NEW Char[length];
-		::GetWindowTextA((HWND) this->hWindow.handle, buffer, length);
-		FTStringA result = buffer;
-		delete[] buffer;
-		return result;
+		int32 length = ::GetWindowTextLengthA((HWND) this->hWindow.handle) + 1;
+		StringA buffer{nullptr, (SizeT) length};
+		::GetWindowTextA((HWND) this->hWindow.handle, buffer.GetPtr(), length);
+		return buffer;
 	}
 	
-	FTStringW WWindow::GetNameW() const
+	StringW WWindow::GetNameW() const
 	{
-		int32 length = ::GetWindowTextLengthW((HWND) this->hWindow.handle);
-		auto *buffer = WHALE_DBG_NEW WChar[length];
-		::GetWindowTextW((HWND) this->hWindow.handle, buffer, length);
-		FTStringW result = buffer;
-		delete[] buffer;
-		return result;
+		int32 length = ::GetWindowTextLengthW((HWND) this->hWindow.handle) + 1;
+		StringW buffer{nullptr, (SizeT) length};
+		::GetWindowTextW((HWND) this->hWindow.handle, buffer.GetPtr(), length);
+		return buffer;
 	}
 	
-	void WWindow::SetName(const FTStringA &name)
+	void WWindow::SetName(const StringA &name)
 	{
 		::SetWindowTextA((HWND) this->hWindow.handle, name.CStr());
 	}
 	
-	void WWindow::SetName(const FTStringW &name)
+	void WWindow::SetName(const StringW &name)
 	{
 		::SetWindowTextW((HWND) this->hWindow.handle, name.CStr());
 	}

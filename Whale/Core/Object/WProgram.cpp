@@ -23,35 +23,109 @@ namespace Whale
 	
 	}
 	
-	int32 WProgram::Run()
+	int32 WProgram::RunA()
 	{
 		MSG msg;
 		
-		FDebug::LogInfo(WProgram::GetAppNameW(), L"WProgram Start");
-		FDebug::LogInfo(WProgram::GetAppNameW(), (std::wstring() + GetAppNameW() + L" " + GetVersionW()).c_str());
+		BeginPlay();
 		
-		GetTimer().Restart();
-		OnBeginPlay();
 		do
 		{
-			if (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+			if (::PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE))
 			{
 				::TranslateMessage(&msg);
-				::DispatchMessage(&msg);
+				::DispatchMessageA(&msg);
 			}
 			else
 			{
-				GetTimer().Tick();
-				OnTick(GetTimer().GetDeltaTimeF());
+				Tick();
 			}
 		}
 		while (msg.message != WM_QUIT);
 		
-		OnEndPlay();
-		FDebug::LogInfo(WProgram::GetAppNameW(), L"WProgram End");
-		FDebug::LogFlush();
+		EndPlay();
 		
-		return (int) msg.wParam;
+		return (int32) msg.wParam;
+	}
+	
+	int32 WProgram::RunW()
+	{
+		MSG msg;
+		
+		BeginPlay();
+		
+		do
+		{
+			if (::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
+			{
+				::TranslateMessage(&msg);
+				::DispatchMessageW(&msg);
+			}
+			else
+			{
+				Tick();
+			}
+		}
+		while (msg.message != WM_QUIT);
+		
+		EndPlay();
+		
+		return (int32) msg.wParam;
+	}
+	
+	void WProgram::BeginPlay()
+	{
+		try
+		{
+			FDebug::LogInfo(WProgram::GetAppNameA(), "WProgram Start");
+			FDebug::LogInfo(WProgram::GetAppNameA(), std::format("{} {}", GetAppNameA(), GetVersionA()).c_str());
+			GetTimer().Restart();
+			OnBeginPlay();
+		}
+		catch (const std::exception &exception)
+		{
+			FDebug::LogFatal(
+				WProgram::GetAppNameA(), std::format(
+					"OnEndPlay(): {}: {}", typeid(exception).name(),
+					exception.what()).c_str());
+			throw exception;
+		}
+	}
+	
+	void WProgram::Tick()
+	{
+		try
+		{
+			GetTimer().Tick();
+			OnTick(GetTimer().GetDeltaTimeF());
+		}
+		catch (const std::exception &exception)
+		{
+			FDebug::LogFatal(
+				WProgram::GetAppNameA(), std::format(
+					"OnEndPlay(): {}: {}", typeid(exception).name(),
+					exception.what()).c_str());
+			throw exception;
+		}
+	}
+	
+	void WProgram::EndPlay()
+	{
+		try
+		{
+			OnEndPlay();
+		}
+		catch (const std::exception &exception)
+		{
+			FDebug::LogFatal(
+				WProgram::GetAppNameA(), std::format(
+					"OnEndPlay(): {}: {}", typeid(exception).name(),
+					exception.what()).c_str());
+			throw exception;
+		}
+		FDebug::LogInfo(WProgram::GetAppNameA(), "WProgram End");
+		FDebug::LogFlush();
+		FDebug::LogClose();
 	}
 	
 	const Char *WProgram::GetAppNameA()

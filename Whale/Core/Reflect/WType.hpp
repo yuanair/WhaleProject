@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Core/Object/WObject.hpp"
-#include "Whale/Core/Container/FTString.hpp"
+#include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale
 {
@@ -25,12 +25,12 @@ namespace Whale
 	{
 	public:
 		
-		WClass(FTStringA name, const Bool isClass, const Bool isFinal)
+		WClass(StringA name, const Bool isClass, const Bool isFinal)
 			: name(Move(name)), isClass(isClass), isFinal(isFinal) {}
 	
 	public:
 		
-		const FTStringA name;
+		const StringA name;
 		
 		const Bool isClass; // true - class/false - struct
 		
@@ -44,12 +44,12 @@ namespace Whale
 	{
 	public:
 		
-		explicit WEnum(FTStringA name)
+		explicit WEnum(StringA name)
 			: name(Move(name)) {}
 	
 	public:
 		
-		const FTStringA name;
+		const StringA name;
 		
 	};
 	
@@ -59,12 +59,12 @@ namespace Whale
 	{
 	public:
 		
-		explicit WUnion(FTStringA name)
+		explicit WUnion(StringA name)
 			: name(Move(name)) {}
 	
 	public:
 		
-		const FTStringA name;
+		const StringA name;
 		
 	};
 	

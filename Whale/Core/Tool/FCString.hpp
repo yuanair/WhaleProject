@@ -4,14 +4,13 @@
 
 #pragma once
 
-#include "FTypeDef.hpp"
+#include "HTypeDef.hpp"
 
 namespace Whale
 {
 	
 	///
 	/// c string
-	template<class CharT>
 	class WHALE_API FCString
 	{
 	public:
@@ -19,17 +18,20 @@ namespace Whale
 		///
 		/// \param str 字符串
 		/// \return 字符串长度（包括结束符null）
+		template<typename CharT>
 		static SizeT Length(const CharT *str);
 		
 		///
 		/// \param str 字符串
 		/// \return 字符串长度（不包括结束符no null）
+		template<typename CharT>
 		static SizeT LengthNoNull(const CharT *str);
+		
 		
 	};
 	
-	template<class CharT>
-	SizeT FCString<CharT>::Length(const CharT *str)
+	template<typename CharT>
+	SizeT FCString::Length(const CharT *str)
 	{
 		if (str == nullptr) return 0;
 		SizeT index = 0;
@@ -41,8 +43,8 @@ namespace Whale
 		return index;
 	}
 	
-	template<class CharT>
-	SizeT FCString<CharT>::LengthNoNull(const CharT *str)
+	template<typename CharT>
+	SizeT FCString::LengthNoNull(const CharT *str)
 	{
 		if (str == nullptr) return 0;
 		SizeT index = 0;

@@ -3,33 +3,23 @@
 //
 
 #include "WObject.hpp"
-#include "Whale/Core/Tool/FCRT.hpp"
-#include <format>
 
 namespace Whale
 {
-	WObject::WObject()
-	{
+	WObject::WObject() = default;
 	
-	}
-	
-	WObject::~WObject()
-	{
-	
-	}
-	
-	bool WObject::Equals(const WObject &other) const
-	{
-		return &other == this;
-	}
+	WObject::~WObject() = default;
 
-//	std::string WObject::ToString() const
+//	void WObject::ToString(StringA &target) const
 //	{
-//		return std::format("{}<{:016X}>", typeid(*this).name(), (intptr_t) this);
+//		target = std::format("{}<{:016X}>", typeid(*this).name(), (intptr_t) this).c_str();
+//	}
+//
+//	void WObject::ToString(StringW &target) const
+//	{
+//		target = std::format(
+//			L"{}<{:016X}>", WLocale::ToUTFString(typeid(*this).name(), "UTF-8").CStr(), (intptr_t) this
+//		).c_str();
 //	}
 	
-	WObject *WObject::Clone() const
-	{
-		return WHALE_DBG_NEW WObject;
-	}
 } // Whale

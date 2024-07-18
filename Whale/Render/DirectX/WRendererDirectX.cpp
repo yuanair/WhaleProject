@@ -135,17 +135,17 @@ namespace Whale
 		
 	}
 	
-	FTUniquePtr<WWindowRenderTarget> WRendererDirectX::CreateWindowRenderTarget()
+	TFUniquePtr<WWindowRenderTarget> WRendererDirectX::CreateWindowRenderTarget()
 	{
 		return MakeUnique<WWindowRenderTargetDirectX>();
 	}
 	
-	FTUniquePtr<WShader> WRendererDirectX::CreateShader()
+	TFUniquePtr<WShader> WRendererDirectX::CreateShader()
 	{
 		return MakeUnique<WShaderDirectX>();
 	}
 	
-	FTUniquePtr<WStaticMesh> WRendererDirectX::CreateStaticMesh()
+	TFUniquePtr<WStaticMesh> WRendererDirectX::CreateStaticMesh()
 	{
 		return MakeUnique<WStaticMeshDirectX>();
 	}

@@ -2,7 +2,7 @@
 // Created by admin on 2024/2/3.
 //
 
-#include "TTimer.hpp"
+#include "TFTimer.hpp"
 
 namespace Whale
 {

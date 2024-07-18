@@ -5,7 +5,7 @@
 #pragma once
 
 #include "WObject.hpp"
-#include "Whale/Core/Tool/TTimer.hpp"
+#include "Whale/Core/Tool/TFTimer.hpp"
 
 namespace Whale
 {
@@ -20,7 +20,12 @@ namespace Whale
 		///
 		/// 运行
 		/// \return 程序返回值
-		int32 Run();
+		int32 RunA();
+		
+		///
+		/// 运行
+		/// \return 程序返回值
+		int32 RunW();
 	
 	protected:
 		
@@ -37,12 +42,20 @@ namespace Whale
 		/// 结束
 		virtual void OnEndPlay();
 	
+	private:
+		
+		void BeginPlay();
+		
+		void Tick();
+		
+		void EndPlay();
+	
 	public:
 		
 		[[nodiscard]]
-		inline const TTimer<std::chrono::system_clock> &GetTimer() const { return this->timer; }
+		inline const TFTimer<std::chrono::system_clock> &GetTimer() const { return this->timer; }
 		
-		inline TTimer<std::chrono::system_clock> &GetTimer() { return this->timer; }
+		inline TFTimer<std::chrono::system_clock> &GetTimer() { return this->timer; }
 	
 	public:
 		
@@ -60,7 +73,7 @@ namespace Whale
 	
 	private:
 		
-		TTimer<std::chrono::system_clock> timer;
+		TFTimer<std::chrono::system_clock> timer;
 		
 	};
 	

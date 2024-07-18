@@ -4,8 +4,7 @@
 
 #include "WRendererOpenGL.hpp"
 
-#include "FOpenGLHeader.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
+#include "HOpenGLHeader.hpp"
 
 namespace Whale
 {
@@ -55,8 +54,7 @@ namespace Whale
 		
 		if (!gladLoadGL())
 		{
-			FDebug::Fatal(WProgram::GetAppNameW(), L"Failed to initialize GLAD");
-			throw;
+			throw FLoadException("Failed to initialize GLAD");
 		}
 		glViewport(0, 0, 800, 800);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -65,19 +63,19 @@ namespace Whale
 		
 	}
 	
-	FTUniquePtr<WWindowRenderTarget> WRendererOpenGL::CreateWindowRenderTarget()
+	TFUniquePtr<WWindowRenderTarget> WRendererOpenGL::CreateWindowRenderTarget()
 	{
 		return nullptr;
 		// return MakeUnique<WWindowRenderTargetOpenGL>();
 	}
 	
-	FTUniquePtr<WShader> WRendererOpenGL::CreateShader()
+	TFUniquePtr<WShader> WRendererOpenGL::CreateShader()
 	{
 		return nullptr;
 		// return MakeUnique<WShaderOpenGL>();
 	}
 	
-	FTUniquePtr<WStaticMesh> WRendererOpenGL::CreateStaticMesh()
+	TFUniquePtr<WStaticMesh> WRendererOpenGL::CreateStaticMesh()
 	{
 		return nullptr;
 		// return MakeUnique<WStaticMeshOpenGL>();

@@ -8,17 +8,17 @@
 
 namespace Whale
 {
-	FTStringA WLocale::Between(const FTStringA &text, const FTStringA &toEncoding, const FTStringA &fromEncoding)
+	StringA WLocale::Between(const StringA &text, const StringA &toEncoding, const StringA &fromEncoding)
 	{
 		return boost::locale::conv::between(text.CStr(), toEncoding.CStr(), fromEncoding.CStr()).c_str();
 	}
 	
-	FTStringW WLocale::ToUTFString(const FTStringA &text, const FTStringA &fromEncoding)
+	StringW WLocale::ToUTFString(const StringA &text, const StringA &fromEncoding)
 	{
 		return boost::locale::conv::to_utf<WChar>(text.CStr(), fromEncoding.CStr()).c_str();
 	}
 	
-	FTStringA WLocale::UTFToString(const FTStringW &text, const FTStringA &toEncoding)
+	StringA WLocale::UTFToString(const StringW &text, const StringA &toEncoding)
 	{
 		return boost::locale::conv::from_utf(text.CStr(), toEncoding.CStr()).c_str();
 	}

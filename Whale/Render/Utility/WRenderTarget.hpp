@@ -8,7 +8,7 @@
 
 #include "Whale/Core/Object/WObject.hpp"
 #include "Whale/Render/Win32/WWindow.hpp"
-#include "Whale/Core/Container/FMemory.hpp"
+#include "Whale/Core/Container/HMemory.hpp"
 #include "WRenderObject.hpp"
 
 namespace Whale
@@ -23,7 +23,7 @@ namespace Whale
 	
 	public:
 		
-		std::vector<FTWeakPtr<WRenderObject>> renderObjects;
+		std::vector<TFWeakPtr<WRenderObject>> renderObjects;
 		
 	};
 	

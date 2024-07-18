@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "FTypeDef.hpp"
+#include "HTypeDef.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -14,7 +14,7 @@ namespace Whale
 	///
 	/// 计时器
 	template<class ClockT = std::chrono::system_clock>
-	class WHALE_API TTimer
+	class WHALE_API TFTimer
 	{
 	public:
 		
@@ -28,13 +28,13 @@ namespace Whale
 	
 	public:
 		
-		inline TTimer()
+		inline TFTimer()
 			: tickCount(0), fps(0.0)
 		{
 			Restart();
 		}
 		
-		inline ~TTimer() = default;
+		inline ~TFTimer() = default;
 	
 	public:
 		

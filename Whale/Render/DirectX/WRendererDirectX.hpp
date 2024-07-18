@@ -5,8 +5,8 @@
 #pragma once
 
 #include "Whale/Render/Utility/WRenderer.hpp"
-#include "Whale/Core/Container/FMemory.hpp"
-#include "Whale/Render/DirectX/FDirectXHeader.hpp"
+#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Render/DirectX/HDirectXHeader.hpp"
 #include "FWICForDirectX.hpp"
 
 namespace Whale
@@ -26,11 +26,11 @@ namespace Whale
 		
 		void Create() override;
 		
-		FTUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() override;
+		TFUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() override;
 		
-		FTUniquePtr<WShader> CreateShader() override;
+		TFUniquePtr<WShader> CreateShader() override;
 		
-		FTUniquePtr<WStaticMesh> CreateStaticMesh() override;
+		TFUniquePtr<WStaticMesh> CreateStaticMesh() override;
 		
 		void Render() override;
 	

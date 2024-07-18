@@ -12,24 +12,24 @@ namespace Whale::Win32
 {
 	
 	HInstance FCore::ShellExecuteT(HWindow hWnd, const std::string &operation, const std::string &file,
-								   const std::string &parameters,
-								   const std::string &directory, int32 showCmd)
+	                               const std::string &parameters,
+	                               const std::string &directory, int32 showCmd)
 	{
 		return {
 			::ShellExecuteA((HWND) hWnd.handle, operation.c_str(), file.c_str(), parameters.c_str(), directory.c_str(),
-							showCmd
+			                showCmd
 			)
 		};
 	}
 	
 	
 	HInstance FCore::ShellExecuteT(HWindow hWnd, const std::wstring &operation, const std::wstring &file,
-								   const std::wstring &parameters,
-								   const std::wstring &directory, int32 showCmd)
+	                               const std::wstring &parameters,
+	                               const std::wstring &directory, int32 showCmd)
 	{
 		return {
 			::ShellExecuteW((HWND) hWnd.handle, operation.c_str(), file.c_str(), parameters.c_str(), directory.c_str(),
-							showCmd
+			                showCmd
 			)
 		};
 	}
@@ -45,8 +45,8 @@ namespace Whale::Win32
 		GetStartupInfoA(&startup_info);
 		
 		return startup_info.dwFlags & STARTF_USESHOWWINDOW
-			   ? startup_info.wShowWindow
-			   : SW_SHOWDEFAULT;
+		       ? startup_info.wShowWindow
+		       : SW_SHOWDEFAULT;
 	}
 	
 	HInstance FCore::GetInstance()
@@ -155,9 +155,9 @@ Cleanup:
 		return ::GetCommandLineW();
 	}
 	
-	std::string FCore::MessageToStringA(uint32 dwMessageId)
+	std::string FCore::MessageToStringA(HResult dwMessageId)
 	{
-		auto strBufferError = WHALE_DBG_NEW char[256];
+		auto strBufferError = WHALE_NEW_CLIENT Char[256];
 		::FormatMessageA
 			(
 				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -169,9 +169,9 @@ Cleanup:
 		return buffer;
 	}
 	
-	std::wstring FCore::MessageToStringW(uint32 dwMessageId)
+	std::wstring FCore::MessageToStringW(HResult dwMessageId)
 	{
-		auto strBufferError = WHALE_DBG_NEW wchar_t[256];
+		auto strBufferError = WHALE_NEW_CLIENT WChar[256];
 		::FormatMessageW
 			(
 				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -183,7 +183,7 @@ Cleanup:
 		return buffer;
 	}
 	
-	uint32 FCore::GetLastError()
+	HResult FCore::GetLastError()
 	{
 		return HRESULT_FROM_WIN32(::GetLastError());
 	}

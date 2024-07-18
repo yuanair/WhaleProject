@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Render/Utility/WBitmap.hpp"
-#include "Whale/Render/DirectX/FDirectXHeader.hpp"
+#include "Whale/Render/DirectX/HDirectXHeader.hpp"
 
 namespace Whale
 {

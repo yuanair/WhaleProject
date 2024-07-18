@@ -46,8 +46,7 @@ namespace Whale
 			// 不支持的图片格式 目前退出了事
 			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
 			// 图片都需要提前转换好，所以不会出现不支持的现象
-			FDebug::Fatal(WProgram::GetAppNameW(), L"Unsupported image format");
-			throw;
+			throw FLoadException("Unsupported image format");
 		}
 		
 		// 定义一个位图格式的图片数据对象接口
@@ -91,8 +90,7 @@ namespace Whale
 		
 		if (type != WICPixelFormat)
 		{
-			FDebug::Fatal(WProgram::GetAppNameW(), L"Error");
-			throw;
+			throw FLoadException("Unknown Error");
 		}
 		
 		Microsoft::WRL::ComPtr<IWICPixelFormatInfo> pIWICPixelInfo;

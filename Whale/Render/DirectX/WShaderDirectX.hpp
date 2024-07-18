@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Render/Utility/WShader.hpp"
-#include "Whale/Render/DirectX/FDirectXHeader.hpp"
+#include "Whale/Render/DirectX/HDirectXHeader.hpp"
 
 namespace Whale
 {
@@ -16,7 +16,7 @@ namespace Whale
 	{
 	public:
 		
-		bool CreateFromFile(const FTStringW &fileName) override;
+		bool CreateFromFile(const StringW &fileName) override;
 		
 		void Use() override;
 	

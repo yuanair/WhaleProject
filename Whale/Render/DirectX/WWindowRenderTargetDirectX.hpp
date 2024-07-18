@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Render/Utility/WRenderTarget.hpp"
-#include "FDirectXHeader.hpp"
+#include "HDirectXHeader.hpp"
 
 namespace Whale
 {

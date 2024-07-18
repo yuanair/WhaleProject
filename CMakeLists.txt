@@ -47,7 +47,7 @@ endif ()
 add_compile_options(-Wall)
 
 # UNICODE
-add_definitions("-DUNICODE" "-D_UNICODE")
+# add_definitions("-DUNICODE" "-D_UNICODE")
 
 # output
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)

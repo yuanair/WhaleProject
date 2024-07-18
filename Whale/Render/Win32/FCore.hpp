@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "FWinDef.hpp"
+#include "HWinDef.hpp"
 #include <string>
 
 namespace Whale::Win32
@@ -89,15 +89,15 @@ namespace Whale::Win32
 		
 		///
 		/// \return 获取最后的WIN32错误
-		static uint32 GetLastError();
+		static HResult GetLastError();
 		
 		///
 		/// windows错误信息
-		static std::string MessageToStringA(uint32 dwMessageId);
+		static std::string MessageToStringA(HResult dwMessageId);
 		
 		///
 		/// windows错误信息
-		static std::wstring MessageToStringW(uint32 dwMessageId);
+		static std::wstring MessageToStringW(HResult dwMessageId);
 		
 	};
 	

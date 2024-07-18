@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "WRenderObject.hpp"
-#include "Whale/Tool/Math/TMath.hpp"
-#include "Whale/Core/Container/FMemory.hpp"
+#include "Whale/Tool/Math/TFMath.hpp"
+#include "Whale/Core/Container/HMemory.hpp"
 #include "WShader.hpp"
 
 namespace Whale
@@ -52,15 +52,15 @@ namespace Whale
 		void SetVertexes(const std::vector<Vertex> &vertexesArg) { this->vertexes = vertexesArg; }
 		
 		[[nodiscard]]
-		const std::vector<FTWeakPtr<WShader>> &GetPShaders() const { return this->pShaders; }
+		const std::vector<TFWeakPtr<WShader>> &GetPShaders() const { return this->pShaders; }
 		
-		void SetPShader(const std::vector<FTWeakPtr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
+		void SetPShader(const std::vector<TFWeakPtr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
 	
 	private:
 		
 		std::vector<Vertex> vertexes;
 		
-		std::vector<FTWeakPtr<WShader>> pShaders;
+		std::vector<TFWeakPtr<WShader>> pShaders;
 		
 	};
 	

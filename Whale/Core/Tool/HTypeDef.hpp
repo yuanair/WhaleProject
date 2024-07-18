@@ -4,46 +4,22 @@
 
 #pragma once
 
-#define WHALE_WIDE_(s) L ## s
-#define WHALE_WIDE(s) WHALE_WIDE_(s)
+// compiler
 
-#ifdef _DEBUG
-#define WHALE_ASSERT(expression) ((!!(expression)) || (::Whale::FatalMessage(WHALE_WIDE(#expression), WHALE_WIDE(__FILE__), __LINE__, WHALE_WIDE(__FUNCSIG__)), 0))
-#else
-#define WHALE_ASSERT(expression) ((void)0)
-#endif
+#define WHALE_COMPILER_TYPE_UNKNOWN 0
+#define WHALE_COMPILER_TYPE_MSVC 1
+#define WHALE_COMPILER_TYPE_GCC 2
+#define WHALE_COMPILER_TYPE_CLANG 3
 
-#ifndef WHALE_API
-
-#define WHALE_API __declspec(dllexport)
-
-#else
-
-#ifdef _DLL
-#define WHALE_API __declspec(dllimport)
-#else
-#define WHALE_API
-#endif
-
-#endif
-
-namespace Whale
-{
-	
-	#define WHALE_COMPILER_TYPE_UNKNOWN 0
-	#define WHALE_COMPILER_TYPE_MSVC 1
-	#define WHALE_COMPILER_TYPE_GCC 2
-	#define WHALE_COMPILER_TYPE_CLANG 3
-	
-	#define WHALE_COMPILER_UNKNOWN_BIT 0
-	#define WHALE_COMPILER_32_BIT 32
-	#define WHALE_COMPILER_64_BIT 64
+#define WHALE_COMPILER_UNKNOWN_BIT 0
+#define WHALE_COMPILER_32_BIT 32
+#define WHALE_COMPILER_64_BIT 64
 
 #if false
 #elif defined(_MSC_VER)
 	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MSVC
 #elif defined(__GNUC__)
-	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_GCC
+#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_GCC
 #else
 	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_UNKNOWN
 #endif
@@ -63,6 +39,48 @@ namespace Whale
 	#define WHALE_COMPILER_BIT WHALE_COMPILER_UNKNOWN_BIT
 #endif
 #endif
+
+// UNICODE
+
+#define WHALE_WIDE_(s) L ## s
+#define WHALE_WIDE(s) WHALE_WIDE_(s)
+
+#if defined(UNICODE) || defined(_UNICODE)
+	#define WHALE_UNICODE
+	#define WHALE_TEXT(s) WHALE_WIDE_(s)
+	#define WHALE_T(e) e ## W
+#else
+	#define WHALE_TEXT(s) s
+	#define WHALE_T(e) e ## A
+#endif
+
+// assert
+
+#ifdef _DEBUG
+#define WHALE_ASSERT(expression) ((!!(expression)) || (::Whale::FatalMessage(WHALE_WIDE(#expression), WHALE_WIDE(__FILE__), __LINE__, WHALE_WIDE(__FUNCSIG__)), 0))
+#else
+#define WHALE_ASSERT(expression) ((void)0)
+#endif
+
+// WHALE_API
+
+#ifndef WHALE_API
+
+#define WHALE_API __declspec(dllexport)
+
+#else
+
+#ifdef _DLL
+#define WHALE_API __declspec(dllimport)
+#else
+#define WHALE_API
+#endif
+
+#endif
+
+
+namespace Whale
+{
 	
 	using Byte = char;
 	
@@ -536,7 +554,7 @@ namespace Whale
 		
 		///
 		/// \return 位置
-		inline TPoint2<T> GetPoint() const noexcept { return TPoint2 < T > {x, y}; }
+		inline TPoint2<T> GetPoint() const noexcept { return TPoint2<T>{x, y}; }
 		
 		///
 		/// \param point 位置
@@ -550,7 +568,7 @@ namespace Whale
 		/// \return 中心点
 		inline TPoint2<T> GetCenterPoint() const noexcept
 		{
-			return TPoint2 < T > {x + width / T{2}, y + height / T{2}};
+			return TPoint2<T>{x + width / T{2}, y + height / T{2}};
 		}
 		
 		///
@@ -563,7 +581,7 @@ namespace Whale
 		
 		///
 		/// \return 大小
-		inline TSize2<T> GetSize() const noexcept { return TSize2 < T > {width, height}; }
+		inline TSize2<T> GetSize() const noexcept { return TSize2<T>{width, height}; }
 		
 		///
 		/// \param size 位置

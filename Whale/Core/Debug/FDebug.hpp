@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
-#include "Whale/Render/Win32/FMessageBox.hpp"
-#include "Whale/Render/Win32/FCore.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
 #include "Whale/Core/Tool/FSourceLocation.hpp"
 
 namespace Whale
@@ -31,21 +29,21 @@ namespace Whale
 	{
 	public:
 		
-		static void LogToFile(const FTStringA &logFileName, SizeT rotationSize = 10 * 1024 * 1024);
+		static void LogToFile(const StringA &logFileName, SizeT rotationSize = 10 * 1024 * 1024);
 		
-		static void LogToFile(const FTStringW &logFileName, SizeT rotationSize = 10 * 1024 * 1024);
+		static void LogToFile(const StringW &logFileName, SizeT rotationSize = 10 * 1024 * 1024);
 		
-		static void Log(const FTStringA &tag, const FTStringA &message, EDebugLevel level,
-						const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		static void Log(const StringA &tag, const StringA &message, EDebugLevel level,
+		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
-		static void Log(const FTStringW &tag, const FTStringW &message, EDebugLevel level,
-						const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		static void Log(const StringW &tag, const StringW &message, EDebugLevel level,
+		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		static void Log(const Char *tag, const Char *message, EDebugLevel level,
-						const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		static void Log(const WChar *tag, const WChar *message, EDebugLevel level,
-						const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		
 		template<typename T1, typename T2>
@@ -90,18 +88,13 @@ namespace Whale
 			Log(tag, message, EDebugLevel::Fatal, sourceLocation);
 		}
 		
-		template<typename T1, typename T2>
-		inline static void
-		Fatal(T1 tag, T2 message, const FSourceLocation &sourceLocation = FSourceLocation::Current())
-		{
-			LogFatal(tag, message, sourceLocation);
-			Win32::FMessageBox::Show(message, tag, Win32::FMessageBoxIconStop);
-			Win32::FCore::Exit(0);
-		}
-		
 		///
 		/// 刷新日志（将缓冲区的数据写入文件）
 		static void LogFlush();
+		
+		///
+		/// 关闭日志
+		static void LogClose();
 		
 	};
 	

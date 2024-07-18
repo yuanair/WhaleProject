@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Core/Object/WObject.hpp"
-#include "Whale/Core/Container/FTString.hpp"
+#include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale
 {

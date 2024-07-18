@@ -10,7 +10,7 @@
 namespace Whale
 {
 	
-	bool WShaderDirectX::CreateFromFile(const FTStringW &fileName)
+	bool WShaderDirectX::CreateFromFile(const StringW &fileName)
 	{
 		auto &renderer = WRenderer::GetRenderer<WRendererDirectX>();
 		

@@ -4,9 +4,10 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/Tool/HCRT.hpp"
+#include "Whale/Core/Container/HMemory.hpp"
 #include "WType.hpp"
-#include "Whale/Core/Tool/FCRT.hpp"
 
 #include <vector>
 #include <typeinfo>
@@ -21,55 +22,49 @@ namespace Whale
 	public:
 		
 		template<class T>
-		inline static const WType *Register();
+		inline static WType &Register();
 	
 	public:
 		
-		static const std::vector<const WClass *> &GetClasses()
+		static const auto &GetClasses()
 		{
 			return classes;
 		}
 		
-		static const std::vector<const WEnum *> &GetEnums()
+		static const auto &GetEnums()
 		{
 			return enums;
 		}
 		
-		static const std::vector<const WUnion *> &GetUnions()
+		static const auto &GetUnions()
 		{
 			return unions;
 		}
 	
 	private:
 		
-		static std::vector<const WClass *> classes;
+		static std::vector<WClass> classes;
 		
-		static std::vector<const WEnum *> enums;
+		static std::vector<WEnum> enums;
 		
-		static std::vector<const WUnion *> unions;
+		static std::vector<WUnion> unions;
 		
 	};
 	
 	template<class T>
-	const WType *FReflect::Register()
+	WType &FReflect::Register()
 	{
 		if constexpr (IsClassValue<T>)
 		{
-			const WClass *type = WHALE_DBG_NEW WClass(typeid(T).name(), IsClassValue<T>, IsFinalValue<T>);
-			classes.push_back(type);
-			return type;
+			return classes.emplace_back(typeid(T).name(), IsClassValue<T>, IsFinalValue<T>);
 		}
 		else if constexpr (IsEnumValue<T>)
 		{
-			const WEnum *type = WHALE_DBG_NEW WEnum(typeid(T).name());
-			enums.push_back(type);
-			return type;
+			return enums.emplace_back(typeid(T).name());
 		}
 		else if constexpr (IsUnionValue<T>)
 		{
-			const WUnion *type = WHALE_DBG_NEW WUnion(typeid(T).name());
-			unions.push_back(type);
-			return type;
+			return unions.emplace_back(typeid(T).name());
 		}
 		else
 		{

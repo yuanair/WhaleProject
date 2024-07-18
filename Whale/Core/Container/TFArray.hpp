@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/FTypeDef.hpp"
-#include "Whale/Core/Tool/FTInitializerList.hpp"
-#include "Whale/Core/Tool/FCRT.hpp"
+#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/Tool/HCRT.hpp"
+#include <initializer_list>
 
 namespace Whale
 {
@@ -15,21 +15,21 @@ namespace Whale
 	/// 非固定长度数组
 	/// \tparam ElemT 元素类型
 	template<class ElemT>
-	class WHALE_API FTArray
+	class WHALE_API TFArray
 	{
 	public:
 		
-		inline FTArray();
+		inline TFArray();
 		
-		inline FTArray(const FTInitializerList<ElemT> &initializerList); // NOLINT(*-explicit-constructor)
+		inline TFArray(std::initializer_list<ElemT> initializerList); // NOLINT(*-explicit-constructor)
 		
-		inline FTArray(const ElemT *first, const ElemT *last);
+		inline TFArray(const ElemT *first, const ElemT *last);
 		
-		inline FTArray(const ElemT *ptr, SizeT length);
+		inline TFArray(const ElemT *ptr, SizeT length);
 		
 		template<SizeT length>
-		inline FTArray(const ElemT (&ptr)[length]) // NOLINT(*-explicit-constructor)
-			: length(length), ptr(WHALE_DBG_NEW ElemT[length])
+		inline TFArray(const ElemT (&ptr)[length]) // NOLINT(*-explicit-constructor)
+			: length(length), ptr(WHALE_NEW_CLIENT ElemT[length])
 		{
 			for (SizeT index = 0; index < length; index++)
 			{
@@ -38,15 +38,15 @@ namespace Whale
 			
 		}
 		
-		inline FTArray(const FTArray &other);
+		inline TFArray(const TFArray &other);
 		
-		inline FTArray(FTArray &&other) noexcept;
+		inline TFArray(TFArray &&other) noexcept;
 		
-		inline ~FTArray() noexcept;
+		inline ~TFArray() noexcept;
 	
 	public:
 		
-		inline FTArray &operator=(FTArray other) noexcept;
+		inline TFArray &operator=(TFArray other) noexcept;
 		
 		inline ElemT &operator[](SizeT index) noexcept { return At(index); }
 		
@@ -54,9 +54,9 @@ namespace Whale
 	
 	public:
 		
-		inline void Swap(FTArray &other) noexcept;
+		inline void Swap(TFArray &other) noexcept;
 		
-		inline Bool Equal(const FTArray &other) const noexcept;
+		inline Bool Equal(const TFArray &other) const noexcept;
 		
 		inline ElemT &At(SizeT index) noexcept;
 		
@@ -66,12 +66,12 @@ namespace Whale
 		
 		inline ElemT *Begin() const noexcept
 		{
-			return ptr;
+			return this->ptr;
 		}
 		
 		inline ElemT *End() const noexcept
 		{
-			return ptr + length;
+			return this->ptr + this->length;
 		}
 		
 		/// for foreach
@@ -81,15 +81,11 @@ namespace Whale
 		constexpr const ElemT *end() const noexcept { return End(); }
 		
 		[[nodiscard]]
-		inline SizeT GetLength() const noexcept
-		{
-			return length;
-		}
+		inline SizeT GetLength() const noexcept { return this->length; }
 		
-		inline const ElemT *GetPtr() const noexcept
-		{
-			return ptr;
-		}
+		inline const ElemT *GetPtr() const noexcept { return this->ptr; }
+		
+		inline ElemT *GetPtr() noexcept { return this->ptr; }
 	
 	private:
 		
@@ -100,17 +96,17 @@ namespace Whale
 	};
 	
 	template<class ElemT>
-	FTArray<ElemT>::FTArray(const FTInitializerList<ElemT> &initializerList)
-		: FTArray(initializerList.begin(), initializerList.end())
+	TFArray<ElemT>::TFArray(std::initializer_list<ElemT> initializerList)
+		: TFArray(initializerList.begin(), initializerList.end())
 	{
 	
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT>::FTArray(const ElemT *first, const ElemT *last)
+	TFArray<ElemT>::TFArray(const ElemT *first, const ElemT *last)
 		: length((SizeT) (last - first)), ptr(nullptr)
 	{
-		this->ptr = WHALE_DBG_NEW ElemT[length];
+		this->ptr = WHALE_NEW_CLIENT ElemT[length];
 		ElemT *target = this->ptr;
 		while (first != last)
 		{
@@ -119,9 +115,10 @@ namespace Whale
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT>::FTArray(const ElemT *ptr, SizeT length)
-		: length(length), ptr(WHALE_DBG_NEW ElemT[length])
+	TFArray<ElemT>::TFArray(const ElemT *ptr, SizeT length)
+		: length(length), ptr(WHALE_NEW_CLIENT ElemT[length])
 	{
+		if (ptr == nullptr) return;
 		for (SizeT index = 0; index < length; index++)
 		{
 			this->ptr[index] = ptr[index];
@@ -129,15 +126,15 @@ namespace Whale
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT>::FTArray()
-		: length(0), ptr(WHALE_DBG_NEW ElemT[0])
+	TFArray<ElemT>::TFArray()
+		: length(0), ptr(WHALE_NEW_CLIENT ElemT[0])
 	{
 	
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT>::FTArray(const FTArray &other)
-		: length(other.length), ptr(WHALE_DBG_NEW ElemT[other.length])
+	TFArray<ElemT>::TFArray(const TFArray &other)
+		: length(other.length), ptr(WHALE_NEW_CLIENT ElemT[other.length])
 	{
 		for (SizeT index = 0; index < this->length; index++)
 		{
@@ -146,14 +143,14 @@ namespace Whale
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT>::FTArray(FTArray &&other) noexcept
-		: FTArray()
+	TFArray<ElemT>::TFArray(TFArray &&other) noexcept
+		: TFArray()
 	{
 		Swap(other);
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT>::~FTArray() noexcept
+	TFArray<ElemT>::~TFArray() noexcept
 	{
 		if (this->ptr == nullptr) return;
 		delete[] this->ptr;
@@ -162,21 +159,21 @@ namespace Whale
 	}
 	
 	template<class ElemT>
-	FTArray<ElemT> &FTArray<ElemT>::operator=(FTArray other) noexcept
+	TFArray<ElemT> &TFArray<ElemT>::operator=(TFArray other) noexcept
 	{
 		Swap(other);
 		return *this;
 	}
 	
 	template<class ElemT>
-	void FTArray<ElemT>::Swap(FTArray &other) noexcept
+	void TFArray<ElemT>::Swap(TFArray &other) noexcept
 	{
 		Whale::Swap(this->ptr, other.ptr);
 		Whale::Swap(this->length, other.length);
 	}
 	
 	template<class ElemT>
-	Bool FTArray<ElemT>::Equal(const FTArray &other) const noexcept
+	Bool TFArray<ElemT>::Equal(const TFArray &other) const noexcept
 	{
 		if (&other == this) return true;
 		if (GetLength() != other.GetLength()) return false;
@@ -188,14 +185,14 @@ namespace Whale
 	}
 	
 	template<class ElemT>
-	ElemT &FTArray<ElemT>::At(SizeT index) noexcept
+	ElemT &TFArray<ElemT>::At(SizeT index) noexcept
 	{
 		WHALE_ASSERT(index < this->length);
 		return this->ptr[index];
 	}
 	
 	template<class ElemT>
-	const ElemT &FTArray<ElemT>::At(SizeT index) const noexcept
+	const ElemT &TFArray<ElemT>::At(SizeT index) const noexcept
 	{
 		WHALE_ASSERT(index < this->length);
 		return this->ptr[index];

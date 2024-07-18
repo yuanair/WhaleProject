@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "FWinDef.hpp"
+#include "HWinDef.hpp"
 #include "FCore.hpp"
 #include "Whale/Core/Object/WObject.hpp"
-#include "Whale/Core/Container/FTString.hpp"
+#include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale::Win32
 {
@@ -17,14 +17,14 @@ namespace Whale::Win32
 	public:
 		
 		// 窗口类
-		class WHALE_API WWindowClassA : public WObject
+		class WHALE_API WWindowClass : public WObject
 		{
 		public:
 			
-			explicit WWindowClassA(const HInstance &hInstance, FTStringA name)
+			explicit WWindowClass(const HInstance &hInstance, StringT name)
 				: hInstance(hInstance), name(Move(name)) {}
 			
-			~WWindowClassA() override { Unregister(); }
+			~WWindowClass() override { Unregister(); }
 		
 		public:
 			
@@ -36,7 +36,7 @@ namespace Whale::Win32
 			
 			// 获取窗口类名
 			[[nodiscard]]
-			const FTStringA &GetName() const { return this->name; }
+			const StringT &GetName() const { return this->name; }
 			
 			// 获取应用实例
 			[[nodiscard]]
@@ -46,43 +46,10 @@ namespace Whale::Win32
 			
 			const HInstance hInstance;
 			
-			const FTStringA name;
+			const StringT name;
 			
 		};
 		
-		// 窗口类
-		class WHALE_API WWindowClassW : public WObject
-		{
-		public:
-			
-			explicit WWindowClassW(const HInstance &hInstance, FTStringW name)
-				: hInstance(hInstance), name(Move(name)) {}
-			
-			~WWindowClassW() override { Unregister(); }
-		
-		public:
-			
-			// 注册窗口类
-			Bool Register(HIcon hIcon = {}, HIcon hIconSm = {});
-			
-			// 取消注册
-			Bool Unregister();
-			
-			// 获取窗口类名
-			[[nodiscard]]
-			const FTStringW &GetName() const { return this->name; }
-			
-			// 获取应用实例
-			[[nodiscard]]
-			const HInstance &GetHInstance() const { return this->hInstance; }
-		
-		private:
-			
-			const HInstance hInstance;
-			
-			const FTStringW name;
-			
-		};
 		
 		///
 		/// 按键事件参数
@@ -175,14 +142,14 @@ namespace Whale::Win32
 	public:
 		
 		// 创建窗口
-		void Create(
-			const WWindowClassA &windowClass, const FTStringA &windowName,
-			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
-		);
+//		void Create(
+//			const WWindowClass &windowClass, const StringA &windowName,
+//			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
+//		);
 		
 		// 创建窗口
 		void Create(
-			const WWindowClassW &windowClass, const FTStringW &windowName,
+			const WWindowClass &windowClass, const StringT &windowName,
 			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
 		);
 		
@@ -271,7 +238,7 @@ namespace Whale::Win32
 		/// 输入字符串事件，用于输入法
 		///
 		/// \param input 输入的字符串
-		virtual LResult OnString(const FTStringT &input) { return 0; }
+		virtual LResult OnString(const StringT &input) { return 0; }
 		
 		///
 		/// Tick事件
@@ -331,20 +298,20 @@ namespace Whale::Win32
 		///
 		/// \return 窗口名
 		[[nodiscard]]
-		FTStringA GetNameA() const;
+		StringA GetNameA() const;
 		
 		///
 		/// \return 窗口名
 		[[nodiscard]]
-		FTStringW GetNameW() const;
+		StringW GetNameW() const;
 		
 		///
 		/// \param name 窗口名
-		void SetName(const FTStringA &name);
+		void SetName(const StringA &name);
 		
 		///
 		/// \param name 窗口名
-		void SetName(const FTStringW &name);
+		void SetName(const StringW &name);
 		
 		///
 		/// \return 窗口矩形

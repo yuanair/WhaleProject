@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "FDirectXHeader.hpp"
+#include "HDirectXHeader.hpp"
 #include <wincodec.h>
 
 namespace Whale
