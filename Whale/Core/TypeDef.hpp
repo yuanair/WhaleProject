@@ -79,10 +79,8 @@
 #if defined(UNICODE) || defined(_UNICODE)
 	#define WHALE_UNICODE
 	#define WHALE_TEXT(s) WHALE_WIDE_(s)
-	#define WHALE_T(e) e ## W
 #else
 	#define WHALE_TEXT(s) s
-	#define WHALE_T(e) e ## A
 #endif
 
 // assert
@@ -221,7 +219,9 @@ namespace Whale
 #else
 	using CharT = CharA;
 #endif
-
+	
+	constexpr const CharA WhaleTagA[] = "Whale";
+	constexpr const CharW WhaleTagW[] = L"Whale";
 
 #pragma region RemoveConst
 	

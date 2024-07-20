@@ -4,4 +4,4 @@ file(GLOB WhaleLanguageSource "./*/*.cpp")
 
 add_library(WhaleLanguage SHARED ${WhaleLanguageSource})
 
-target_link_libraries(WhaleLanguage PRIVATE WhaleCore)
+target_link_libraries(WhaleLanguage PUBLIC WhaleCore)

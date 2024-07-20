@@ -4,7 +4,7 @@
 
 #include "FReflect.hpp"
 
-namespace Whale
+namespace Whale::Reflect
 {
 	
 	std::vector<WClass> FReflect::classes{};

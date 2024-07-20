@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include "WProgram.hpp"
 #include "Whale/Core/FDebug.hpp"
+#include "FCore.hpp"
 
 namespace Whale
 {
@@ -77,15 +78,15 @@ namespace Whale
 	{
 		try
 		{
-			FDebug::LogInfo(WProgram::GetAppNameA(), "WProgram Start");
-			FDebug::LogInfo(WProgram::GetAppNameA(), std::format("{} {}", GetAppNameA(), GetVersionA()).c_str());
+			FDebug::LogInfo(WhaleTagA, "WProgram Start");
+			FDebug::LogInfo(WhaleTagA, std::format("{} {}", FCore::GetAppNameA(), FCore::GetVersionA()).c_str());
 			GetTimer().Restart();
 			OnBeginPlay();
 		}
 		catch (const std::exception &exception)
 		{
 			FDebug::LogFatal(
-				WProgram::GetAppNameA(), std::format(
+				WhaleTagA, std::format(
 					"OnEndPlay(): {}: {}", typeid(exception).name(),
 					exception.what()).c_str());
 			throw exception;
@@ -102,7 +103,7 @@ namespace Whale
 		catch (const std::exception &exception)
 		{
 			FDebug::LogFatal(
-				WProgram::GetAppNameA(), std::format(
+				WhaleTagA, std::format(
 					"OnEndPlay(): {}: {}", typeid(exception).name(),
 					exception.what()).c_str());
 			throw exception;
@@ -118,44 +119,15 @@ namespace Whale
 		catch (const std::exception &exception)
 		{
 			FDebug::LogFatal(
-				WProgram::GetAppNameA(), std::format(
+				WhaleTagA, std::format(
 					"OnEndPlay(): {}: {}", typeid(exception).name(),
 					exception.what()).c_str());
 			throw exception;
 		}
-		FDebug::LogInfo(WProgram::GetAppNameA(), "WProgram End");
+		FDebug::LogInfo(WhaleTagA, "WProgram End");
 		FDebug::LogFlush();
 		FDebug::LogClose();
 	}
 	
-	const CharA *WProgram::GetAppNameA()
-	{
-		return "Whale";
-	}
-	
-	const CharW *WProgram::GetAppNameW()
-	{
-		return L"Whale";
-	};
-	
-	const CharA *WProgram::GetVersionA()
-	{
-		return "0.1.0-alpha";
-	}
-	
-	const CharW *WProgram::GetVersionW()
-	{
-		return L"0.1.0-alpha";
-	}
-	
-	const CharA *WProgram::GetBuildDataA()
-	{
-		return __DATE__;
-	}
-	
-	const CharW *WProgram::GetBuildDataW()
-	{
-		return L"" __DATE__;
-	}
 	
 } // Whale

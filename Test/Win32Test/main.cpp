@@ -1,7 +1,7 @@
 ﻿#include "Whale/Core/FDebug.hpp"
 #include "Whale/Core/WProgram.hpp"
-#include "Whale/Render/Win32/WWindow.hpp"
-#include "Whale/Render/Utility/WRenderer.hpp"
+#include "Whale/Platform/Win32/WWindow.hpp"
+#include "Whale/Platform/WRenderer.hpp"
 #include "Whale/Language/Json/TFValue.hpp"
 
 #include <boost/json.hpp>
@@ -152,15 +152,15 @@ public:
 
 void Program::InitData()
 {
-	Language::Json::JsonT testValue;
+	Json::JsonT testValue;
 	testValue = true;
 	testValue = 578;
 	testValue = 3.14159;
 	testValue = WHALE_TEXT("Hello Json");
 	testValue = {
-		Language::Json::JsonT{1.0},
-		Language::Json::JsonT{5},
-		Language::Json::JsonT{10}
+		Json::JsonT{1.0},
+		Json::JsonT{5},
+		Json::JsonT{10}
 	};
 	
 	testValue[WHALE_TEXT("Hi")] = WHALE_TEXT("Hello");
@@ -282,6 +282,6 @@ int WhaleMain()
 	return Program().WHALE_T(Run)();
 }
 
-#include "Whale/Render/Win32/FWinMain.hpp"
+#include "Whale/Platform/Win32/WinMain.hpp"
 //*/
 

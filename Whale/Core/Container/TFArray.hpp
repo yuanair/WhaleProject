@@ -6,10 +6,10 @@
 
 #include "Whale/Core/TypeDef.hpp"
 #include "Whale/Core/CRT.hpp"
-#include "Whale/Tool/Math/TFMath.hpp"
+#include "Whale/Core/TFMath.hpp"
 #include <initializer_list>
 
-namespace Whale
+namespace Whale::Container
 {
 	
 	///
@@ -49,7 +49,9 @@ namespace Whale
 		
 		inline TFArray &operator=(TFArray other) noexcept;
 		
-		inline Bool operator==(const TFArray &other) noexcept { return Equal(other); }
+		inline Bool operator==(const TFArray &other) const noexcept { return Equal(other); }
+		
+		inline Bool operator!=(const TFArray &other) const noexcept { return !Equal(other); }
 		
 		inline ElemT &operator[](SizeT index) noexcept { return At(index); }
 		
@@ -58,9 +60,21 @@ namespace Whale
 	public:
 		
 		///
+		/// 查找第一个元素
+		ElemT *Find(const ElemT &elem, SizeT offset = 0) const noexcept;
+		
+		///
+		/// 查找最后一个元素
+		ElemT *RFind(const ElemT &elem, SizeT offset = 0) const noexcept;
+		
+		///
 		/// 交换数据
 		/// \param other
 		void Swap(TFArray &other) noexcept;
+		
+		///
+		/// 清空
+		void Clear() noexcept;
 		
 		///
 		/// 判断相等
@@ -83,18 +97,32 @@ namespace Whale
 		/// \param array
 		virtual ElemT &Append(const TFArray &array) noexcept;
 		
+		///
+		/// 添加元素
+		/// \param array
+		virtual ElemT &Append(TFArray &&array) noexcept;
+	
+	public:
+		
 		ElemT &At(SizeT index) noexcept;
 		
 		const ElemT &At(SizeT index) const noexcept;
 		
 		ElemT *Begin() noexcept { return GetPtr(); }
 		
-		
 		const ElemT *Begin() const noexcept { return GetPtr(); }
 		
 		ElemT *End() noexcept { return GetPtr() + GetLength(); }
 		
 		const ElemT *End() const noexcept { return GetPtr() + GetLength(); }
+		
+		ElemT *RBegin() noexcept { return GetPtr() + GetLength() - 1; }
+		
+		const ElemT *RBegin() const noexcept { return GetPtr() + GetLength() - 1; }
+		
+		ElemT *REnd() noexcept { return GetPtr() - 1; }
+		
+		const ElemT *REnd() const noexcept { return GetPtr() - 1; }
 		
 		/// for foreach
 		ElemT *begin() noexcept { return Begin(); }
@@ -107,8 +135,25 @@ namespace Whale
 		
 		/// for foreach
 		const ElemT *end() const noexcept { return End(); }
+		
+		/// for foreach
+		ElemT *rbegin() noexcept { return RBegin(); }
+		
+		/// for foreach
+		const ElemT *rbegin() const noexcept { return RBegin(); }
+		
+		/// for foreach
+		ElemT *rend() noexcept { return REnd(); }
+		
+		/// for foreach
+		const ElemT *rend() const noexcept { return REnd(); }
 	
 	public:
+		
+		///
+		/// \return 是否为空
+		[[nodiscard]]
+		SizeT IsEmpty() const noexcept { return GetLength() == 0; }
 		
 		///
 		/// \return 数组长度
@@ -140,6 +185,30 @@ namespace Whale
 		ElemT *ptr;
 		
 	};
+	
+	template<class ElemT>
+	ElemT *TFArray<ElemT>::Find(const ElemT &elem, SizeT offset) const noexcept
+	{
+		if (offset >= GetLength()) return End();
+		ElemT *iter = Begin() + offset;
+		for (; iter != End(); iter++)
+		{
+			if (elem == *iter) return iter;
+		}
+		return iter;
+	}
+	
+	template<class ElemT>
+	ElemT *TFArray<ElemT>::RFind(const ElemT &elem, SizeT offset) const noexcept
+	{
+		if (offset >= GetLength()) return REnd();
+		ElemT *iter = RBegin() + offset;
+		for (; iter != REnd(); iter--)
+		{
+			if (elem == *iter) return iter;
+		}
+		return iter;
+	}
 	
 	template<class ElemT>
 	TFArray<ElemT>::TFArray(std::initializer_list<ElemT> initializerList)
@@ -217,6 +286,12 @@ namespace Whale
 	}
 	
 	template<class ElemT>
+	void TFArray<ElemT>::Clear() noexcept
+	{
+		TFArray<ElemT>().Swap(*this);
+	}
+	
+	template<class ElemT>
 	Bool TFArray<ElemT>::Equal(const TFArray &other) const noexcept
 	{
 		if (&other == this) return true;
@@ -258,6 +333,19 @@ namespace Whale
 		{
 			At(oldLength + index) = array.At(index);
 		}
+		return At(GetLength() - 1);
+	}
+	
+	template<class ElemT>
+	ElemT &TFArray<ElemT>::Append(TFArray &&array) noexcept
+	{
+		SizeT oldLength = GetLength();
+		Relength(oldLength + array.GetLength());
+		for (SizeT index = 0; index < array.GetLength(); index++)
+		{
+			At(oldLength + index) = Whale::Move(array.At(index));
+		}
+		array.Clear();
 		return At(GetLength() - 1);
 	}
 	

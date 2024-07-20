@@ -41,6 +41,23 @@ namespace Whale
 			#endif
 		}
 		
+		///
+		/// \return 是否为空白字符
+		static Bool IsSpace(CharA ch);
+		
+		///
+		/// \return 是否为空白字符
+		static Bool IsSpace(CharW ch);
+		
+		///
+		/// \return 是否为换行字符
+		static Bool IsNewLine(CharA ch);
+		
+		///
+		/// \return 是否为换行字符
+		static Bool IsNewLine(CharW ch);
+		
+		
 	};
 	
 } // Whale

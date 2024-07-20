@@ -57,20 +57,6 @@ namespace Whale
 		
 		inline TFTimer<std::chrono::system_clock> &GetTimer() { return this->timer; }
 	
-	public:
-		
-		static const CharA *GetAppNameA();
-		
-		static const CharW *GetAppNameW();
-		
-		static const CharA *GetVersionA();
-		
-		static const CharW *GetVersionW();
-		
-		static const CharA *GetBuildDataA();
-		
-		static const CharW *GetBuildDataW();
-	
 	private:
 		
 		TFTimer<std::chrono::system_clock> timer;

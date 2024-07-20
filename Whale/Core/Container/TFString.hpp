@@ -6,10 +6,10 @@
 
 #include "Whale/Core/TypeDef.hpp"
 #include "Whale/Core/FCString.hpp"
-#include "Whale/Tool/Math/TFMath.hpp"
+#include "Whale/Core/TFMath.hpp"
 #include "TFArray.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	
 	///
@@ -39,6 +39,14 @@ namespace Whale
 	public:
 		
 		inline TFString &operator=(TFString other) noexcept;
+		
+		inline TFString &operator+=(TFString other) noexcept;
+		
+		inline TFString operator+(TFString other) const noexcept;
+		
+		inline Bool operator==(const TFString &other) const noexcept { return TFArray<ElemT>::Equal(other); }
+		
+		inline Bool operator!=(const TFString &other) const noexcept { return !TFArray<ElemT>::Equal(other); }
 		
 		Bool operator<(const TFString &other) const;
 		
@@ -92,8 +100,23 @@ namespace Whale
 		
 	};
 	
-	using StringA = TFString<CharA>;
+	template<class ElemT>
+	inline TFString<ElemT> operator+(const ElemT *left, const TFString<ElemT> &right) noexcept
+	{
+		TFString<ElemT> result{left};
+		result.Append(right);
+		return result;
+	}
 	
+	template<class ElemT>
+	inline TFString<ElemT> operator+(const TFString<ElemT> &left, const TFString<ElemT> &right) noexcept
+	{
+		TFString<ElemT> result{left};
+		result.Append(right);
+		return result;
+	}
+	
+	using StringA = TFString<CharA>;
 	using StringW = TFString<CharW>;
 	using StringT = TFString<CharT>;
 	
@@ -160,6 +183,21 @@ namespace Whale
 	}
 	
 	template<class ElemT>
+	TFString<ElemT> &TFString<ElemT>::operator+=(TFString other) noexcept
+	{
+		Append(Whale::Move(other));
+		return *this;
+	}
+	
+	template<class ElemT>
+	TFString<ElemT> TFString<ElemT>::operator+(TFString other) const noexcept
+	{
+		TFString result{*this};
+		result.Append(Whale::Move(other));
+		return result;
+	}
+	
+	template<class ElemT>
 	Bool TFString<ElemT>::operator<(const TFString &other) const
 	{
 		SizeT thisLength = GetLength(), otherLength = other.GetLength();
@@ -219,4 +257,12 @@ namespace Whale
 		return thisLength >= otherLength;
 	}
 	
-} // Whale
+}
+
+namespace Whale
+{
+	using Container::StringA;
+	using Container::StringW;
+	using Container::StringT;
+}
+

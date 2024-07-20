@@ -4,7 +4,7 @@ add_executable(Test WIN32 main.cpp)
 target_link_libraries(Test
         PUBLIC WhaleCore
         PUBLIC WhaleLanguage
-        PUBLIC WhaleRender
+        PUBLIC WhalePlatform
         PUBLIC WhaleTool
 )
 

@@ -4,6 +4,6 @@
 
 #include "TFValue.hpp"
 
-namespace Whale::Language::Json
+namespace Whale::Json
 {
 } // Whale

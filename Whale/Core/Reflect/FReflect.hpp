@@ -12,7 +12,7 @@
 #include <vector>
 #include <typeinfo>
 
-namespace Whale
+namespace Whale::Reflect
 {
 	
 	///

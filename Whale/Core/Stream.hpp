@@ -19,6 +19,10 @@ namespace Whale
 	{
 	public:
 		
+		using String = Container::TFString<ElemT>;
+	
+	public:
+		
 		TIInputStream() noexcept = default;
 		
 		TIInputStream(const TIInputStream &) = delete;
@@ -27,11 +31,11 @@ namespace Whale
 	
 	public:
 		
-		virtual ElemT Peek() = 0;
+		virtual Bool Get(ElemT &elem) = 0;
 		
-		virtual ElemT Get() = 0;
+		virtual Bool UnGet(ElemT &elem) = 0;
 		
-		virtual ElemT UnGet() = 0;
+		virtual Bool Read(String &elem) = 0;
 		
 	};
 	
@@ -43,6 +47,10 @@ namespace Whale
 	{
 	public:
 		
+		using String = Container::TFString<ElemT>;
+	
+	public:
+		
 		TIOutputStream() noexcept = default;
 		
 		TIOutputStream(const TIOutputStream &) = delete;
@@ -51,9 +59,9 @@ namespace Whale
 	
 	public:
 		
-		virtual TIOutputStream &Put(ElemT elem) = 0;
+		virtual Bool Put(ElemT elem) = 0;
 		
-		virtual TIOutputStream &Flush() = 0;
+		virtual Bool Flush() = 0;
 		
 	};
 	
@@ -62,6 +70,10 @@ namespace Whale
 	template<class ElemT>
 	class TIStream : public TIInputStream<ElemT>, public TIOutputStream<ElemT>
 	{
+	public:
+		
+		using String = Container::TFString<ElemT>;
+	
 	public:
 		
 		TIStream() noexcept = default;

@@ -1,10 +1,10 @@
 ﻿
-add_executable(ConsoleTest main.cpp)
+add_executable(ConsoleTest main.cpp CommandManager.cpp)
 
 target_link_libraries(ConsoleTest
         PUBLIC WhaleCore
         PUBLIC WhaleLanguage
-        PUBLIC WhaleRender
+        PUBLIC WhalePlatform
         PUBLIC WhaleTool
 )
 

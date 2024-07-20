@@ -59,7 +59,7 @@ namespace Whale
 			return ::_InterlockedDecrement(reinterpret_cast<Long *>(addend));
 		}
 		
-		#if WHALE_COMPILER_BIT >= WHALE_COMPILER_64_BIT
+		#if WHALE_COMPILER_BIT >= WHALE_COMPILER_BIT_64
 		
 		inline static int64 InterlockedIncrement(int64 *addend) noexcept
 		{

@@ -4,7 +4,7 @@
 
 #include "WType.hpp"
 
-namespace Whale
+namespace Whale::Reflect
 {
 
 	

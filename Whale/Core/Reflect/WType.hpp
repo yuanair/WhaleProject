@@ -7,12 +7,12 @@
 #include "Whale/Core/WObject.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 
-namespace Whale
+namespace Whale::Reflect
 {
 	
 	///
 	/// 数据类型
-	class WType : public WObject
+	class WHALE_API WType : public WObject
 	{
 	public:
 	
@@ -21,7 +21,7 @@ namespace Whale
 	
 	///
 	/// 类/结构体数据类型
-	class WClass final : public WType
+	class WHALE_API WClass final : public WType
 	{
 	public:
 		
@@ -40,7 +40,7 @@ namespace Whale
 	
 	///
 	/// 枚举数据类型
-	class WEnum final : public WType
+	class WHALE_API WEnum final : public WType
 	{
 	public:
 		
@@ -55,7 +55,7 @@ namespace Whale
 	
 	///
 	/// 联合体数据类型
-	class WUnion final : public WType
+	class WHALE_API WUnion final : public WType
 	{
 	public:
 		
