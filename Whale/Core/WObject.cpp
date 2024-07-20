@@ -18,7 +18,7 @@ namespace Whale
 //	void WObject::ToString(StringW &target) const
 //	{
 //		target = std::format(
-//			L"{}<{:016X}>", WLocale::ToUTFString(typeid(*this).name(), "UTF-8").CStr(), (intptr_t) this
+//			L"{}<{:016X}>", FLocale::ToUTFString(typeid(*this).name(), "UTF-8").CStr(), (intptr_t) this
 //		).c_str();
 //	}
 	

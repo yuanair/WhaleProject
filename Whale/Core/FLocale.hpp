@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
-#include "Whale/Core/Object/WObject.hpp"
+#include "Whale/Core/TypeDef.hpp"
+#include "WObject.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale
@@ -13,7 +13,7 @@ namespace Whale
 	
 	///
 	/// 本地化
-	class WHALE_API WLocale : public WObject
+	class WHALE_API FLocale
 	{
 	public:
 		
@@ -35,7 +35,7 @@ namespace Whale
 		inline static StringT WToTString(const StringW &text, const StringA &toEncoding)
 		{
 			#ifdef WHALE_UNICODE
-			return text
+			return text;
 			#else
 			return UTFToString(text, toEncoding);
 			#endif

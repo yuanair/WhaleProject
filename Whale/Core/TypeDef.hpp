@@ -11,12 +11,18 @@
 #define WHALE_COMPILER_TYPE_GCC 2
 #define WHALE_COMPILER_TYPE_CLANG 3
 
-#define WHALE_COMPILER_UNKNOWN_BIT 0
-#define WHALE_COMPILER_32_BIT 32
-#define WHALE_COMPILER_64_BIT 64
+#define WHALE_COMPILER_BIT_UNKNOWN 0
+#define WHALE_COMPILER_BIT_32 32
+#define WHALE_COMPILER_BIT_64 64
 
-#if false
-#elif defined(_MSC_VER)
+#define WHALE_TARGET_UNKNOWN 0
+#define WHALE_TARGET_WINDOWS 1
+#define WHALE_TARGET_LINUX 2
+#define WHALE_TARGET_MACOS 3
+#define WHALE_TARGET_IOS 4
+#define WHALE_TARGET_ANDROID 5
+
+#if defined(_MSC_VER)
 	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MSVC
 #elif defined(__GNUC__)
 #define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_GCC
@@ -24,20 +30,45 @@
 	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_UNKNOWN
 #endif
 
-#ifdef _WIN32
-#ifdef _WIN64
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_64_BIT
+#if defined(_WIN32)
+	#define WHALE_TARGET WHALE_TARGET_WINDOWS
+#if defined(_WIN64)
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
 #else
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_32_BIT
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_32
+#endif
+#elif defined(__APPLE__)
+#include "TargetConditionals.h"
+	#if defined(TARGET_OS_IPHONE)
+		#define WHALE_TARGET WHALE_TARGET_IOS
+	#elif defined(TARGET_OS_MAC)
+		#define WHALE_TARGET WHALE_TARGET_MACOS
+	#else
+		#define WHALE_TARGET WHALE_TARGET_UNKNOWN
+		#error "Unknown Apple platform"
+	#endif
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
+#elif __ANDROID__
+	#define WHALE_TARGET WHALE_TARGET_ANDROID
+#if defined(__x86_64__)
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
+#elif defined(__i386__)
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_32
+#else
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_UNKNOWN
+#endif
+#elif __linux__
+	#define WHALE_TARGET WHALE_TARGET_LINUX
+#if defined(__x86_64__)
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
+#elif defined(__i386__)
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_32
+#else
+	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_UNKNOWN
 #endif
 #else
-#ifdef __x86_64__
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_64_BIT
-#elif __i386__
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_32_BIT
-#else
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_UNKNOWN_BIT
-#endif
+	#define WHALE_TARGET WHALE_TARGET_UNKNOWN
+#error "Unknown platform"
 #endif
 
 // UNICODE
@@ -78,6 +109,16 @@
 
 #endif
 
+// newline
+
+#if WHALE_TARGET == WHALE_TARGET_WINDOWS
+#define WHALE_NEWLINE '\r', '\n'
+#elif WHALE_TARGET == WHALE_TARGET_MACOS
+#define WHALE_NEWLINE '\r'
+#else
+#define WHALE_NEWLINE '\n'
+#endif
+
 
 namespace Whale
 {
@@ -102,9 +143,9 @@ namespace Whale
 	
 	using ULongLong = unsigned long long;
 	
-	using Char = char;
+	using CharA = char;
 	
-	using WChar = wchar_t;
+	using CharW = wchar_t;
 	
 	using Float = float;
 	
@@ -151,7 +192,7 @@ namespace Whale
 	
 	#endif
 	
-	#if WHALE_COMPILER_BIT == WHALE_COMPILER_64_BIT
+	#if WHALE_COMPILER_BIT == WHALE_COMPILER_BIT_64
 	
 	using IntPointer = int64;
 	
@@ -161,7 +202,7 @@ namespace Whale
 	
 	using ULongPointer = uint64;
 	
-	#elif WHALE_COMPILER_BIT == WHALE_COMPILER_32_BIT
+	#elif WHALE_COMPILER_BIT == WHALE_COMPILER_BIT_32
 	
 	using IntPointer = Int;
 	
@@ -176,9 +217,9 @@ namespace Whale
 	using SizeT = uint64;
 
 #if defined(UNICODE) || defined(_UNICODE)
-	using TChar = WChar;
+	using CharT = CharW;
 #else
-	using TChar = Char;
+	using CharT = CharA;
 #endif
 
 
@@ -470,7 +511,7 @@ namespace Whale
 	}
 	
 	// 致命消息
-	WHALE_API void FatalMessage(const WChar *message, const WChar *file, uint64 line, const WChar *function);
+	WHALE_API void FatalMessage(const CharW *message, const CharW *file, uint64 line, const CharW *function);
 	
 	///
 	/// 点

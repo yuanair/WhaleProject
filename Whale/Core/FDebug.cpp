@@ -94,23 +94,23 @@ namespace Whale
 	void FDebug::Log(const StringA &tag, const StringA &message, EDebugLevel level,
 	                 const FSourceLocation &sourceLocation)
 	{
-		Whale::LogA<const Char *>(tag.CStr(), message.CStr(), level, sourceLocation);
+		Whale::LogA<const CharA *>(tag.CStr(), message.CStr(), level, sourceLocation);
 	}
 	
 	void FDebug::Log(const StringW &tag, const StringW &message, EDebugLevel level,
 	                 const FSourceLocation &sourceLocation)
 	{
-		Whale::LogW<const WChar *>(tag.CStr(), message.CStr(), level, sourceLocation);
+		Whale::LogW<const CharW *>(tag.CStr(), message.CStr(), level, sourceLocation);
 	}
 	
-	void FDebug::Log(const Char *tag, const Char *message, EDebugLevel level, const FSourceLocation &sourceLocation)
+	void FDebug::Log(const CharA *tag, const CharA *message, EDebugLevel level, const FSourceLocation &sourceLocation)
 	{
-		Whale::LogA<const Char *>(tag, message, level, sourceLocation);
+		Whale::LogA<const CharA *>(tag, message, level, sourceLocation);
 	}
 	
-	void FDebug::Log(const WChar *tag, const WChar *message, EDebugLevel level, const FSourceLocation &sourceLocation)
+	void FDebug::Log(const CharW *tag, const CharW *message, EDebugLevel level, const FSourceLocation &sourceLocation)
 	{
-		Whale::LogW<const WChar *>(tag, message, level, sourceLocation);
+		Whale::LogW<const CharW *>(tag, message, level, sourceLocation);
 	}
 	
 	void FDebug::LogFlush()
@@ -127,7 +127,7 @@ namespace Whale
 		wLogger.reset();
 	}
 	
-	const Char *ToString(EDebugLevel lvl)
+	const CharA *ToString(EDebugLevel lvl)
 	{
 		switch (lvl)
 		{

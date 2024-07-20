@@ -4,8 +4,8 @@
 
 #include "FDirectXResult.hpp"
 
-#include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
+#include "Whale/Core/FDebug.hpp"
+#include "Whale/Core/WProgram.hpp"
 #include "Whale/Render/Win32/FCore.hpp"
 
 #include <format>

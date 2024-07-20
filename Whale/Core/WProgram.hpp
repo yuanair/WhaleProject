@@ -5,7 +5,7 @@
 #pragma once
 
 #include "WObject.hpp"
-#include "Whale/Core/Tool/TFTimer.hpp"
+#include "Whale/Core/TFTimer.hpp"
 
 namespace Whale
 {
@@ -59,17 +59,17 @@ namespace Whale
 	
 	public:
 		
-		static const Char *GetAppNameA();
+		static const CharA *GetAppNameA();
 		
-		static const WChar *GetAppNameW();
+		static const CharW *GetAppNameW();
 		
-		static const Char *GetVersionA();
+		static const CharA *GetVersionA();
 		
-		static const WChar *GetVersionW();
+		static const CharW *GetVersionW();
 		
-		static const Char *GetBuildDataA();
+		static const CharA *GetBuildDataA();
 		
-		static const WChar *GetBuildDataW();
+		static const CharW *GetBuildDataW();
 	
 	private:
 		

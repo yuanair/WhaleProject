@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 
 #include <chrono>
 #include <cmath>

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "HTypeDef.hpp"
-#include "WLocale.hpp"
+#include "TypeDef.hpp"
+#include "FLocale.hpp"
 
 namespace Whale
 {
@@ -18,8 +18,8 @@ namespace Whale
 			(
 				uint32 line = __builtin_LINE(),
 				uint32 column = __builtin_COLUMN(),
-				const Char *file = __builtin_FILE(),
-				const Char *function = __builtin_FUNCSIG()
+				const CharA *file = __builtin_FILE(),
+				const CharA *function = __builtin_FUNCSIG()
 			) noexcept;
 
 #elif WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_GCC
@@ -28,8 +28,8 @@ namespace Whale
 			(
 				uint32 line = __builtin_LINE(),
 				uint32 column = 0,
-				const Char *file = __builtin_FILE(),
-				const Char *function = __builtin_FUNCTION()
+				const CharA *file = __builtin_FILE(),
+				const CharA *function = __builtin_FUNCTION()
 			) noexcept;
 
 #else
@@ -38,8 +38,8 @@ namespace Whale
 			(
 				uint32 line = __builtin_LINE(),
 				 uint32 column = 0,
-				const Char *file = __builtin_FILE(),
-				const Char *function = __builtin_FUNCTION()
+				const CharA *file = __builtin_FILE(),
+				const CharA *function = __builtin_FUNCTION()
 			) noexcept;
 
 #endif
@@ -75,13 +75,13 @@ namespace Whale
 		
 		uint32 line{};
 		uint32 column{};
-		const Char *file = "";
-		const Char *function = "";
+		const CharA *file = "";
+		const CharA *function = "";
 		
 	};
 	
 	consteval FSourceLocation
-	FSourceLocation::Current(uint32 line, uint32 column, const Char *file, const Char *function) noexcept
+	FSourceLocation::Current(uint32 line, uint32 column, const CharA *file, const CharA *function) noexcept
 	{
 		FSourceLocation result{};
 		result.line = line;

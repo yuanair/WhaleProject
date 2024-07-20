@@ -4,7 +4,7 @@
 
 #include <Windows.h>
 #include "WProgram.hpp"
-#include "Whale/Core/Debug/FDebug.hpp"
+#include "Whale/Core/FDebug.hpp"
 
 namespace Whale
 {
@@ -128,32 +128,32 @@ namespace Whale
 		FDebug::LogClose();
 	}
 	
-	const Char *WProgram::GetAppNameA()
+	const CharA *WProgram::GetAppNameA()
 	{
 		return "Whale";
 	}
 	
-	const WChar *WProgram::GetAppNameW()
+	const CharW *WProgram::GetAppNameW()
 	{
 		return L"Whale";
 	};
 	
-	const Char *WProgram::GetVersionA()
+	const CharA *WProgram::GetVersionA()
 	{
 		return "0.1.0-alpha";
 	}
 	
-	const WChar *WProgram::GetVersionW()
+	const CharW *WProgram::GetVersionW()
 	{
 		return L"0.1.0-alpha";
 	}
 	
-	const Char *WProgram::GetBuildDataA()
+	const CharA *WProgram::GetBuildDataA()
 	{
 		return __DATE__;
 	}
 	
-	const WChar *WProgram::GetBuildDataW()
+	const CharW *WProgram::GetBuildDataW()
 	{
 		return L"" __DATE__;
 	}

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
-#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Core/TypeDef.hpp"
+#include "Whale/Core/Memory.hpp"
 
 namespace Whale
 {
@@ -17,6 +17,12 @@ namespace Whale
 	template<class Base, class Derived>
 	class WHALE_API FCloneable
 	{
+	public:
+		
+		FCloneable() = default;
+		
+		virtual ~FCloneable() = default;
+	
 	public:
 		
 		///
@@ -37,7 +43,7 @@ namespace Whale
 		
 		WObject();
 		
-		virtual ~WObject();
+		~WObject() override;
 		
 	};
 	

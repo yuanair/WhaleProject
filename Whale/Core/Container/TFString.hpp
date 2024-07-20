@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
-#include "Whale/Core/Tool/FCString.hpp"
+#include "Whale/Core/TypeDef.hpp"
+#include "Whale/Core/FCString.hpp"
 #include "Whale/Tool/Math/TFMath.hpp"
 #include "TFArray.hpp"
 
@@ -14,27 +14,27 @@ namespace Whale
 	
 	///
 	/// 字符串
-	/// \tparam CharT
-	template<class CharT>
-	class WHALE_API TFString : public TFArray<CharT>
+	/// \tparam ElemT
+	template<class ElemT>
+	class WHALE_API TFString final : public TFArray<ElemT>
 	{
 	public:
 		
 		inline TFString();
 		
-		inline TFString(std::initializer_list<CharT> initializerList); // NOLINT(*-explicit-constructor)
+		inline TFString(std::initializer_list<ElemT> initializerList); // NOLINT(*-explicit-constructor)
 		
-		inline TFString(const CharT *first, const CharT *last);
+		inline TFString(const ElemT *first, const ElemT *last);
 		
-		inline TFString(const CharT *str, SizeT length);
+		inline TFString(const ElemT *str, SizeT length);
 		
-		inline TFString(const CharT *str); // NOLINT(*-explicit-constructor)
+		inline TFString(const ElemT *str); // NOLINT(*-explicit-constructor)
 		
 		inline TFString(const TFString &other);
 		
 		inline TFString(TFString &&other) noexcept;
 		
-		inline ~TFString() noexcept;
+		inline ~TFString() noexcept override;
 	
 	public:
 		
@@ -50,94 +50,123 @@ namespace Whale
 	
 	public:
 		
-		[[nodiscard]]
-		inline SizeT GetLengthNoNull() const noexcept
+		void Relength(SizeT newLength) noexcept override
 		{
-			return this->GetLength() - 1;
+			TFArray<ElemT>::Relength(newLength + 1);
 		}
 		
-		inline const CharT *CStr() const noexcept
+		ElemT &Append(const ElemT &elem) noexcept override
 		{
-			return TFArray<CharT>::GetPtr();
+			SizeT oldLength = GetLength();
+			Relength(oldLength + 1);
+			ElemT &result = this->At(oldLength) = elem;
+			this->ProtectedAt(GetLength()) = 0;
+			return result;
+		}
+		
+		ElemT &Append(const TFArray<ElemT> &array) noexcept override
+		{
+			SizeT oldLength = GetLength();
+			Relength(oldLength + array.GetLength());
+			for (SizeT index = 0; index < array.GetLength(); index++)
+			{
+				this->At(oldLength + index) = array.At(index);
+			}
+			ElemT &result = this->At(GetLength() - 1);
+			this->ProtectedAt(GetLength()) = 0;
+			return result;
+		}
+	
+	public:
+		
+		[[nodiscard]]
+		inline SizeT GetLength() const noexcept override
+		{
+			return TFMath<SizeT>::Max(TFArray<ElemT>::GetLength(), 1) - 1;
+		}
+		
+		inline const ElemT *CStr() const noexcept
+		{
+			return TFArray<ElemT>::GetPtr();
 		}
 		
 	};
 	
-	using StringA = TFString<Char>;
+	using StringA = TFString<CharA>;
 	
-	using StringW = TFString<WChar>;
-	using StringT = TFString<TChar>;
+	using StringW = TFString<CharW>;
+	using StringT = TFString<CharT>;
 	
-	template<class CharT>
-	TFString<CharT>::TFString()
-		: TFArray<CharT>{}
+	template<class ElemT>
+	TFString<ElemT>::TFString()
+		: TFArray<ElemT>{}
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::TFString(std::initializer_list<CharT> initializerList)
-		: TFArray<CharT>(initializerList)
+	template<class ElemT>
+	TFString<ElemT>::TFString(std::initializer_list<ElemT> initializerList)
+		: TFArray<ElemT>(initializerList)
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::TFString(const CharT *first, const CharT *last)
-		: TFArray<CharT>(first, last)
+	template<class ElemT>
+	TFString<ElemT>::TFString(const ElemT *first, const ElemT *last)
+		: TFArray<ElemT>(first, last)
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::TFString(const CharT *str, SizeT length)
-		: TFArray<CharT>{str, length}
+	template<class ElemT>
+	TFString<ElemT>::TFString(const ElemT *str, SizeT length)
+		: TFArray<ElemT>{str, length}
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::TFString(const CharT *str)
-		: TFArray<CharT>{str, FCString::Length<CharT>(str)}
+	template<class ElemT>
+	TFString<ElemT>::TFString(const ElemT *str)
+		: TFArray<ElemT>{str, FCString::Length<ElemT>(str)}
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::TFString(const TFString &other)
-		: TFArray<CharT>{other}
+	template<class ElemT>
+	TFString<ElemT>::TFString(const TFString &other)
+		: TFArray<ElemT>{other}
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::TFString(TFString &&other) noexcept
-		: TFArray<CharT>{other}
+	template<class ElemT>
+	TFString<ElemT>::TFString(TFString &&other) noexcept
+		: TFArray<ElemT>{other}
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT>::~TFString() noexcept
+	template<class ElemT>
+	TFString<ElemT>::~TFString() noexcept
 	{
 	
 	}
 	
-	template<class CharT>
-	TFString<CharT> &TFString<CharT>::operator=(TFString other) noexcept
+	template<class ElemT>
+	TFString<ElemT> &TFString<ElemT>::operator=(TFString other) noexcept
 	{
-		TFArray<CharT>::Swap(other);
+		TFArray<ElemT>::Swap(other);
 		return *this;
 	}
 	
-	template<class CharT>
-	Bool TFString<CharT>::operator<(const TFString &other) const
+	template<class ElemT>
+	Bool TFString<ElemT>::operator<(const TFString &other) const
 	{
-		SizeT thisLength = GetLengthNoNull(), otherLength = other.GetLengthNoNull();
+		SizeT thisLength = GetLength(), otherLength = other.GetLength();
 		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
 		for (SizeT index = 0; index < minSize; index++)
 		{
-			CharT thisChar = this->At(index), otherChar = other.At(index);
+			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar < otherChar) return true;
 			if (thisChar == otherChar) continue;
 			return false;
@@ -145,14 +174,14 @@ namespace Whale
 		return thisLength < otherLength;
 	}
 	
-	template<class CharT>
-	Bool TFString<CharT>::operator<=(const TFString &other) const
+	template<class ElemT>
+	Bool TFString<ElemT>::operator<=(const TFString &other) const
 	{
-		SizeT thisLength = GetLengthNoNull(), otherLength = other.GetLengthNoNull();
+		SizeT thisLength = GetLength(), otherLength = other.GetLength();
 		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
 		for (SizeT index = 0; index < minSize; index++)
 		{
-			CharT thisChar = this->At(index), otherChar = other.At(index);
+			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar <= otherChar) return true;
 			if (thisChar == otherChar) continue;
 			return false;
@@ -160,14 +189,14 @@ namespace Whale
 		return thisLength <= otherLength;
 	}
 	
-	template<class CharT>
-	Bool TFString<CharT>::operator>(const TFString &other) const
+	template<class ElemT>
+	Bool TFString<ElemT>::operator>(const TFString &other) const
 	{
-		SizeT thisLength = GetLengthNoNull(), otherLength = other.GetLengthNoNull();
+		SizeT thisLength = GetLength(), otherLength = other.GetLength();
 		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
 		for (SizeT index = 0; index < minSize; index++)
 		{
-			CharT thisChar = this->At(index), otherChar = other.At(index);
+			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar > otherChar) return true;
 			if (thisChar == otherChar) continue;
 			return false;
@@ -175,14 +204,14 @@ namespace Whale
 		return thisLength > otherLength;
 	}
 	
-	template<class CharT>
-	Bool TFString<CharT>::operator>=(const TFString &other) const
+	template<class ElemT>
+	Bool TFString<ElemT>::operator>=(const TFString &other) const
 	{
-		SizeT thisLength = GetLengthNoNull(), otherLength = other.GetLengthNoNull();
+		SizeT thisLength = GetLength(), otherLength = other.GetLength();
 		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
 		for (SizeT index = 0; index < minSize; index++)
 		{
-			CharT thisChar = this->At(index), otherChar = other.At(index);
+			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar >= otherChar) return true;
 			if (thisChar == otherChar) continue;
 			return false;

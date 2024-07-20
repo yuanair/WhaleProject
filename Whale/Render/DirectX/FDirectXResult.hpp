@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 #include "Whale/Core/Container/TFString.hpp"
-#include "Whale/Core/Tool/FSourceLocation.hpp"
-#include "Whale/Core/FException/FException.hpp"
+#include "Whale/Core/SourceLocation.hpp"
+#include "Whale/Core/Exception.hpp"
 #include "Whale/Render/Win32/HWinDef.hpp"
 
 namespace Whale
@@ -20,7 +20,7 @@ namespace Whale
 		FDirectXResultException()
 			: FException() {}
 		
-		explicit FDirectXResultException(const Char *message)
+		explicit FDirectXResultException(const CharA *message)
 			: FException(message) {}
 		
 	};

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
-#include "Whale/Core/Tool/FSourceLocation.hpp"
+#include "TypeDef.hpp"
+#include "SourceLocation.hpp"
 
 namespace Whale
 {
@@ -22,7 +22,7 @@ namespace Whale
 		Fatal
 	};
 	
-	WHALE_API const Char *ToString(EDebugLevel lvl);
+	WHALE_API const CharA *ToString(EDebugLevel lvl);
 	
 	/// 调试类
 	class WHALE_API FDebug
@@ -39,10 +39,10 @@ namespace Whale
 		static void Log(const StringW &tag, const StringW &message, EDebugLevel level,
 		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
-		static void Log(const Char *tag, const Char *message, EDebugLevel level,
+		static void Log(const CharA *tag, const CharA *message, EDebugLevel level,
 		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
-		static void Log(const WChar *tag, const WChar *message, EDebugLevel level,
+		static void Log(const CharW *tag, const CharW *message, EDebugLevel level,
 		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		

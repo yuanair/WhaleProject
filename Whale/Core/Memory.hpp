@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
-#include "Whale/Core/Tool/FIntrinsics.hpp"
-#include "Whale/Core/FException/FException.hpp"
+#include "TypeDef.hpp"
+#include "FIntrinsics.hpp"
+#include "Exception.hpp"
 
 namespace Whale
 {
@@ -31,7 +31,7 @@ namespace Whale
 	public:
 		FBadWeakPtrException() noexcept = default;
 		
-		[[nodiscard]] const Char *what() const noexcept override { return "FBadWeakPtrException"; }
+		[[nodiscard]] const CharA *what() const noexcept override { return "FBadWeakPtrException"; }
 	};
 	
 	template<class ElemT>
@@ -559,4 +559,4 @@ namespace Whale
 	
 } // Whale
 
-#include "HMemory.inl"
+#include "Memory.inl"

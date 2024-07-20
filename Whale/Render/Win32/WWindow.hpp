@@ -6,7 +6,7 @@
 
 #include "HWinDef.hpp"
 #include "FCore.hpp"
-#include "Whale/Core/Object/WObject.hpp"
+#include "Whale/Core/WObject.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale::Win32
@@ -232,7 +232,7 @@ namespace Whale::Win32
 		/// 输入字符事件
 		///
 		/// \param input 输入的字符
-		virtual LResult OnChar(const TChar &input) { return 0; }
+		virtual LResult OnChar(const CharT &input) { return 0; }
 		
 		///
 		/// 输入字符串事件，用于输入法

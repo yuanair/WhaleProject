@@ -1,24 +1,27 @@
-﻿#include "Whale/Core/Debug/FDebug.hpp"
+﻿#include "Whale/Core/FDebug.hpp"
+#include "Whale/Core/FConsole.hpp"
 #include "Whale/Language/Json/TFValue.hpp"
-
-#include <iostream>
-#include <string>
 
 using namespace Whale;
 
-int main()
+int WhaleMain()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
 	
-	Language::Json::JsonA value;
-	std::string input;
+	Language::Json::JsonT value;
 	
 	while (true)
 	{
-		std::cout << "> ";
-		std::getline(std::cin, input);
+		StringT input;
+		FConsole::Write(WHALE_TEXT("> "));
+		FConsole::ReadLine(input);
 		
-		value[input.c_str()] = nullptr;
+		if (input == WHALE_TEXT("exit")) break;
+		else if (input == WHALE_TEXT("debug"))
+		{
+		
+		}
+		else value[input] = nullptr;
 		
 	}
 	

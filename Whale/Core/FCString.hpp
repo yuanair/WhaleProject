@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 
 namespace Whale
 {
@@ -18,20 +18,20 @@ namespace Whale
 		///
 		/// \param str 字符串
 		/// \return 字符串长度（包括结束符null）
-		template<typename CharT>
-		static SizeT Length(const CharT *str);
+		template<typename ElemT>
+		static SizeT Length(const ElemT *str);
 		
 		///
 		/// \param str 字符串
 		/// \return 字符串长度（不包括结束符no null）
-		template<typename CharT>
-		static SizeT LengthNoNull(const CharT *str);
+		template<typename ElemT>
+		static SizeT LengthNoNull(const ElemT *str);
 		
 		
 	};
 	
-	template<typename CharT>
-	SizeT FCString::Length(const CharT *str)
+	template<typename ElemT>
+	SizeT FCString::Length(const ElemT *str)
 	{
 		if (str == nullptr) return 0;
 		SizeT index = 0;
@@ -43,8 +43,8 @@ namespace Whale
 		return index;
 	}
 	
-	template<typename CharT>
-	SizeT FCString::LengthNoNull(const CharT *str)
+	template<typename ElemT>
+	SizeT FCString::LengthNoNull(const ElemT *str)
 	{
 		if (str == nullptr) return 0;
 		SizeT index = 0;

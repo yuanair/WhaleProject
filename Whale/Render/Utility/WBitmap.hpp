@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Whale/Core/Object/WObject.hpp"
+#include "Whale/Core/WObject.hpp"
 
 namespace Whale
 {

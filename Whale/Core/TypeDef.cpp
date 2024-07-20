@@ -2,7 +2,7 @@
 // Created by admin on 2024/6/16.
 //
 
-#include "HTypeDef.hpp"
+#include "TypeDef.hpp"
 
 #if defined(DEBUG) || defined(_DEBUG)
 
@@ -10,14 +10,14 @@
 
 #else
 
-#include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
+#include "Whale/Core/FDebug.hpp"
+#include "WProgram.hpp"
 
 #endif
 
 namespace Whale
 {
-	WHALE_API void FatalMessage(const WChar *message, const WChar *file, uint64 line, const WChar *function)
+	WHALE_API void FatalMessage(const CharW *message, const CharW *file, uint64 line, const CharW *function)
 	{
 #if defined(DEBUG) || defined(_DEBUG)
 		_wassert(message, file, (uint32) line);

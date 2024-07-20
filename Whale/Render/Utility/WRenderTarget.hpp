@@ -6,9 +6,9 @@
 
 #include <vector>
 
-#include "Whale/Core/Object/WObject.hpp"
+#include "Whale/Core/WObject.hpp"
 #include "Whale/Render/Win32/WWindow.hpp"
-#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Core/Memory.hpp"
 #include "WRenderObject.hpp"
 
 namespace Whale

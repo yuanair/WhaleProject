@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 #include "Whale/Core/Container/TFString.hpp"
-#include "Whale/Core/FException/FException.hpp"
+#include "Whale/Core/Exception.hpp"
 
 #include <vector>
 #include <map>
@@ -483,8 +483,8 @@ namespace Whale::Language::Json
 		}
 	}
 	
-	using JsonA = TFValue<Char>;
-	using JsonW = TFValue<WChar>;
-	using JsonT = TFValue<TChar>;
+	using JsonA = TFValue<CharA>;
+	using JsonW = TFValue<CharW>;
+	using JsonT = TFValue<CharT>;
 	
 } // Whale

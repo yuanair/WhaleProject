@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "TypeDef.hpp"
 #include <intrin.h>
 #include <atomic>
 

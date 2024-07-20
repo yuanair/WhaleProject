@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "Whale/Core/Object/WObject.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
-#include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Core/WObject.hpp"
+#include "Whale/Core/WProgram.hpp"
+#include "Whale/Core/FDebug.hpp"
+#include "Whale/Core/Memory.hpp"
 #include "WRenderTarget.hpp"
 #include "WShader.hpp"
 #include "WStaticMesh.hpp"

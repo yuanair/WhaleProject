@@ -5,7 +5,7 @@
 #pragma once
 
 #include "HWinDef.hpp"
-#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale::Win32

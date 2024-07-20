@@ -1,5 +1,5 @@
-﻿#include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
+﻿#include "Whale/Core/FDebug.hpp"
+#include "Whale/Core/WProgram.hpp"
 #include "Whale/Render/Win32/WWindow.hpp"
 #include "Whale/Render/Utility/WRenderer.hpp"
 #include "Whale/Language/Json/TFValue.hpp"
@@ -163,8 +163,8 @@ void Program::InitData()
 		Language::Json::JsonT{10}
 	};
 	
-	testValue["Hi"] = "Hello";
-	testValue["100"] = "800";
+	testValue[WHALE_TEXT("Hi")] = WHALE_TEXT("Hello");
+	testValue[WHALE_TEXT("100")] = WHALE_TEXT("800");
 	
 	std::ifstream dataFile{"./Data/data.json"};
 	if (!dataFile.is_open())
@@ -183,7 +183,7 @@ void Program::InitData()
 	this->data.toEncoding = dataObject["toEncoding"].as_string().c_str();
 	this->data.fromEncoding = dataObject["fromEncoding"].as_string().c_str();
 	this->data.windowData.name = dataObject["windowData"].as_object()["name"].as_string().c_str();
-	this->data.windowData.name = WLocale::Between(
+	this->data.windowData.name = FLocale::Between(
 		this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
 	);
 	this->data.shader = dataObject["shader"].as_string().c_str();
@@ -200,7 +200,7 @@ void Program::InitData()
 	}
 	
 	pWindow = MakeUnique<MyWindow>(*this);
-	pWindow->Create(*pWindowClass, WLocale::AToTString(this->data.windowData.name, this->data.toEncoding));
+	pWindow->Create(*pWindowClass, FLocale::AToTString(this->data.windowData.name, this->data.toEncoding));
 	auto buffer = pWindow->GetNameA();
 	
 	if (pWindow->GetHWindow().handle == nullptr)
@@ -214,7 +214,7 @@ void Program::InitData()
 	
 	
 	pWindow2 = MakeUnique<MyWindow2>(*this);
-	pWindow2->Create(*pWindowClass, WLocale::AToTString(this->data.windowData.name, this->data.toEncoding));
+	pWindow2->Create(*pWindowClass, FLocale::AToTString(this->data.windowData.name, this->data.toEncoding));
 	if (pWindow2->GetHWindow().handle == nullptr)
 	{
 		throw FException((
@@ -233,7 +233,7 @@ void Program::InitDirectX()
 	pShader = pRender->CreateShader();
 	pMesh = pRender->CreateStaticMesh();
 	pRender->Create();
-	pShader->CreateFromFile(WLocale::ToUTFString(data.shader, data.fromEncoding));
+	pShader->CreateFromFile(FLocale::ToUTFString(data.shader, data.fromEncoding));
 	pMesh->SetVertexes(
 		{
 			FVertex{{0.0f, 0.25f, 0.0f, 1.0f},
@@ -276,7 +276,7 @@ void MyWindow::OnTick(float deltaTIme)
 }
 
 
-int main()
+int WhaleMain()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
 	return Program().WHALE_T(Run)();

@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
-#include "Whale/Core/Tool/HCRT.hpp"
-#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Core/TypeDef.hpp"
+#include "Whale/Core/CRT.hpp"
+#include "Whale/Core/Memory.hpp"
 #include "WType.hpp"
 
 #include <vector>

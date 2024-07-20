@@ -3,8 +3,8 @@
 //
 
 #include "FCore.hpp"
-#include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
+#include "Whale/Core/FDebug.hpp"
+#include "Whale/Core/WProgram.hpp"
 
 #include <windows.h>
 
@@ -157,7 +157,7 @@ Cleanup:
 	
 	std::string FCore::MessageToStringA(HResult dwMessageId)
 	{
-		auto strBufferError = WHALE_NEW_CLIENT Char[256];
+		auto strBufferError = WHALE_NEW_CLIENT CharA[256];
 		::FormatMessageA
 			(
 				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -171,7 +171,7 @@ Cleanup:
 	
 	std::wstring FCore::MessageToStringW(HResult dwMessageId)
 	{
-		auto strBufferError = WHALE_NEW_CLIENT WChar[256];
+		auto strBufferError = WHALE_NEW_CLIENT CharW[256];
 		::FormatMessageW
 			(
 				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,

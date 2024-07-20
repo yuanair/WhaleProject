@@ -6,8 +6,8 @@
 
 #include "FCore.hpp"
 
-#include "Whale/Core/Debug/FDebug.hpp"
-#include "Whale/Core/Object/WProgram.hpp"
+#include "Whale/Core/FDebug.hpp"
+#include "Whale/Core/WProgram.hpp"
 
 
 #include <windows.h>
@@ -247,7 +247,7 @@ namespace Whale::Win32
 					// Get the size of the result string.
 					dwSize = ImmGetCompositionString(hIMC, GCS_RESULTSTR, nullptr, 0);
 					
-					// increase buffer size for terminating null Char,
+					// increase buffer size for terminating null CharA,
 					//   maybe it is in UNICODE
 					dwSize += sizeof(WCHAR);
 					

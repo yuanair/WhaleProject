@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Render/Utility/WRenderer.hpp"
-#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Core/Memory.hpp"
 #include "Whale/Render/DirectX/HDirectXHeader.hpp"
 #include "FWICForDirectX.hpp"
 

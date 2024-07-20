@@ -8,7 +8,7 @@
 
 #include "WRenderObject.hpp"
 #include "Whale/Tool/Math/TFMath.hpp"
-#include "Whale/Core/Container/HMemory.hpp"
+#include "Whale/Core/Memory.hpp"
 #include "WShader.hpp"
 
 namespace Whale

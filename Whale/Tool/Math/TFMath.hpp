@@ -4,12 +4,10 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 
 namespace Whale
 {
-	
-	WHALE_API void Test();
 	
 	///
 	/// 数学库
@@ -191,6 +189,63 @@ namespace Whale
 	using float4 = TVector4<float>;
 	using double4 = TVector4<double>;
 	
+	
+	WHALE_API void Test();
+	
+	///
+	/// 按位与
+	/// \tparam Args
+	/// \param args
+	/// \return
+	template<class... Args>
+	inline static auto BitwiseAND(const Args &... args)
+	{
+		return (... & args);
+	}
+	
+	///
+	/// 按位异或
+	/// \tparam Args
+	/// \param args
+	/// \return
+	template<class... Args>
+	inline static auto BitwiseExclusiveOR(const Args &... args)
+	{
+		return (... ^ args);
+	}
+	
+	///
+	/// 按位或
+	/// \tparam Args
+	/// \param args
+	/// \return
+	template<class... Args>
+	inline static auto BitwiseInclusiveOR(const Args &... args)
+	{
+		return (... | args);
+	}
+	
+	///
+	/// 逻辑与
+	/// \tparam Args
+	/// \param args
+	/// \return
+	template<class... Args>
+	inline static auto LogicalAND(const Args &... args)
+	{
+		return (... && args);
+	}
+	
+	///
+	/// 逻辑或
+	/// \tparam Args
+	/// \param args
+	/// \return
+	template<class... Args>
+	inline static auto LogicalOR(const Args &... args)
+	{
+		return (... || args);
+	}
 	
 	template<class T>
 	T TFMath<T>::Min(T x, T y)

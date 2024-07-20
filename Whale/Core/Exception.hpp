@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Whale/Core/Tool/HTypeDef.hpp"
+#include "Whale/Core/TypeDef.hpp"
 #include <stdexcept>
 
 namespace Whale
@@ -18,7 +18,7 @@ namespace Whale
 		
 		FException() : std::runtime_error("") {}
 		
-		explicit FException(const Char *message) : std::runtime_error(message) {}
+		explicit FException(const CharA *message) : std::runtime_error(message) {}
 		
 	};
 	
@@ -30,7 +30,7 @@ namespace Whale
 		
 		FNullPtrException() : FException() {}
 		
-		explicit FNullPtrException(const Char *message) : FException(message) {}
+		explicit FNullPtrException(const CharA *message) : FException(message) {}
 		
 	};
 	
@@ -43,7 +43,7 @@ namespace Whale
 		
 		FInvalidCastException() : FException() {}
 		
-		explicit FInvalidCastException(const Char *message) : FException(message) {}
+		explicit FInvalidCastException(const CharA *message) : FException(message) {}
 		
 	};
 	
@@ -55,7 +55,7 @@ namespace Whale
 		
 		FIOException() : FException() {}
 		
-		explicit FIOException(const Char *message) : FException(message) {}
+		explicit FIOException(const CharA *message) : FException(message) {}
 		
 	};
 	
@@ -67,7 +67,7 @@ namespace Whale
 		
 		FFileNotFoundException() : FException() {}
 		
-		explicit FFileNotFoundException(const Char *message) : FException(message) {}
+		explicit FFileNotFoundException(const CharA *message) : FException(message) {}
 		
 	};
 	
@@ -79,7 +79,7 @@ namespace Whale
 		
 		FLoadException() : FException() {}
 		
-		explicit FLoadException(const Char *message) : FException(message) {}
+		explicit FLoadException(const CharA *message) : FException(message) {}
 		
 	};
 	
