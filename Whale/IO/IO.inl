@@ -144,10 +144,10 @@ namespace Whale::IO
 	template<class ElemT>
 	Bool FFileStream<ElemT>::ReadToNewLine()
 	{
-		ElemT elem{};
+		ElemT elem;
 		while (true)
 		{
-			if (FLocale::IsNewLine(Peek()) || Peek() == 0) break;
+			if (FLocale::IsNewLine(Peek()) || Peek() == 0) return true;
 			if (!Get(elem)) throw FIOException("FFileStream<ElemT>::ReadToNewLine() failed");
 		}
 	}
