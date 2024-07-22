@@ -61,8 +61,8 @@ namespace Whale
 		
 	}
 	
-	template<class T>
-	void LogA(T tag, T message, EDebugLevel level, const FSourceLocation &sourceLocation)
+	template<class T, class U>
+	void LogA(T tag, U message, EDebugLevel level, const FSourceLocation &sourceLocation)
 	{
 		BOOST_LOG_SEV(*logger, level) << "[" << sourceLocation.FileName() << "(" << sourceLocation.Line() << ", "
 		                              << sourceLocation.Column() << ")][" << sourceLocation.FunctionName() << "]" << tag
@@ -70,8 +70,8 @@ namespace Whale
 		if (level >= EDebugLevel::Warning) FDebug::LogFlush();
 	}
 	
-	template<class T>
-	void LogW(T tag, T message, EDebugLevel level, const FSourceLocation &sourceLocation)
+	template<class T, class U>
+	void LogW(T tag, U message, EDebugLevel level, const FSourceLocation &sourceLocation)
 	{
 		BOOST_LOG_SEV(*wLogger, level) << L"[" << sourceLocation.FileName() << L"(" << sourceLocation.Line() << L", "
 		                               << sourceLocation.Column() << L")][" << sourceLocation.FunctionName() << L"]"
@@ -94,23 +94,35 @@ namespace Whale
 	void FDebug::Log(const StringA &tag, const StringA &message, EDebugLevel level,
 	                 const FSourceLocation &sourceLocation)
 	{
-		Whale::LogA<const CharA *>(tag.CStr(), message.CStr(), level, sourceLocation);
+		Whale::LogA(tag.CStr(), message.CStr(), level, sourceLocation);
 	}
 	
 	void FDebug::Log(const StringW &tag, const StringW &message, EDebugLevel level,
 	                 const FSourceLocation &sourceLocation)
 	{
-		Whale::LogW<const CharW *>(tag.CStr(), message.CStr(), level, sourceLocation);
+		Whale::LogW(tag.CStr(), message.CStr(), level, sourceLocation);
+	}
+	
+	void FDebug::Log(const StringA &tag, const FException &exception, EDebugLevel level,
+	                 const FSourceLocation &sourceLocation)
+	{
+		Whale::LogA(tag.CStr(), exception.What(), level, sourceLocation);
+	}
+	
+	void FDebug::Log(const StringW &tag, const FException &exception, EDebugLevel level,
+	                 const FSourceLocation &sourceLocation)
+	{
+		Whale::LogW(tag.CStr(), exception.What(), level, sourceLocation);
 	}
 	
 	void FDebug::Log(const CharA *tag, const CharA *message, EDebugLevel level, const FSourceLocation &sourceLocation)
 	{
-		Whale::LogA<const CharA *>(tag, message, level, sourceLocation);
+		Whale::LogA(tag, message, level, sourceLocation);
 	}
 	
 	void FDebug::Log(const CharW *tag, const CharW *message, EDebugLevel level, const FSourceLocation &sourceLocation)
 	{
-		Whale::LogW<const CharW *>(tag, message, level, sourceLocation);
+		Whale::LogW(tag, message, level, sourceLocation);
 	}
 	
 	void FDebug::LogFlush()

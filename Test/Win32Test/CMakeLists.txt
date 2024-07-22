@@ -1,23 +1,20 @@
-﻿
-add_executable(Test WIN32 main.cpp)
+﻿project(Win32Test)
 
-target_link_libraries(Test
+file(GLOB ${PROJECT_NAME}Data "./Data/*.*")
+add_definitions(-DCMAKE_PROJECT_NAME="${PROJECT_NAME}")
+
+add_executable(${PROJECT_NAME} WIN32 main.cpp)
+
+target_link_libraries(${PROJECT_NAME}
         PUBLIC WhaleCore
         PUBLIC WhaleLanguage
         PUBLIC WhalePlatform
         PUBLIC WhaleTool
 )
 
-target_include_directories(Test PUBLIC "../../../boost_1_85_0")
-
-target_link_directories(Test PUBLIC "../../../boost_1_85_0/stage/lib")
-
-#add_custom_command(TARGET Test
-#        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TestData
-#        COMMAND ${CMAKE_COMMAND} -E
-#        copy_directory
-#        ./Resources
-#        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TestData
-#)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}Data
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${${PROJECT_NAME}Data} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}Data
+)
 
 

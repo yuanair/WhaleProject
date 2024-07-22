@@ -7,6 +7,7 @@
 #include "TypeDef.hpp"
 #include "FIntrinsics.hpp"
 #include "Exception.hpp"
+#include "FDebug.hpp"
 
 namespace Whale
 {
@@ -365,7 +366,8 @@ namespace Whale
 		{
 			if (!this->ConstructFromWeak(Whale::Move(other)))
 			{
-				throw FBadWeakPtrException();
+				FDebug::LogError(WhaleTagA, FBadWeakPtrException());
+				return;
 			}
 		}
 		

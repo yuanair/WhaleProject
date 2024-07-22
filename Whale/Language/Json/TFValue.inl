@@ -1,5 +1,4 @@
 
-#include "TFValue.hpp"
 
 namespace Whale::Json
 {
@@ -95,21 +94,21 @@ namespace Whale::Json
 	}
 	
 	template<class CharT>
-	const TFValue<CharT>::String &TFValue<CharT>::AsString() const
+	const typename TFValue<CharT>::String &TFValue<CharT>::AsString() const
 	{
 		if (IsString()) return *value.pString;
 		throw FInvalidCastException("can not cast to String");
 	}
 	
 	template<class CharT>
-	const TFValue<CharT>::Array &TFValue<CharT>::AsArray() const
+	const typename TFValue<CharT>::Array &TFValue<CharT>::AsArray() const
 	{
 		if (IsArray()) return *value.pArray;
 		throw FInvalidCastException("can not cast to Array");
 	}
 	
 	template<class CharT>
-	const TFValue<CharT>::Object &TFValue<CharT>::AsObject() const
+	const typename TFValue<CharT>::Object &TFValue<CharT>::AsObject() const
 	{
 		if (IsObject()) return *value.pObject;
 		throw FInvalidCastException("can not cast to Object");
@@ -134,19 +133,19 @@ namespace Whale::Json
 	}
 	
 	template<class CharT>
-	const TFValue<CharT>::String *TFValue<CharT>::IfString() const noexcept
+	const typename TFValue<CharT>::String *TFValue<CharT>::IfString() const noexcept
 	{
 		return IsString() ? value.pString : nullptr;
 	}
 	
 	template<class CharT>
-	const TFValue<CharT>::Array *TFValue<CharT>::IfArray() const noexcept
+	const typename TFValue<CharT>::Array *TFValue<CharT>::IfArray() const noexcept
 	{
 		return IsArray() ? value.pArray : nullptr;
 	}
 	
 	template<class CharT>
-	const TFValue<CharT>::Object *TFValue<CharT>::IfObject() const noexcept
+	const typename TFValue<CharT>::Object *TFValue<CharT>::IfObject() const noexcept
 	{
 		return IsObject() ? value.pObject : nullptr;
 	}
@@ -453,7 +452,7 @@ namespace Whale::Json
 	}
 	
 	template<>
-	inline TFValue<CharA>::String WHALE_API TFValue<CharA>::ToString() const noexcept
+	inline typename TFValue<CharA>::String WHALE_API TFValue<CharA>::ToString() const noexcept
 	{
 		String result;
 		switch (this->type)
@@ -522,7 +521,7 @@ namespace Whale::Json
 	}
 	
 	template<>
-	inline TFValue<CharW>::String WHALE_API TFValue<CharW>::ToString() const noexcept
+	inline typename TFValue<CharW>::String WHALE_API TFValue<CharW>::ToString() const noexcept
 	{
 		String result;
 		switch (this->type)
@@ -591,7 +590,7 @@ namespace Whale::Json
 	}
 	
 	template<>
-	inline TFValue<CharA>::String WHALE_API TFValue<CharA>::KeyToString(const String &key) const
+	inline typename TFValue<CharA>::String WHALE_API TFValue<CharA>::KeyToString(const String &key) const
 	{
 		String result{"\""};
 		result += key;
@@ -601,7 +600,7 @@ namespace Whale::Json
 	}
 	
 	template<>
-	inline TFValue<CharW>::String WHALE_API TFValue<CharW>::KeyToString(const String &key) const
+	inline typename TFValue<CharW>::String WHALE_API TFValue<CharW>::KeyToString(const String &key) const
 	{
 		String result{L"\""};
 		result += key;

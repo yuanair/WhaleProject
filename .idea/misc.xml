@@ -4,6 +4,7 @@
   <component name="CidrRootsConfiguration">
     <sourceRoots>
       <file path="$PROJECT_DIR$/DirectX-Headers-main" />
+      <file path="$PROJECT_DIR$/boost_1_85_0" />
     </sourceRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/.vs" />

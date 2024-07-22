@@ -22,7 +22,7 @@ namespace Whale
 #if defined(DEBUG) || defined(_DEBUG)
 		_wassert(message, file, (uint32) line);
 #else
-		FDebug::LogFatal(WProgram::GetAppNameW(), message);
+		FDebug::LogFatal(WhaleTagW, message);
 #endif
 	}
 } // Whale

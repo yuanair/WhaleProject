@@ -6,6 +6,7 @@
 
 #include "TypeDef.hpp"
 #include "SourceLocation.hpp"
+#include "Exception.hpp"
 
 namespace Whale
 {
@@ -37,6 +38,12 @@ namespace Whale
 		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		static void Log(const StringW &tag, const StringW &message, EDebugLevel level,
+		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		
+		static void Log(const StringA &tag, const FException &exception, EDebugLevel level,
+		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		
+		static void Log(const StringW &tag, const FException &exception, EDebugLevel level,
 		                const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		static void Log(const CharA *tag, const CharA *message, EDebugLevel level,

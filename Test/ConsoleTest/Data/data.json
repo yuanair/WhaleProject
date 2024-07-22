@@ -4,5 +4,5 @@
 	"windowData": {
 		"name": "鲸鱼控制台测试"
 	},
-	"shader": "Data\\test.hlsl"
+	"shader": "./test.hlsl"
 }

@@ -12,13 +12,17 @@ namespace Whale
 	
 	///
 	/// 异常
-	class WHALE_API FException : public std::runtime_error
+	class WHALE_API FException : private std::runtime_error
 	{
 	public:
 		
 		FException() : std::runtime_error("") {}
 		
 		explicit FException(const CharA *message) : std::runtime_error(message) {}
+	
+	public:
+		
+		[[nodiscard]] const CharA *What() const noexcept { return this->what(); }
 		
 	};
 	

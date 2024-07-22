@@ -82,6 +82,16 @@ class Program : public WProgram
 {
 public:
 	
+	Program() : dataDirectoryA("./" CMAKE_PROJECT_NAME "Data"), dataDirectoryW(L"./" CMAKE_PROJECT_NAME "Data") {}
+
+public:
+	
+	const StringA dataDirectoryA;
+	
+	const StringW dataDirectoryW;
+
+public:
+	
 	void InitData();
 	
 	void InitDirectX();
@@ -166,10 +176,14 @@ void Program::InitData()
 	testValue[WHALE_TEXT("Hi")] = WHALE_TEXT("Hello");
 	testValue[WHALE_TEXT("100")] = WHALE_TEXT("800");
 	
-	std::ifstream dataFile{"./Data/data.json"};
+	std::ifstream dataFile{(dataDirectoryA + "/data.json").CStr()};
 	if (!dataFile.is_open())
 	{
-		throw FFileNotFoundException("cannot to open \"./Data/data.json\"");
+		FDebug::LogFatal(
+			WHALE_TEXT("OpenDataJson"),
+			FFileNotFoundException(("cannot to open \"" + dataDirectoryA + "/data.json\"").CStr()));
+		Win32::FCore::Exit();
+		return;
 	}
 	boost::json::object dataObject;
 	{
@@ -186,7 +200,7 @@ void Program::InitData()
 	this->data.windowData.name = FLocale::Between(
 		this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
 	);
-	this->data.shader = dataObject["shader"].as_string().c_str();
+	this->data.shader = dataDirectoryA + dataObject["shader"].as_string().c_str();
 	
 	pWindowClass = MakeUnique<Win32::WWindow::WWindowClass>(
 		Win32::FCore::GetInstance(), WHALE_TEXT("WhaleTestWindowClass")
@@ -279,7 +293,7 @@ void MyWindow::OnTick(float deltaTIme)
 int WhaleMain()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
-	return Program().WHALE_T(Run)();
+	return Program().Run(WHALE_TEXT(""));
 }
 
 #include "Whale/Platform/Win32/WinMain.hpp"

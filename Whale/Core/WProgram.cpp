@@ -24,7 +24,7 @@ namespace Whale
 	
 	}
 	
-	int32 WProgram::RunA()
+	int32 WProgram::Run(const StringA &)
 	{
 		MSG msg;
 		
@@ -49,7 +49,7 @@ namespace Whale
 		return (int32) msg.wParam;
 	}
 	
-	int32 WProgram::RunW()
+	int32 WProgram::Run(const StringW &)
 	{
 		MSG msg;
 		
@@ -76,54 +76,21 @@ namespace Whale
 	
 	void WProgram::BeginPlay()
 	{
-		try
-		{
-			FDebug::LogInfo(WhaleTagA, "WProgram Start");
-			FDebug::LogInfo(WhaleTagA, std::format("{} {}", FCore::GetAppNameA(), FCore::GetVersionA()).c_str());
-			GetTimer().Restart();
-			OnBeginPlay();
-		}
-		catch (const std::exception &exception)
-		{
-			FDebug::LogFatal(
-				WhaleTagA, std::format(
-					"OnEndPlay(): {}: {}", typeid(exception).name(),
-					exception.what()).c_str());
-			throw exception;
-		}
+		FDebug::LogInfo(WhaleTagA, "WProgram Start");
+		FDebug::LogInfo(WhaleTagA, std::format("{} {}", FCore::GetAppNameA(), FCore::GetVersionA()).c_str());
+		GetTimer().Restart();
+		OnBeginPlay();
 	}
 	
 	void WProgram::Tick()
 	{
-		try
-		{
-			GetTimer().Tick();
-			OnTick(GetTimer().GetDeltaTimeF());
-		}
-		catch (const std::exception &exception)
-		{
-			FDebug::LogFatal(
-				WhaleTagA, std::format(
-					"OnEndPlay(): {}: {}", typeid(exception).name(),
-					exception.what()).c_str());
-			throw exception;
-		}
+		GetTimer().Tick();
+		OnTick(GetTimer().GetDeltaTimeF());
 	}
 	
 	void WProgram::EndPlay()
 	{
-		try
-		{
-			OnEndPlay();
-		}
-		catch (const std::exception &exception)
-		{
-			FDebug::LogFatal(
-				WhaleTagA, std::format(
-					"OnEndPlay(): {}: {}", typeid(exception).name(),
-					exception.what()).c_str());
-			throw exception;
-		}
+		OnEndPlay();
 		FDebug::LogInfo(WhaleTagA, "WProgram End");
 		FDebug::LogFlush();
 		FDebug::LogClose();

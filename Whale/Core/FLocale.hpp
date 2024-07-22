@@ -5,7 +5,6 @@
 #pragma once
 
 #include "Whale/Core/TypeDef.hpp"
-#include "WObject.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale

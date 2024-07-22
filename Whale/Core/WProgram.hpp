@@ -20,12 +20,12 @@ namespace Whale
 		///
 		/// 运行
 		/// \return 程序返回值
-		int32 RunA();
+		int32 Run(const StringA &);
 		
 		///
 		/// 运行
 		/// \return 程序返回值
-		int32 RunW();
+		int32 Run(const StringW &);
 	
 	protected:
 		
