@@ -5,13 +5,21 @@
 #pragma once
 
 #include "TypeDef.hpp"
+
+#if WHALE_TARGET == WHALE_TARGET_WINDOWS
+
 #include <intrin.h>
+
+#endif
+
 #include <atomic>
 
 namespace Whale
 {
 	
 	using AtomicCounterT = ULong;
+	
+	#if WHALE_TARGET == WHALE_TARGET_WINDOWS
 	
 	///
 	/// 内部函数
@@ -84,5 +92,7 @@ namespace Whale
 		#endif
 		
 	};
+	
+	#endif
 	
 } // Whale

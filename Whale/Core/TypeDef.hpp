@@ -94,8 +94,16 @@
 // WHALE_API
 
 #ifndef WHALE_API
+	
+	#ifdef _WIN32
 
 #define WHALE_API __declspec(dllexport)
+	
+	#else
+
+#define WHALE_API
+	
+	#endif
 
 #else
 
