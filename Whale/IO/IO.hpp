@@ -17,9 +17,6 @@ namespace Whale::IO
 	constexpr const CharW TagW[] = L"Whale::IO";
 	
 	template<class ElemT>
-	errno_t FileOpen(FILE **pFile, const ElemT *fileName, const ElemT *openMode) noexcept;
-	
-	template<class ElemT>
 	Bool FileGet(ElemT &elem, FILE *file) noexcept;
 	
 	template<class ElemT>

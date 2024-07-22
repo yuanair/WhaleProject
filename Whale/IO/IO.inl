@@ -3,11 +3,6 @@
 
 namespace Whale::IO
 {
-	template<class ElemT>
-	errno_t FileOpen(FILE **pFile, const ElemT *fileName, const ElemT *openMode) noexcept
-	{
-		return ::fopen_s(pFile, fileName, openMode);
-	}
 	
 	template<class ElemT>
 	Bool FileGet(ElemT &elem, FILE *file) noexcept
