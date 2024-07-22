@@ -4,11 +4,10 @@
 
 #pragma once
 
+#include "Whale/Core/TypeDef.hpp"
 #include <Windows.h>
 #include <tchar.h>
 
-
-int WhaleMain();
 
 int WINAPI _tWinMain(::HINSTANCE, ::HINSTANCE, ::LPTSTR, int)
 {
