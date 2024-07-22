@@ -17,8 +17,7 @@ if (Boost_FOUND)
     MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
     MESSAGE(STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
 
-    add_executable(foo foo.cpp)
-    target_link_libraries(foo ${Boost_LIBRARIES})
+    target_link_libraries(WhaleCore ${Boost_LIBRARIES})
 endif ()
 
 # target_link_libraries(WhaleCore PUBLIC Boost)
