@@ -4,11 +4,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include "WRenderObject.hpp"
 #include "Whale/Core/TFMath.hpp"
 #include "Whale/Core/Memory.hpp"
+#include "Whale/Core/Container/TFArray.hpp"
 #include "WShader.hpp"
 
 namespace Whale
@@ -34,7 +33,7 @@ namespace Whale
 		///
 		/// \return 获取网格体数据字节大小
 		[[nodiscard]]
-		SizeT GetByteSize() const { return sizeof(Vertex) * this->vertexes.size(); }
+		SizeT GetByteSize() const { return sizeof(Vertex) * this->vertexes.GetLength(); }
 		
 		///
 		/// 加载网格体
@@ -47,20 +46,20 @@ namespace Whale
 	public:
 		
 		[[nodiscard]]
-		const std::vector<Vertex> &GetVertexes() const { return this->vertexes; }
+		const Container::TFArray<Vertex> &GetVertexes() const { return this->vertexes; }
 		
-		void SetVertexes(const std::vector<Vertex> &vertexesArg) { this->vertexes = vertexesArg; }
+		void SetVertexes(const Container::TFArray<Vertex> &vertexesArg) { this->vertexes = vertexesArg; }
 		
 		[[nodiscard]]
-		const std::vector<TFWeakPtr<WShader>> &GetPShaders() const { return this->pShaders; }
+		const Container::TFArray<TFWeakPtr<WShader>> &GetPShaders() const { return this->pShaders; }
 		
-		void SetPShader(const std::vector<TFWeakPtr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
+		void SetPShader(const Container::TFArray<TFWeakPtr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
 	
 	private:
 		
-		std::vector<Vertex> vertexes;
+		Container::TFArray<Vertex> vertexes;
 		
-		std::vector<TFWeakPtr<WShader>> pShaders;
+		Container::TFArray<TFWeakPtr<WShader>> pShaders;
 		
 	};
 	

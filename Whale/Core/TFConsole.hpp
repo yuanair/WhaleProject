@@ -26,40 +26,40 @@ namespace Whale
 		///
 		/// 写入字符串
 		/// \param str
-		static void Write(const String &str);
+		void Write(const String &str) noexcept;
 		
 		///
 		/// 写入字符串，并换行
 		/// \param str
-		static void WriteLine(const String &str);
+		void WriteLine(const String &str) noexcept;
 		
 		///
 		/// \return 读取到空白
-		static void Read(String &str);
+		void Read(String &str) noexcept;
 		
 		///
 		/// \return 读取一行
-		static void ReadLine(String &str);
+		void ReadLine(String &str) noexcept;
 		
 		///
 		/// 清空控制台
-		static void Clear();
+		static void Clear() noexcept;
 		
 		///
 		/// 清空输入缓冲区
-		static void ClearInBuffer();
+		void ClearInBuffer() noexcept;
 		
 		///
 		/// \return 是否为新行
-		static Bool IsNewLine(const String &);
+		Bool IsNewLine(const String &) noexcept;
 	
 	public:
 		
-		static FileStream out;
+		FileStream out{stdout, false};
 		
-		static FileStream in;
+		FileStream in{stdin, false};
 		
-		static FileStream err;
+		FileStream err{stderr, false};
 		
 	};
 	
@@ -68,54 +68,45 @@ namespace Whale
 	using ConsoleT = TFConsole<CharT>;
 	
 	template<class ElemT>
-	void TFConsole<ElemT>::Write(const String &str)
+	void TFConsole<ElemT>::Write(const String &str) noexcept
 	{
 		out.Write(str);
 	}
 	
 	template<class ElemT>
-	void TFConsole<ElemT>::WriteLine(const String &str)
+	void TFConsole<ElemT>::WriteLine(const String &str) noexcept
 	{
 		out.WriteLine(str);
 	}
 	
 	template<class ElemT>
-	void TFConsole<ElemT>::Read(String &str)
+	void TFConsole<ElemT>::Read(String &str) noexcept
 	{
 		in.Read(str);
 	}
 	
 	template<class ElemT>
-	void TFConsole<ElemT>::ReadLine(String &str)
+	void TFConsole<ElemT>::ReadLine(String &str) noexcept
 	{
 		in.ReadLine(str);
 	}
 	
 	template<class ElemT>
-	void TFConsole<ElemT>::Clear()
+	void TFConsole<ElemT>::Clear() noexcept
 	{
 		system("cls");
 	}
 	
 	template<class ElemT>
-	void TFConsole<ElemT>::ClearInBuffer()
+	void TFConsole<ElemT>::ClearInBuffer() noexcept
 	{
 		in.ReadToNewLine();
 	}
 	
 	template<class ElemT>
-	Bool TFConsole<ElemT>::IsNewLine(const String &)
+	Bool TFConsole<ElemT>::IsNewLine(const String &) noexcept
 	{
-		return FLocale::IsNewLine(in.Peek());
+		return FLocale::IsNewLine(in.GetPeek());
 	}
-	
-	template<class ElemT>
-	TFConsole<ElemT>::FileStream TFConsole<ElemT>::out{stdout, false};
-	
-	template<class ElemT>
-	TFConsole<ElemT>::FileStream TFConsole<ElemT>::in{stdin, false};
-	
-	template<class ElemT>
-	TFConsole<ElemT>::FileStream TFConsole<ElemT>::err{stderr, false};
 	
 } // Whale

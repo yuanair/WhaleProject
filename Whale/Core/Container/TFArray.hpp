@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "Whale/Core/TypeDef.hpp"
+#include "Whale/Core/Utility.hpp"
 #include "Whale/Core/CRT.hpp"
 #include "Whale/Core/TFMath.hpp"
-#include <initializer_list>
+#include "InitList.hpp"
 
 namespace Whale::Container
 {
@@ -80,7 +80,7 @@ namespace Whale::Container
 		/// 判断相等
 		/// \param other
 		/// \return
-		virtual Bool Equal(const TFArray &other) const noexcept;
+		Bool Equal(const TFArray &other) const noexcept;
 		
 		///
 		/// 改变数组长度

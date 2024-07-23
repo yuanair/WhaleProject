@@ -68,6 +68,10 @@ namespace Whale
 	
 	public:
 		
+		Bool operator==(const TFUniquePtr &other) const noexcept { return this->GetPtr() == other.GetPtr(); }
+		
+		Bool operator!=(const TFUniquePtr &other) const noexcept { return this->GetPtr() != other.GetPtr(); }
+		
 		TFUniquePtr &operator=(TFUniquePtr &&other) noexcept
 		{
 			Reset(other.Release());
@@ -386,6 +390,10 @@ namespace Whale
 	
 	public:
 		
+		Bool operator==(const TFSharedPtr &other) const noexcept { return this->GetPtr() == other.GetPtr(); }
+		
+		Bool operator!=(const TFSharedPtr &other) const noexcept { return this->GetPtr() != other.GetPtr(); }
+		
 		TFSharedPtr &operator=(const TFSharedPtr &other) noexcept
 		{
 			TFSharedPtr(other).Swap(*this);
@@ -493,6 +501,10 @@ namespace Whale
 		~TFWeakPtr() noexcept { this->DecrementWeak(); }
 	
 	public:
+		
+		Bool operator==(const TFWeakPtr &other) const noexcept { return this->GetPtr() == other.GetPtr(); }
+		
+		Bool operator!=(const TFWeakPtr &other) const noexcept { return this->GetPtr() != other.GetPtr(); }
 		
 		TFWeakPtr &operator=(const TFWeakPtr &other) noexcept
 		{

@@ -4,11 +4,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include "Whale/Core/WObject.hpp"
 #include "Whale/Platform/Win32/WWindow.hpp"
 #include "Whale/Core/Memory.hpp"
+#include "Whale/Core/Container/TFArray.hpp"
 #include "WRenderObject.hpp"
 
 namespace Whale
@@ -23,7 +22,7 @@ namespace Whale
 	
 	public:
 		
-		std::vector<TFWeakPtr<WRenderObject>> renderObjects;
+		Container::TFArray<TFWeakPtr<WRenderObject>> renderObjects;
 		
 	};
 	

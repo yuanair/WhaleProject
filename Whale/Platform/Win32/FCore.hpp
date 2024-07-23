@@ -5,7 +5,7 @@
 #pragma once
 
 #include "HWinDef.hpp"
-#include <string>
+#include "Whale/Core/Container/TFString.hpp"
 
 namespace Whale::Win32
 {
@@ -18,16 +18,16 @@ namespace Whale::Win32
 		// 运行命令
 		//
 		static HInstance ShellExecuteT(
-			HWindow hWnd, const std::string &operation, const std::string &file, const std::string &parameters,
-			const std::string &directory, int32 showCmd
+			HWindow hWnd, const StringA &operation, const StringA &file, const StringA &parameters,
+			const StringA &directory, int32 showCmd
 		);
 		
 		//
 		// 运行命令
 		//
 		static HInstance ShellExecuteT(
-			HWindow hWnd, const std::wstring &operation, const std::wstring &file, const std::wstring &parameters,
-			const std::wstring &directory, int32 showCmd
+			HWindow hWnd, const StringW &operation, const StringW &file, const StringW &parameters,
+			const StringW &directory, int32 showCmd
 		);
 		
 		///
@@ -42,12 +42,12 @@ namespace Whale::Win32
 		///
 		/// 以管理员权限启动应用
 		/// \param strApp 模块文件名
-		static void GainAdminPrivileges(const std::string &strApp);
+		static void GainAdminPrivileges(const StringA &strApp);
 		
 		///
 		/// 以管理员权限启动应用
 		/// \param strApp 模块文件名
-		static void GainAdminPrivileges(const std::wstring &strApp);
+		static void GainAdminPrivileges(const StringW &strApp);
 		
 		///
 		/// \return
@@ -55,11 +55,11 @@ namespace Whale::Win32
 		
 		///
 		/// \return 命令行
-		static std::string GetCommandLineA();
+		static StringA GetCommandLineA();
 		
 		///
 		/// \return 命令行
-		static std::wstring GetCommandLineW();
+		static StringW GetCommandLineW();
 		
 		///
 		/// \return 应用实例
@@ -93,11 +93,11 @@ namespace Whale::Win32
 		
 		///
 		/// windows错误信息
-		static std::string MessageToStringA(HResult dwMessageId);
+		static StringA MessageToStringA(HResult dwMessageId);
 		
 		///
 		/// windows错误信息
-		static std::wstring MessageToStringW(HResult dwMessageId);
+		static StringW MessageToStringW(HResult dwMessageId);
 		
 	};
 	

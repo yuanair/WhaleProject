@@ -209,7 +209,7 @@ void Program::InitData()
 	{
 		throw FException((
 			                 "Register Window Class Failed!\r\nError: " +
-			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str()
+			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
 		);
 	}
 	
@@ -221,7 +221,7 @@ void Program::InitData()
 	{
 		throw FException((
 			                 "Create Window Failed!\r\nError: " +
-			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str()
+			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
 		);
 	}
 	pWindow->ShowAndUpdate();
@@ -233,7 +233,7 @@ void Program::InitData()
 	{
 		throw FException((
 			                 "Create Window Failed!\r\nError: " +
-			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).c_str()
+			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
 		);
 	}
 	pWindow2->ShowAndUpdate();
@@ -268,7 +268,7 @@ void Program::InitDirectX()
 	pRender->renderTargets.emplace_back(pWindow->GetPRenderTarget());
 	pRender->renderTargets.emplace_back(pWindow2->GetPRenderTarget());
 	
-	pWindow->GetPRenderTarget()->renderObjects.emplace_back(pMesh);
+	pWindow->GetPRenderTarget()->renderObjects.Append(pMesh);
 }
 
 void MyWindow::InitDirectX()

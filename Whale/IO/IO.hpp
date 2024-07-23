@@ -34,6 +34,17 @@ namespace Whale::IO
 	inline Bool FileClose(FILE *file) noexcept;
 	
 	///
+	/// 文件状态
+	enum EFileState
+	{
+		EFileStateClosed = 0,
+		EFileStateOpened = 1,
+		EFileStateFileNoFound = 2,
+		EFileStateFileError = 3,
+		EFileStateFileEOF = 4
+	};
+	
+	///
 	/// 文件
 	template<class ElemT>
 	class WHALE_API FFileStream : public TIStream<ElemT>
@@ -44,10 +55,10 @@ namespace Whale::IO
 	
 	public:
 		
-		FFileStream() noexcept: myChar(0), isWroteSome(false), isCloseF(false), myFile(nullptr) {}
+		FFileStream() noexcept: m_file(nullptr), m_isCloseF(false), m_peek(0), m_state(EFileStateClosed) {}
 		
-		FFileStream(FILE *file, Bool isCloseF) noexcept: myChar(0), isWroteSome(false), isCloseF(isCloseF),
-		                                                 myFile(file) {}
+		FFileStream(FILE *file, Bool isCloseF) noexcept: m_file(file), m_isCloseF(isCloseF), m_peek(0),
+		                                                 m_state(EFileStateOpened) {}
 		
 		FFileStream(const FFileStream &) = delete;
 		
@@ -61,60 +72,66 @@ namespace Whale::IO
 		
 		///
 		/// 关闭文件
-		/// \return 是否成功
-		Bool Close() noexcept;
+		void Close() noexcept;
 	
 	public:
 		
-		ElemT Peek();
+		[[nodiscard]] Bool Good() const noexcept override { return this->m_state <= EFileStateOpened; }
 		
-		Bool Get(ElemT &elem) override;
+		[[nodiscard]] Bool Bad() const noexcept override { return this->m_state > EFileStateOpened; }
 		
-		Bool UnGet(ElemT &elem) override;
+		FFileStream &Peek(ElemT &elem) noexcept override;
 		
-		Bool Put(ElemT elem) override;
+		FFileStream &Get(ElemT &elem) noexcept override;
+		
+		FFileStream &UnGet(ElemT &elem) noexcept override;
+		
+		FFileStream &Put(ElemT elem) noexcept override;
 		
 		template<class... Args>
-		Bool Puts(ElemT elem, Args... args);
+		FFileStream &Puts(ElemT elem, Args... args) noexcept;
 		
-		Bool Flush() override;
+		FFileStream &Flush() noexcept override;
 		
-		Bool ReadToNewLine();
+		FFileStream &ReadToNewLine() noexcept;
 		
-		Bool Write(const String &str);
+		FFileStream &Write(const String &str) noexcept;
 		
-		Bool WriteLine(const String &str);
+		FFileStream &WriteLine(const String &str) noexcept;
 		
-		Bool Read(String &str) override;
+		FFileStream &Read(String &str) noexcept;
 		
-		Bool ReadTo(const std::function<Bool(ElemT)> &stopFunction);
+		FFileStream &ReadTo(const std::function<Bool(ElemT)> &stopFunction) noexcept;
 		
-		Bool ReadTo(String &str, const std::function<Bool(ElemT)> &stopFunction);
+		FFileStream &ReadTo(String &str, const std::function<Bool(ElemT)> &stopFunction) noexcept;
 		
-		Bool ReadLine(String &str);
+		FFileStream &ReadLine(String &str) noexcept;
 	
 	
 	public:
-		
-		///
-		/// \return 如果需要自导序列，则为true。
-		[[nodiscard]] bool IsWroteSome() const noexcept { return this->isWroteSome; }
-		
-		///
-		/// \return 如果C流必须关闭，则为true。
-		[[nodiscard]] bool IsCloseF() const noexcept { return this->isCloseF; }
 		
 		///
 		/// \return 指向C流的指针
-		[[nodiscard]] FILE *GetMyFile() const noexcept { return this->myFile; }
+		[[nodiscard]] FILE *GetFile() const noexcept { return this->m_file; }
+		
+		///
+		/// \return 下一个字符
+		[[nodiscard]] ElemT GetPeek() const noexcept { return m_peek; }
+		
+		///
+		/// \return 如果C流必须关闭，则为true。
+		[[nodiscard]] Bool IsCloseF() const noexcept { return this->m_isCloseF; }
+		
+		///
+		/// \return 文件状态
+		[[nodiscard]] EFileState GetState() const noexcept { return this->m_state; }
 	
 	private:
 		
-		// const _Cvt* pcvt;//指向编解码面的指针(可能为空)。
-		ElemT myChar;
-		bool isWroteSome;
-		bool isCloseF;
-		FILE *myFile;
+		FILE *m_file;
+		ElemT m_peek;
+		Bool m_isCloseF;
+		EFileState m_state;
 		
 	};
 	

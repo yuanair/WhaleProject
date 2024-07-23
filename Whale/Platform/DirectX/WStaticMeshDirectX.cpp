@@ -27,7 +27,7 @@ namespace Whale::DirectX
 		UINT8 *pVertexDataBegin = nullptr;
 		CD3DX12_RANGE readRange(0, 0);
 		THROW_IF_FAILED(this->pID3D12VertexBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, GetVertexes().data(), GetByteSize());
+		memcpy(pVertexDataBegin, GetVertexes().GetPtr(), GetByteSize());
 		this->pID3D12VertexBuffer->Unmap(0, nullptr);
 		
 		this->vertexBufferView.BufferLocation = this->pID3D12VertexBuffer->GetGPUVirtualAddress();

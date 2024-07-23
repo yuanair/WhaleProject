@@ -1,6 +1,6 @@
 
-file(GLOB WhaleLanguageHeader "./*/*.hpp")
-file(GLOB WhaleLanguageSource "./*/*.cpp")
+file(GLOB WhaleLanguageHeader "./*.hpp" "./*/*.hpp")
+file(GLOB WhaleLanguageSource "./*.cpp" "./*/*.cpp")
 
 add_library(WhaleLanguage SHARED ${WhaleLanguageSource})
 

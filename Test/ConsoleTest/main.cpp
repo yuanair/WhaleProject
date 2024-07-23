@@ -1,7 +1,9 @@
 ﻿
-
 #include "CommandManager.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
 Json::JsonT value(Json::ETypeObject);
 
@@ -9,7 +11,7 @@ using MyCommandManager = CommandManager<CharT>;
 
 void Show(MyCommandManager &commandManager)
 {
-	if (FLocale::IsNewLine(commandManager.in.Peek()))
+	if (FLocale::IsNewLine(commandManager.in.GetPeek()))
 	{
 		commandManager.out.WriteLine(value.ToString());
 	}
@@ -46,9 +48,11 @@ void Remove(MyCommandManager &commandManager)
 
 int WhaleMain()
 {
-	//FDebug::LogToFile(".\\logs\\%Y%m%d.log");
+	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
 	
-	MyCommandManager commandManager{ConsoleT::in, ConsoleT::out};
+	ConsoleT console;
+	
+	MyCommandManager commandManager{console.in, console.out};
 	commandManager.commands.insert(
 		{
 			{WHALE_TEXT("show"),   Show},
@@ -60,23 +64,27 @@ int WhaleMain()
 	while (true)
 	{
 		StringT command, arg1;
-		ConsoleT::Write(WHALE_TEXT("> "));
-		ConsoleT::Read(command);
+		console.Write(WHALE_TEXT("> "));
+		console.Read(command);
 		if (command == WHALE_TEXT("exit")) break;
 		
 		commandManager.Run(command);
 		for (auto &item: commandManager.errors)
 		{
-			ConsoleT::WriteLine(item);
+			console.WriteLine(item);
 		}
 		
 		commandManager.errors.Clear();
-		ConsoleT::ClearInBuffer();
+		console.ClearInBuffer();
 		
 	}
-	ConsoleT::WriteLine(WHALE_TEXT("Thanks for using"));
+	console.WriteLine(WHALE_TEXT("Thanks for using"));
 	
-	//FDebug::LogClose();
+	std::ifstream f;
+	std::istream &a = f;
+	
+	
+	FDebug::LogClose();
 	value = nullptr;
 	
 	return 0;

@@ -11,24 +11,24 @@
 namespace Whale::Win32
 {
 	
-	HInstance FCore::ShellExecuteT(HWindow hWnd, const std::string &operation, const std::string &file,
-	                               const std::string &parameters,
-	                               const std::string &directory, int32 showCmd)
+	HInstance FCore::ShellExecuteT(HWindow hWnd, const StringA &operation, const StringA &file,
+	                               const StringA &parameters,
+	                               const StringA &directory, int32 showCmd)
 	{
 		return {
-			::ShellExecuteA((HWND) hWnd.handle, operation.c_str(), file.c_str(), parameters.c_str(), directory.c_str(),
+			::ShellExecuteA((HWND) hWnd.handle, operation.CStr(), file.CStr(), parameters.CStr(), directory.CStr(),
 			                showCmd
 			)
 		};
 	}
 	
 	
-	HInstance FCore::ShellExecuteT(HWindow hWnd, const std::wstring &operation, const std::wstring &file,
-	                               const std::wstring &parameters,
-	                               const std::wstring &directory, int32 showCmd)
+	HInstance FCore::ShellExecuteT(HWindow hWnd, const StringW &operation, const StringW &file,
+	                               const StringW &parameters,
+	                               const StringW &directory, int32 showCmd)
 	{
 		return {
-			::ShellExecuteW((HWND) hWnd.handle, operation.c_str(), file.c_str(), parameters.c_str(), directory.c_str(),
+			::ShellExecuteW((HWND) hWnd.handle, operation.CStr(), file.CStr(), parameters.CStr(), directory.CStr(),
 			                showCmd
 			)
 		};
@@ -76,11 +76,11 @@ namespace Whale::Win32
 		return {::LoadImage((HINSTANCE) hInstance.handle, MAKEINTRESOURCE(id), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR)};
 	}
 	
-	void FCore::GainAdminPrivileges(const std::string &strApp)
+	void FCore::GainAdminPrivileges(const StringA &strApp)
 	{
 		SHELLEXECUTEINFOA execInfo;
 		execInfo.cbSize = sizeof(execInfo);
-		execInfo.lpFile = strApp.c_str();
+		execInfo.lpFile = strApp.CStr();
 		execInfo.cbSize = sizeof(execInfo);
 		execInfo.lpVerb = "runas";
 		execInfo.fMask = SEE_MASK_NO_CONSOLE;
@@ -89,11 +89,11 @@ namespace Whale::Win32
 		::ShellExecuteExA(&execInfo);
 	}
 	
-	void FCore::GainAdminPrivileges(const std::wstring &strApp)
+	void FCore::GainAdminPrivileges(const StringW &strApp)
 	{
 		SHELLEXECUTEINFOW execInfo;
 		execInfo.cbSize = sizeof(execInfo);
-		execInfo.lpFile = strApp.c_str();
+		execInfo.lpFile = strApp.CStr();
 		execInfo.cbSize = sizeof(execInfo);
 		execInfo.lpVerb = L"runas";
 		execInfo.fMask = SEE_MASK_NO_CONSOLE;
@@ -138,24 +138,24 @@ Cleanup:
 		
 		if (ERROR_SUCCESS != dwError)
 		{
-			FDebug::LogError(TagW, MessageToStringW(HRESULT_FROM_WIN32(dwError)).c_str());
+			FDebug::LogError(TagW, MessageToStringW(HRESULT_FROM_WIN32(dwError)).CStr());
 		}
 		
 		return fIsRunAsAdmin;
 	}
 	
 	
-	std::string FCore::GetCommandLineA()
+	StringA FCore::GetCommandLineA()
 	{
 		return ::GetCommandLineA();
 	}
 	
-	std::wstring FCore::GetCommandLineW()
+	StringW FCore::GetCommandLineW()
 	{
 		return ::GetCommandLineW();
 	}
 	
-	std::string FCore::MessageToStringA(HResult dwMessageId)
+	StringA FCore::MessageToStringA(HResult dwMessageId)
 	{
 		auto strBufferError = WHALE_NEW_CLIENT CharA[256];
 		::FormatMessageA
@@ -164,12 +164,12 @@ Cleanup:
 				nullptr, dwMessageId, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
 				strBufferError, 256, nullptr
 			);
-		std::string buffer = strBufferError;
+		StringA buffer = strBufferError;
 		delete[] strBufferError;
 		return buffer;
 	}
 	
-	std::wstring FCore::MessageToStringW(HResult dwMessageId)
+	StringW FCore::MessageToStringW(HResult dwMessageId)
 	{
 		auto strBufferError = WHALE_NEW_CLIENT CharW[256];
 		::FormatMessageW
@@ -178,7 +178,7 @@ Cleanup:
 				nullptr, dwMessageId, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
 				strBufferError, 256, nullptr
 			);
-		std::wstring buffer = strBufferError;
+		StringW buffer = strBufferError;
 		delete[] strBufferError;
 		return buffer;
 	}

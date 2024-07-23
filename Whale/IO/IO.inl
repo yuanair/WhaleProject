@@ -90,141 +90,142 @@ namespace Whale::IO
 	template<class ElemT>
 	FFileStream<ElemT>::~FFileStream() noexcept
 	{
-		if (!isCloseF || Close()) return;
-		FDebug::LogError(TagA, "FileClose Failed!");
+		Close();
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Close() noexcept
+	void FFileStream<ElemT>::Close() noexcept
 	{
-		Bool result = FileClose(this->myFile);
-		this->myFile = nullptr;
-		return result;
+		Bool result = !m_isCloseF || FileClose(this->m_file);
+		this->m_file = nullptr;
+		this->m_state = result ? EFileStateClosed : EFileStateFileError;
 	}
 	
 	template<class ElemT>
-	ElemT FFileStream<ElemT>::Peek()
+	FFileStream<ElemT> &FFileStream<ElemT>::Peek(ElemT &elem) noexcept
 	{
-		return this->myChar;
+		elem = this->m_peek;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Get(ElemT &elem)
+	FFileStream<ElemT> &FFileStream<ElemT>::Get(ElemT &elem) noexcept
 	{
-		elem = this->myChar;
-		return FileGet(this->myChar, this->myFile);
+		elem = this->m_peek;
+		if (!FileGet(this->m_peek, this->m_file))this->m_state = EFileStateFileEOF;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::UnGet(ElemT &elem)
+	FFileStream<ElemT> &FFileStream<ElemT>::UnGet(ElemT &elem) noexcept
 	{
-		elem = this->myChar;
-		return FileUnGet(this->myChar, this->myFile);
+		elem = this->m_peek;
+		if (!FileUnGet(this->m_peek, this->m_file))this->m_state = EFileStateFileError;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Put(ElemT elem)
+	FFileStream<ElemT> &FFileStream<ElemT>::Put(ElemT elem) noexcept
 	{
-		return FilePut(elem, this->myFile);
+		if (!FilePut(elem, this->m_file))this->m_state = EFileStateFileError;
+		return *this;
 	}
 	
 	template<class ElemT>
 	template<class... Args>
-	Bool FFileStream<ElemT>::Puts(ElemT elem, Args... args)
+	FFileStream<ElemT> &FFileStream<ElemT>::Puts(ElemT elem, Args... args) noexcept
 	{
-		return FilePuts(this->myFile, elem, args...);
+		if (!FilePuts(this->m_file, elem, args...))this->m_state = EFileStateFileError;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Flush()
+	FFileStream<ElemT> &FFileStream<ElemT>::Flush() noexcept
 	{
-		return ::fflush(this->myFile);
+		if (!::fflush(this->m_file))this->m_state = EFileStateFileError;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::ReadToNewLine()
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadToNewLine() noexcept
 	{
 		ElemT elem;
 		while (true)
 		{
-			if (FLocale::IsNewLine(Peek()) || Peek() == 0) return true;
-			if (!Get(elem)) throw FIOException("FFileStream<ElemT>::ReadToNewLine() failed");
+			if (FLocale::IsNewLine(this->m_peek) || this->m_peek == 0 || !Get(elem)) break;
 		}
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Write(const String &str)
+	FFileStream<ElemT> &FFileStream<ElemT>::Write(const String &str) noexcept
 	{
 		for (auto ch: str)
 		{
-			if (!Put(ch))
-				throw FIOException("FFileStream<ElemT>::Write(FFileStream::String) failed");
+			if (!Put(ch)) break;
 		}
-		return true;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::WriteLine(const FFileStream::String &str)
+	FFileStream<ElemT> &FFileStream<ElemT>::WriteLine(const FFileStream::String &str) noexcept
 	{
 		for (auto ch: str)
 		{
-			if (!Put(ch))
-				throw FIOException("FFileStream<ElemT>::Write(FFileStream::String) failed");
+			if (!Put(ch)) return *this;
 		}
-		if (!Puts(WHALE_NEWLINE))
-			throw FIOException("FFileStream<ElemT>::Write(FFileStream::String) failed");
-		
-		return true;
+		return Puts(WHALE_NEWLINE);
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Read(FFileStream::String &str)
+	FFileStream<ElemT> &FFileStream<ElemT>::Read(FFileStream::String &str) noexcept
 	{
 		ElemT elem{};
-		while (FLocale::IsSpace(Peek()) || Peek() == 0)
+		while (FLocale::IsSpace(this->m_peek) || this->m_peek == 0)
 		{
-			if (!Get(elem)) throw FIOException("FFileStream<ElemT>::Read(FFileStream::String &) failed");
+			if (!Get(elem)) return *this;
 		}
 		while (true)
 		{
-			if (!Get(elem)) throw FIOException("FFileStream<ElemT>::Read(FFileStream::String &) failed");
+			if (!Get(elem)) return *this;
 			str.Append(elem);
-			if (FLocale::IsSpace(Peek())) break;
+			if (FLocale::IsSpace(this->m_peek)) break;
 		}
-		if (FLocale::IsNewLine(Peek())) return true;
+		if (FLocale::IsNewLine(this->m_peek)) return *this;
 		while (true)
 		{
-			if (!Get(elem)) throw FIOException("FFileStream<ElemT>::Read(FFileStream::String &) failed");
-			if (!FLocale::IsSpace(Peek()) || FLocale::IsNewLine(Peek())) break;
+			if (!Get(elem)) return *this;
+			if (!FLocale::IsSpace(this->m_peek) || FLocale::IsNewLine(this->m_peek)) break;
 		}
-		return true;
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::ReadTo(const std::function<Bool(ElemT)> &stopFunction)
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadTo(const std::function<Bool(ElemT)> &stopFunction) noexcept
 	{
 		ElemT elem{};
 		while (true)
 		{
-			if (!Get(elem)) throw FIOException("FFileStream<ElemT>::ReadTo(FFileStream::String &) failed");
-			if (stopFunction(elem)) return true;
+			if (!Get(elem) || stopFunction(elem)) break;
 		}
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::ReadTo(FFileStream::String &str, const std::function<Bool(ElemT)> &stopFunction)
+	FFileStream<ElemT> &
+	FFileStream<ElemT>::ReadTo(FFileStream::String &str, const std::function<Bool(ElemT)> &stopFunction) noexcept
 	{
 		ElemT elem{};
 		while (true)
 		{
-			if (!Get(elem))throw FIOException("FFileStream<ElemT>::ReadTo(FFileStream::String &) failed");
-			if (stopFunction(elem)) return true;
+			if (!Get(elem) || stopFunction(elem)) break;
 			str.Append(elem);
 		}
+		return *this;
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::ReadLine(FFileStream::String &str)
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadLine(FFileStream::String &str) noexcept
 	{
 		return ReadTo(str, [](ElemT elem) -> Bool { return FLocale::IsNewLine(elem); });
 	}

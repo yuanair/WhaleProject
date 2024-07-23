@@ -5,8 +5,9 @@
 #pragma once
 
 #include "TypeDef.hpp"
-#include "Whale/Core/Container/TFString.hpp"
 #include "WObject.hpp"
+#include "IGoodAndBad.hpp"
+#include "./Container/TFString.hpp"
 
 namespace Whale
 {
@@ -15,7 +16,7 @@ namespace Whale
 	///
 	/// 输入流
 	template<class ElemT>
-	class TIInputStream
+	class TIInputStream : public virtual IGoodAndBad
 	{
 	public:
 		
@@ -31,11 +32,11 @@ namespace Whale
 	
 	public:
 		
-		virtual Bool Get(ElemT &elem) = 0;
+		virtual TIInputStream &Peek(ElemT &elem) noexcept = 0;
 		
-		virtual Bool UnGet(ElemT &elem) = 0;
+		virtual TIInputStream &Get(ElemT &elem) noexcept = 0;
 		
-		virtual Bool Read(String &elem) = 0;
+		virtual TIInputStream &UnGet(ElemT &elem) noexcept = 0;
 		
 	};
 	
@@ -43,7 +44,7 @@ namespace Whale
 	///
 	/// 输出流
 	template<class ElemT>
-	class TIOutputStream
+	class TIOutputStream : public virtual IGoodAndBad
 	{
 	public:
 		
@@ -59,9 +60,9 @@ namespace Whale
 	
 	public:
 		
-		virtual Bool Put(ElemT elem) = 0;
+		virtual TIOutputStream &Put(ElemT elem) noexcept = 0;
 		
-		virtual Bool Flush() = 0;
+		virtual TIOutputStream &Flush() noexcept = 0;
 		
 	};
 	
