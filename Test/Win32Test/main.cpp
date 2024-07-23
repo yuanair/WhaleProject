@@ -296,6 +296,6 @@ int WhaleMain()
 	return Program().Run(WHALE_TEXT(""));
 }
 
-#include "Whale/Platform/Win32/WinMain.hpp"
+#include "Whale/Platform/WhaleMain.hpp"
 //*/
 

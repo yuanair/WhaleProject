@@ -10,7 +10,7 @@ int WhaleMain();
 
 #if WHALE_TARGET == WHALE_TARGET_WINDOWS
 	
-	#include "./WhaleMain.hpp"
+	#include "./Win32/WinMain.hpp"
 
 #else
 
