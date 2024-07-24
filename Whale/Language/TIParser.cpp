@@ -2,7 +2,7 @@
 // Created by admin on 2024/7/22.
 //
 
-#include "Parser.hpp"
+#include "TIParser.hpp"
 
 namespace Whale
 {

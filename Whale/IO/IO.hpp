@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Whale/Core/TypeDef.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 #include "Whale/Core/Stream.hpp"
 
@@ -17,48 +18,34 @@ namespace Whale::IO
 	constexpr const CharW TagW[] = L"Whale::IO";
 	
 	template<class ElemT>
-	Bool FileGet(ElemT &elem, FILE *file) noexcept;
-	
-	template<class ElemT>
-	Bool FilePut(ElemT elem, FILE *file) noexcept;
-	
-	template<class... Args>
-	Bool FilePuts(FILE *file, Args... args) noexcept
+	int32 FileGet(FILE *file) noexcept
 	{
-		return (... && FilePut(args, file));
+		static_assert("Not implemented");
 	}
 	
 	template<class ElemT>
-	Bool FileUnGet(const ElemT &elem, FILE *file) noexcept = delete;
-	
-	inline Bool FileClose(FILE *file) noexcept;
-	
-	///
-	/// 文件状态
-	enum EFileState
+	int32 FilePut(FILE *file, ElemT elem) noexcept
 	{
-		EFileStateClosed = 0,
-		EFileStateOpened = 1,
-		EFileStateFileNoFound = 2,
-		EFileStateFileError = 3,
-		EFileStateFileEOF = 4
-	};
+		static_assert("Not implemented");
+	}
 	
 	///
 	/// 文件
 	template<class ElemT>
-	class WHALE_API FFileStream : public TIStream<ElemT>
+	class WHALE_API FFileStream : public TIStream<int32, ElemT>
 	{
 	public:
 		
-		using String = TIStream<ElemT>::String;
+		using String = Container::TFString<ElemT>;
 	
 	public:
 		
-		FFileStream() noexcept: m_file(nullptr), m_isCloseF(false), m_peek(0), m_state(EFileStateClosed) {}
+		FFileStream() noexcept: m_file(nullptr), m_now(0), m_peek(0), m_isCloseF(false) {}
 		
-		FFileStream(FILE *file, Bool isCloseF) noexcept: m_file(file), m_isCloseF(isCloseF), m_peek(0),
-		                                                 m_state(EFileStateOpened) {}
+		///
+		/// \param file 文件流
+		/// \param isCloseF 是否需要关闭
+		FFileStream(FILE *file, Bool isCloseF) noexcept: m_file(file), m_now(0), m_peek(0), m_isCloseF(isCloseF) {}
 		
 		FFileStream(const FFileStream &) = delete;
 		
@@ -72,41 +59,67 @@ namespace Whale::IO
 		
 		///
 		/// 关闭文件
-		void Close() noexcept;
+		/// \return 是否成功
+		Bool Close() noexcept;
 	
 	public:
 		
-		[[nodiscard]] Bool Good() const noexcept override { return this->m_state <= EFileStateOpened; }
+		[[nodiscard]] Bool Good() const noexcept override { return !(IsError() || IsEOF()); }
 		
-		[[nodiscard]] Bool Bad() const noexcept override { return this->m_state > EFileStateOpened; }
+		[[nodiscard]] Bool Bad() const noexcept override { return IsError() || IsEOF(); }
 		
-		FFileStream &Peek(ElemT &elem) noexcept override;
+		[[nodiscard]] Bool IsOpen() const noexcept { return this->m_file != 0; }
 		
-		FFileStream &Get(ElemT &elem) noexcept override;
+		[[nodiscard]] Bool IsError() const noexcept { return ::ferror(this->m_file) != 0; }
 		
-		FFileStream &UnGet(ElemT &elem) noexcept override;
+		[[nodiscard]] Bool IsEOF() const noexcept { return ::feof(this->m_file) != 0; }
 		
-		FFileStream &Put(ElemT elem) noexcept override;
+		int32 Peek() noexcept override { return GetPeek(); }
+		
+		int32 Read() noexcept override;
+		
+		FFileStream &Write(ElemT elem) noexcept override;
 		
 		template<class... Args>
-		FFileStream &Puts(ElemT elem, Args... args) noexcept;
+		FFileStream &Writes(Args... args) noexcept;
 		
 		FFileStream &Flush() noexcept override;
 		
-		FFileStream &ReadToNewLine() noexcept;
-		
 		FFileStream &Write(const String &str) noexcept;
+		
+		FFileStream &WriteLine() noexcept;
 		
 		FFileStream &WriteLine(const String &str) noexcept;
 		
 		FFileStream &Read(String &str) noexcept;
 		
-		FFileStream &ReadTo(const std::function<Bool(ElemT)> &stopFunction) noexcept;
+		FFileStream &ReadTo(const std::function<Bool(int32)> &stopFunction) noexcept;
 		
-		FFileStream &ReadTo(String &str, const std::function<Bool(ElemT)> &stopFunction) noexcept;
+		FFileStream &ReadTo(String &str, const std::function<Bool(int32)> &stopFunction) noexcept;
+		
+		FFileStream &ReadToNewLine() noexcept;
 		
 		FFileStream &ReadLine(String &str) noexcept;
-	
+		
+		///
+		/// 清空错误
+		FFileStream &ClearError() noexcept;
+		
+		///
+		/// 清空错误
+		const FFileStream &ClearError() const noexcept;
+		
+		///
+		/// \param file 文件流
+		/// \param isCloseF 是否需要关闭
+		void Reset(FILE *file, Bool isCloseF)
+		{
+			this->m_file = file;
+			this->m_now = 0;
+			this->m_peek = 0;
+			this->m_isCloseF = isCloseF;
+			Read();
+		}
 	
 	public:
 		
@@ -115,23 +128,27 @@ namespace Whale::IO
 		[[nodiscard]] FILE *GetFile() const noexcept { return this->m_file; }
 		
 		///
+		/// \return 当前字符
+		[[nodiscard]] int32 GetNow() const noexcept { return m_now; }
+		
+		///
 		/// \return 下一个字符
-		[[nodiscard]] ElemT GetPeek() const noexcept { return m_peek; }
+		[[nodiscard]] int32 GetPeek() const noexcept { return m_peek; }
 		
 		///
 		/// \return 如果C流必须关闭，则为true。
 		[[nodiscard]] Bool IsCloseF() const noexcept { return this->m_isCloseF; }
 		
 		///
-		/// \return 文件状态
-		[[nodiscard]] EFileState GetState() const noexcept { return this->m_state; }
+		/// \param isCloseF 如果C流必须关闭，则为true。
+		void SetIsCloseF(Bool isCloseF) noexcept { this->m_isCloseF = isCloseF; }
 	
 	private:
 		
 		FILE *m_file;
-		ElemT m_peek;
+		int32 m_now;
+		int32 m_peek;
 		Bool m_isCloseF;
-		EFileState m_state;
 		
 	};
 	

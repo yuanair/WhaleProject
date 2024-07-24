@@ -8,6 +8,7 @@
 #include "FIntrinsics.hpp"
 #include "Exception.hpp"
 #include "FDebug.hpp"
+#include "IGoodAndBad.hpp"
 
 namespace Whale
 {
@@ -36,7 +37,7 @@ namespace Whale
 	};
 	
 	template<class ElemT>
-	class WHALE_API TFUniquePtr
+	class WHALE_API TFUniquePtr : public IGoodAndBad
 	{
 		
 		template<class> friend
@@ -83,10 +84,12 @@ namespace Whale
 		ElemT &operator*() const noexcept { return *this->ptr; }
 		
 		ElemT &operator[](SizeT index) const noexcept { return this->ptr[index]; }
-		
-		explicit operator Bool() { return static_cast<Bool>(this->ptr); }
 	
 	public:
+		
+		[[nodiscard]] Bool Good() const noexcept override { return this->ptr != nullptr; }
+		
+		[[nodiscard]] Bool Bad() const noexcept override { return this->ptr == nullptr; }
 		
 		///
 		/// 不释放空间，重置指针
@@ -227,7 +230,7 @@ namespace Whale
 	///
 	/// 指针基类
 	template<class ElemT>
-	class WHALE_API _TFPtrBase // NOLINT(*-reserved-identifier)
+	class WHALE_API _TFPtrBase : public IGoodAndBad // NOLINT(*-reserved-identifier)
 	{
 	public:
 		
@@ -242,6 +245,10 @@ namespace Whale
 		~_TFPtrBase() = default;
 	
 	public:
+		
+		[[nodiscard]] Bool Good() const noexcept override { return this->ptr != nullptr; }
+		
+		[[nodiscard]] Bool Bad() const noexcept override { return this->ptr == nullptr; }
 		
 		///
 		/// \return 获取使用引用计数

@@ -23,7 +23,7 @@ namespace Whale
 		return boost::locale::conv::from_utf(text.CStr(), toEncoding.CStr()).c_str();
 	}
 	
-	Bool FLocale::IsSpace(CharA ch)
+	Bool FLocale::IsSpace(int32 ch)
 	{
 		switch (ch)
 		{
@@ -39,30 +39,67 @@ namespace Whale
 		}
 	}
 	
-	Bool FLocale::IsSpace(CharW ch)
+	Bool FLocale::IsSpaceIncludeNull(int32 ch)
 	{
 		switch (ch)
 		{
-			case L'\t':
-			case L'\n':
-			case L'\v':
-			case L'\f':
-			case L'\r':
-			case L' ':
+			case '\0':
+			case '\t':
+			case '\n':
+			case '\v':
+			case '\f':
+			case '\r':
+			case ' ':
 				return true;
 			default:
 				return false;
 		}
 	}
 	
-	Bool FLocale::IsNewLine(CharA ch)
+	Bool FLocale::IsNewLine(int32 ch)
 	{
 		return ch == '\n' || ch == '\r';
 	}
 	
-	Bool FLocale::IsNewLine(CharW ch)
+	Bool FLocale::IsDigit(int32 ch)
 	{
-		return ch == L'\n' || ch == L'\r';
+		return ch >= '0' && ch <= '9';
+	}
+	
+	Bool FLocale::IsUpper(int32 ch)
+	{
+		return ch >= 'A' && ch <= 'Z';
+	}
+	
+	Bool FLocale::IsLower(int32 ch)
+	{
+		return ch >= 'a' && ch <= 'z';
+	}
+	
+	Bool FLocale::IsAlpha(int32 ch)
+	{
+		return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+	}
+	
+	Bool FLocale::IsXDigit(int32 ch)
+	{
+		return (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f');
+	}
+	
+	Bool FLocale::IsADigit(int32 ch)
+	{
+		return (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+	}
+	
+	Bool FLocale::IsPunct(int32 ch)
+	{
+		return (ch >= '!' && ch <= '/') || (ch >= ':' && ch <= '@') || (ch >= '[' && ch <= '`') ||
+		       (ch >= '{' && ch <= '~');
+	}
+	
+	Bool FLocale::IsCtrl(int32 ch)
+	{
+		return (ch >= '\x00' && ch <= '\x1F') || ch == '\x7F';
 	}
 	
 	

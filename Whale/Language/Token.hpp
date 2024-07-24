@@ -10,6 +10,20 @@
 
 namespace Whale
 {
+	
+	///
+	/// 符号位置
+	struct WHALE_API FTokenPos
+	{
+		
+		/// 行
+		SizeT line = 0;
+		
+		/// 列
+		SizeT column = 0;
+		
+	};
+	
 	///
 	/// 符号
 	template<class ElemT>
@@ -21,16 +35,26 @@ namespace Whale
 	
 	public:
 		
+		explicit TWToken(const FTokenPos &pos) : m_pos(pos) {}
+	
+	public:
+		
+		[[nodiscard]] virtual Bool IsEOF() const noexcept { return false; }
+		
 		[[nodiscard]] virtual String ToString() const noexcept = 0;
 		
 		[[nodiscard]] virtual String GetTypeString() const noexcept = 0;
+	
+	public:
+		
+		FTokenPos m_pos;
 		
 	};
 	
 	///
-	/// 操作符
+	/// 结束符
 	template<class ElemT>
-	class WHALE_API TWOperatorToken : public TWToken<ElemT>
+	class WHALE_API TWEOFToken : public TWToken<ElemT>, public FObjectCloneable<TWEOFToken<ElemT>>
 	{
 	public:
 		
@@ -38,7 +62,41 @@ namespace Whale
 	
 	public:
 		
-		explicit TWOperatorToken(ElemT anOperator) : m_operator(anOperator) {}
+		explicit TWEOFToken(const FTokenPos &pos) : TWToken<ElemT>(pos) {}
+	
+	public:
+		
+		[[nodiscard]] Bool IsEOF() const noexcept override { return true; }
+		
+		[[nodiscard]]
+		String ToString() const noexcept override { return GetTypeString(); }
+		
+		[[nodiscard]]
+		String GetTypeString() const noexcept override;
+		
+	};
+	
+	template<>
+	inline TWToken<CharA>::String WHALE_API
+	TWEOFToken<CharA>::GetTypeString() const noexcept { return "EOF"; }
+	
+	template<>
+	inline TWToken<CharW>::String WHALE_API
+	TWEOFToken<CharW>::GetTypeString() const noexcept { return L"EOF"; }
+	
+	///
+	/// 操作符
+	template<class ElemT>
+	class WHALE_API TWOperatorToken : public TWToken<ElemT>, public FObjectCloneable<TWOperatorToken<ElemT>>
+	{
+	public:
+		
+		using String = typename TWToken<ElemT>::String;
+	
+	public:
+		
+		explicit TWOperatorToken(const FTokenPos &pos, ElemT anOperator) : TWToken<ElemT>(pos),
+		                                                                   m_operator(anOperator) {}
 	
 	public:
 		
@@ -68,7 +126,8 @@ namespace Whale
 	///
 	/// 标识符
 	template<class ElemT>
-	class WHALE_API TWIdentifierToken : public TWToken<ElemT>
+	class WHALE_API TWIdentifierToken
+		: public TWToken<ElemT>, public FObjectCloneable<TWIdentifierToken<ElemT>>
 	{
 	public:
 		
@@ -76,7 +135,8 @@ namespace Whale
 	
 	public:
 		
-		explicit TWIdentifierToken(const String &anString) : m_string(anString) {}
+		explicit TWIdentifierToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+		                                                                           m_string(anString) {}
 	
 	public:
 		
@@ -103,7 +163,7 @@ namespace Whale
 	///
 	/// 字面量
 	template<class ElemT>
-	class WHALE_API TWLiteralToken : public TWToken<ElemT>
+	class WHALE_API TWLiteralToken : public TWToken<ElemT>, public FObjectCloneable<TWLiteralToken<ElemT>>
 	{
 	public:
 		
@@ -111,7 +171,10 @@ namespace Whale
 	
 	public:
 		
-		explicit TWLiteralToken(const String &anString) : m_string(anString) {}
+		TWLiteralToken() : m_string() {}
+		
+		explicit TWLiteralToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+		                                                                        m_string(anString) {}
 	
 	public:
 		

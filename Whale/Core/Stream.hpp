@@ -14,67 +14,57 @@ namespace Whale
 	
 	
 	///
-	/// 输入流
+	/// 读取流
 	template<class ElemT>
-	class TIInputStream : public virtual IGoodAndBad
+	class TIStreamReader : public virtual IGoodAndBad
 	{
 	public:
 		
-		using String = Container::TFString<ElemT>;
+		TIStreamReader() noexcept = default;
+		
+		TIStreamReader(const TIStreamReader &) = delete;
+		
+		TIStreamReader &operator=(const TIStreamReader &) = delete;
+		
+		virtual ~TIStreamReader() noexcept = default;
 	
 	public:
 		
-		TIInputStream() noexcept = default;
+		virtual ElemT Peek() noexcept = 0;
 		
-		TIInputStream(const TIInputStream &) = delete;
-		
-		TIInputStream &operator=(const TIInputStream &) = delete;
-	
-	public:
-		
-		virtual TIInputStream &Peek(ElemT &elem) noexcept = 0;
-		
-		virtual TIInputStream &Get(ElemT &elem) noexcept = 0;
-		
-		virtual TIInputStream &UnGet(ElemT &elem) noexcept = 0;
+		virtual ElemT Read() noexcept = 0;
 		
 	};
 	
 	
 	///
-	/// 输出流
+	/// 写入流
 	template<class ElemT>
-	class TIOutputStream : public virtual IGoodAndBad
+	class TIStreamWriter : public virtual IGoodAndBad
 	{
 	public:
 		
-		using String = Container::TFString<ElemT>;
+		TIStreamWriter() noexcept = default;
+		
+		TIStreamWriter(const TIStreamWriter &) = delete;
+		
+		TIStreamWriter &operator=(const TIStreamWriter &) = delete;
+		
+		virtual ~TIStreamWriter() noexcept = default;
 	
 	public:
 		
-		TIOutputStream() noexcept = default;
+		virtual TIStreamWriter &Write(ElemT elem) noexcept = 0;
 		
-		TIOutputStream(const TIOutputStream &) = delete;
-		
-		TIOutputStream &operator=(const TIOutputStream &) = delete;
-	
-	public:
-		
-		virtual TIOutputStream &Put(ElemT elem) noexcept = 0;
-		
-		virtual TIOutputStream &Flush() noexcept = 0;
+		virtual TIStreamWriter &Flush() noexcept = 0;
 		
 	};
 	
 	///
 	/// 输入输出流
-	template<class ElemT>
-	class TIStream : public TIInputStream<ElemT>, public TIOutputStream<ElemT>
+	template<class ReadT, class WriteT>
+	class TIStream : public TIStreamReader<ReadT>, public TIStreamWriter<WriteT>
 	{
-	public:
-		
-		using String = Container::TFString<ElemT>;
-	
 	public:
 		
 		TIStream() noexcept = default;
@@ -82,6 +72,8 @@ namespace Whale
 		TIStream(const TIStream &) = delete;
 		
 		TIStream &operator=(const TIStream &) = delete;
+		
+		virtual ~TIStream() noexcept = default;
 		
 	};
 	

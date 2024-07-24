@@ -16,12 +16,12 @@ namespace Whale
 	public:
 		
 		///
-		/// \return 好的
-		virtual explicit operator Bool() const noexcept { return Good(); }
-		
-		///
 		/// \return 坏的
 		virtual Bool operator!() const noexcept { return Bad(); }
+		
+		///
+		/// \return 好的
+		virtual explicit operator Bool() const noexcept { return Good(); }
 	
 	public:
 		

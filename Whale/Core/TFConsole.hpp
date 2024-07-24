@@ -24,6 +24,12 @@ namespace Whale
 	public:
 		
 		///
+		/// 清空控制台
+		static void Clear() noexcept;
+	
+	public:
+		
+		///
 		/// 写入字符串
 		/// \param str
 		void Write(const String &str) noexcept;
@@ -42,12 +48,12 @@ namespace Whale
 		void ReadLine(String &str) noexcept;
 		
 		///
-		/// 清空控制台
-		static void Clear() noexcept;
-		
-		///
 		/// 清空输入缓冲区
 		void ClearInBuffer() noexcept;
+		
+		///
+		/// 清空错误
+		void ClearError() const noexcept;
 		
 		///
 		/// \return 是否为新行
@@ -101,6 +107,14 @@ namespace Whale
 	void TFConsole<ElemT>::ClearInBuffer() noexcept
 	{
 		in.ReadToNewLine();
+	}
+	
+	template<class ElemT>
+	void TFConsole<ElemT>::ClearError() const noexcept
+	{
+		in.ClearError();
+		out.ClearError();
+		err.ClearError();
 	}
 	
 	template<class ElemT>

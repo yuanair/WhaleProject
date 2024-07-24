@@ -22,6 +22,12 @@ namespace Whale
 		
 		static StringA UTFToString(const StringW &text, const StringA &toEncoding);
 		
+		template<class StringType>
+		static StringType AToString(const StringA &text, const StringA &fromEncoding);
+		
+		template<class StringType>
+		static StringType WToString(const StringW &text, const StringA &toEncoding);
+		
 		inline static StringT AToTString(const StringA &text, const StringA &fromEncoding)
 		{
 			#ifdef WHALE_UNICODE
@@ -42,21 +48,84 @@ namespace Whale
 		
 		///
 		/// \return 是否为空白字符
-		static Bool IsSpace(CharA ch);
+		static Bool IsSpace(int32 ch);
 		
 		///
-		/// \return 是否为空白字符
-		static Bool IsSpace(CharW ch);
-		
-		///
-		/// \return 是否为换行字符
-		static Bool IsNewLine(CharA ch);
+		/// \return 是否为空白字符（包括0）
+		static Bool IsSpaceIncludeNull(int32 ch);
 		
 		///
 		/// \return 是否为换行字符
-		static Bool IsNewLine(CharW ch);
+		static Bool IsNewLine(int32 ch);
 		
+		///
+		/// \return 是否为数字
+		static Bool IsDigit(int32 ch);
+		
+		///
+		/// \return 是否为大写字母
+		static Bool IsUpper(int32 ch);
+		
+		///
+		/// \return 是否为小写字母
+		static Bool IsLower(int32 ch);
+		
+		///
+		/// \return 是否为字母
+		static Bool IsAlpha(int32 ch);
+		
+		///
+		/// \return 是否为十六进制数字
+		static Bool IsXDigit(int32 ch);
+		
+		///
+		/// \return 是否为数字或字母
+		static Bool IsADigit(int32 ch);
+		
+		///
+		/// \return 是否为标点符号
+		static Bool IsPunct(int32 ch);
+		
+		///
+		/// \return 是否为控制符号
+		static Bool IsCtrl(int32 ch);
 		
 	};
+	
+	template<class StringType>
+	StringType FLocale::AToString(const StringA &text, const StringA &fromEncoding)
+	{
+		return text;
+	}
+	
+	template<class StringType>
+	StringType FLocale::WToString(const StringW &text, const StringA &toEncoding)
+	{
+		return text;
+	}
+	
+	template<>
+	inline StringA WHALE_API FLocale::AToString(const StringA &text, const StringA &fromEncoding)
+	{
+		return text;
+	}
+	
+	template<>
+	inline StringW WHALE_API FLocale::AToString(const StringA &text, const StringA &fromEncoding)
+	{
+		return ToUTFString(text, fromEncoding);
+	}
+	
+	template<>
+	inline StringA WHALE_API FLocale::WToString(const StringW &text, const StringA &toEncoding)
+	{
+		return UTFToString(text, toEncoding);
+	}
+	
+	template<>
+	inline StringW WHALE_API FLocale::WToString(const StringW &text, const StringA &toEncoding)
+	{
+		return text;
+	}
 	
 } // Whale

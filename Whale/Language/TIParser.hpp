@@ -10,8 +10,9 @@ namespace Whale
 {
 	
 	///
-	/// 词法分析器
-	class WHALE_API IParser
+	/// 语法分析器
+	template<class ElemT>
+	class WHALE_API TIParser
 	{
 	public:
 	
