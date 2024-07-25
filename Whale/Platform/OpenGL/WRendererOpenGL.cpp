@@ -22,6 +22,16 @@ namespace Whale::OpenGL
 		// return MakeUnique<WShaderOpenGL>();
 	}
 	
+	TFUniquePtr<WRenderingPipeline> WRendererOpenGL::OnMakeRenderingPipeline()
+	{
+		return nullptr;
+	}
+	
+	TFUniquePtr<WMaterial> WRendererOpenGL::OnMakeMaterial()
+	{
+		return nullptr;
+	}
+	
 	TFUniquePtr<WStaticMesh> WRendererOpenGL::OnMakeStaticMesh()
 	{
 		return nullptr;

@@ -70,6 +70,16 @@ namespace Whale
 		return m_pShaders.Append(OnMakeShader());
 	}
 	
+	TFWeakPtr<WRenderingPipeline> WRenderer::MakeRenderingPipeline()
+	{
+		return m_pRenderingPipelines.Append(OnMakeRenderingPipeline());
+	}
+	
+	TFWeakPtr<WMaterial> WRenderer::MakeMaterial()
+	{
+		return m_pMaterials.Append(OnMakeMaterial());
+	}
+	
 	TFWeakPtr<WStaticMesh> WRenderer::MakeStaticMesh()
 	{
 		return m_pStaticMeshes.Append(OnMakeStaticMesh());

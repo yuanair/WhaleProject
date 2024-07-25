@@ -54,7 +54,7 @@ namespace Whale::DirectX
 	
 	public:
 		
-		const Microsoft::WRL::ComPtr<ID3DBlob> &GetPShader() const noexcept { return m_pShader; }
+		[[nodiscard]] const Microsoft::WRL::ComPtr<ID3DBlob> &GetPShader() const noexcept { return m_pShader; }
 	
 	private:
 		

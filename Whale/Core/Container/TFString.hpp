@@ -296,37 +296,37 @@ namespace Whale
 	void ToString(StringW &target, const CharA *arg) noexcept = delete;
 	
 	template<>
-	void WHALE_API ToString(StringA &target, const CharA *arg) noexcept
+	inline void WHALE_API ToString(StringA &target, const CharA *arg) noexcept
 	{
 		target = arg;
 	}
 	
 	template<>
-	void WHALE_API ToString(StringW &target, const CharW *arg) noexcept
+	inline void WHALE_API ToString(StringW &target, const CharW *arg) noexcept
 	{
 		target = arg;
 	}
 	
 	template<>
-	void WHALE_API ToString(StringA &target, const StringA &arg) noexcept
+	inline void WHALE_API ToString(StringA &target, const StringA &arg) noexcept
 	{
 		target = arg;
 	}
 	
 	template<>
-	void WHALE_API ToString(StringW &target, const StringW &arg) noexcept
+	inline void WHALE_API ToString(StringW &target, const StringW &arg) noexcept
 	{
 		target = arg;
 	}
 	
 	template<>
-	void WHALE_API ToString(StringA &target, Bool arg) noexcept
+	inline void WHALE_API ToString(StringA &target, Bool arg) noexcept
 	{
 		target = arg ? "true" : "false";
 	}
 	
 	template<>
-	void WHALE_API ToString(StringW &target, Bool arg) noexcept
+	inline void WHALE_API ToString(StringW &target, Bool arg) noexcept
 	{
 		target = arg ? L"true" : L"false";
 	}

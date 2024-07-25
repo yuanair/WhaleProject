@@ -18,6 +18,10 @@ namespace Whale
 	
 	class WShader;
 	
+	class WRenderingPipeline;
+	
+	class WMaterial;
+	
 	class WStaticMesh;
 	
 	class WImage;
@@ -82,6 +86,14 @@ namespace Whale
 		TFWeakPtr<WShader> MakeShader();
 		
 		///
+		/// 创建渲染管线
+		TFWeakPtr<WRenderingPipeline> MakeRenderingPipeline();
+		
+		///
+		/// 创建材质
+		TFWeakPtr<WMaterial> MakeMaterial();
+		
+		///
 		/// 创建网格体
 		TFWeakPtr<WStaticMesh> MakeStaticMesh();
 		
@@ -101,6 +113,10 @@ namespace Whale
 		
 		virtual TFUniquePtr<WShader> OnMakeShader() = 0;
 		
+		virtual TFUniquePtr<WRenderingPipeline> OnMakeRenderingPipeline() = 0;
+		
+		virtual TFUniquePtr<WMaterial> OnMakeMaterial() = 0;
+		
 		virtual TFUniquePtr<WStaticMesh> OnMakeStaticMesh() = 0;
 		
 		virtual TFUniquePtr<WBitmap> OnMakeBitmap() = 0;
@@ -112,6 +128,12 @@ namespace Whale
 		
 		// 着色器
 		Container::TFArray<TFSharedPtr<WShader>> m_pShaders;
+		
+		// 渲染管线
+		Container::TFArray<TFSharedPtr<WRenderingPipeline>> m_pRenderingPipelines;
+		
+		// 材质
+		Container::TFArray<TFSharedPtr<WMaterial>> m_pMaterials;
 		
 		// 静态网格体
 		Container::TFArray<TFSharedPtr<WStaticMesh>> m_pStaticMeshes;

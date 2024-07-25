@@ -8,6 +8,8 @@
 #include "WWindowRenderTargetDirectX.hpp"
 #include "WStaticMeshDirectX.hpp"
 #include "WBitmapDirectX.hpp"
+#include "WRenderingPipelineDirectX.hpp"
+#include "WMaterialDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -20,6 +22,16 @@ namespace Whale::DirectX
 	TFUniquePtr<WShader> WRendererDirectX::OnMakeShader()
 	{
 		return MakeUnique<WShaderDirectX>(this);
+	}
+	
+	TFUniquePtr<WRenderingPipeline> WRendererDirectX::OnMakeRenderingPipeline()
+	{
+		return MakeUnique<WRenderingPipelineDirectX>(this);
+	}
+	
+	TFUniquePtr<WMaterial> WRendererDirectX::OnMakeMaterial()
+	{
+		return MakeUnique<WMaterialDirectX>(this);
 	}
 	
 	TFUniquePtr<WStaticMesh> WRendererDirectX::OnMakeStaticMesh()

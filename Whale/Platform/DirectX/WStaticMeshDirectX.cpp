@@ -15,11 +15,17 @@ namespace Whale::DirectX
 			auto locked = shader.Lock();
 			if (!locked || !locked->IsEnabled()) continue;
 			locked->Use();
-			m_pRenderer->pID3D12CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			m_pRenderer->pID3D12CommandList->IASetVertexBuffers(0, 1, &this->vertexBufferView);
-			m_pRenderer->pID3D12CommandList->DrawInstanced(
-				GetVertexes().GetLength(), 1, 0, 0
-			);
+			for (auto &pRenderingPipeline: locked->GetPRenderingPipelines())
+			{
+				auto rp = pRenderingPipeline.Lock();
+				if (!rp || !rp->IsEnabled()) continue;
+				rp->Use();
+				m_pRenderer->pID3D12CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				m_pRenderer->pID3D12CommandList->IASetVertexBuffers(0, 1, &this->vertexBufferView);
+				m_pRenderer->pID3D12CommandList->DrawInstanced(
+					GetVertexes().GetLength(), 1, 0, 0
+				);
+			}
 		}
 	}
 	
@@ -55,8 +61,8 @@ namespace Whale::DirectX
 	
 	void WStaticMeshDirectX::OnGPUDestroy() noexcept
 	{
-		pID3D12VertexBuffer = nullptr;
-		vertexBufferView    = {};
+		pID3D12VertexBuffer.Reset();
+		vertexBufferView = {};
 	}
 	
 	Bool WStaticMeshDirectX::IsGPUResourceCreated() const noexcept

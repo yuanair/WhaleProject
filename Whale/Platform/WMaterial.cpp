@@ -6,4 +6,5 @@
 
 namespace Whale
 {
+
 } // Whale

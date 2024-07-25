@@ -19,19 +19,17 @@ namespace Whale::DirectX
 		
 		explicit WStaticMeshDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
 	
-	private:
-		
-		void OnRender() override;
-	
 	public:
-		
-		void OnGPUCreate() noexcept override;
-		
-		void OnGPUDestroy() noexcept override;
 		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
+		
+		void OnRender() override;
+		
+		void OnGPUCreate() noexcept override;
+		
+		void OnGPUDestroy() noexcept override;
 		
 		void OnEnable() noexcept override;
 		

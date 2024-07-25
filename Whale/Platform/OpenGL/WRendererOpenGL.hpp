@@ -35,6 +35,10 @@ namespace Whale::OpenGL
 		
 		TFUniquePtr<WShader> OnMakeShader() override;
 		
+		TFUniquePtr<WRenderingPipeline> OnMakeRenderingPipeline() override;
+		
+		TFUniquePtr<WMaterial> OnMakeMaterial() override;
+		
 		TFUniquePtr<WStaticMesh> OnMakeStaticMesh() override;
 		
 		TFUniquePtr<WBitmap> OnMakeBitmap() override;

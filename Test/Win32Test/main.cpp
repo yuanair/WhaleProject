@@ -132,7 +132,10 @@ private:
 	TFUniquePtr<MyWindow2>                    pWindow2;
 	TFUniquePtr<Win32::WWindow::WWindowClass> pWindowClass;
 	TFUniquePtr<WRenderer>                    pRender;
-	TFWeakPtr<WShader>                        pShader;
+	TFWeakPtr<WShader>                        pVertexShader;
+	TFWeakPtr<WShader>                        pPixelShader;
+	TFWeakPtr<WRenderingPipeline>             pRenderingPipeline;
+	TFWeakPtr<WMaterial>                      pMaterial;
 	TFWeakPtr<WStaticMesh>                    pMesh;
 
 public:
@@ -144,8 +147,6 @@ public:
 	[[nodiscard]]auto &GetPWindowClass() const { return pWindowClass; }
 	
 	[[nodiscard]]auto &GetPRender() const { return pRender; }
-	
-	[[nodiscard]]auto &GetPShader() const { return pShader; }
 	
 	[[nodiscard]]auto &GetPMesh() const { return pMesh; }
 	
@@ -221,12 +222,31 @@ void Program::InitData()
 
 void Program::InitDirectX()
 {
-	pRender = WRenderer::CreateRenderer(ERendererTypeDirectX);
+	pRender            = WRenderer::CreateRenderer(ERendererTypeDirectX);
+	pVertexShader      = pRender->MakeShader();
+	pPixelShader       = pRender->MakeShader();
+	pRenderingPipeline = pRender->MakeRenderingPipeline();
+	pMaterial          = pRender->MakeMaterial();
+	pMesh              = pRender->MakeStaticMesh();
+	
 	pRender->GPUCreateAndEnable();
-	pShader = pRender->MakeShader();
-	pMesh   = pRender->MakeStaticMesh();
-	pShader.Lock()->CreateFromFile(FLocale::ToUTFString(data.shader, data.fromEncoding));
-	pShader.Lock()->Enable();
+	pVertexShader.Lock()->GPUCreateAndEnable(
+		{
+			.m_fileName=FLocale::ToUTFString(data.shader, data.fromEncoding),
+			.m_type=EShaderTypeVertex,
+			.entryPoint="vertex"
+		}
+	);
+	pPixelShader.Lock()->GPUCreateAndEnable(
+		{
+			.m_fileName=FLocale::ToUTFString(data.shader, data.fromEncoding),
+			.m_type=EShaderTypePixel,
+			.entryPoint="pixel"
+		}
+	);
+	pRenderingPipeline.Lock()->GPUCreateAndEnable({.m_pVertexShader=pVertexShader, .m_pPixelShader=pPixelShader});
+	pMaterial.Lock()->GPUCreateAndEnable({});
+	pMaterial.Lock()->SetPRenderingPipelines({pRenderingPipeline});
 	pMesh.Lock()->SetVertexes
 		(
 			{
@@ -244,7 +264,7 @@ void Program::InitDirectX()
 				        {0.0f,  0.0f,  1.0f, 1.0f}}
 			}
 		);
-	pMesh.Lock()->SetPShader({pShader});
+	pMesh.Lock()->SetPMaterials({pMaterial});
 	pMesh.Lock()->GPUCreateAndEnable();
 	
 	pWindow->InitDirectX();

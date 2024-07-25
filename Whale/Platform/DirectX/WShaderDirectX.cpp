@@ -39,7 +39,7 @@ namespace Whale::DirectX
 	
 	void WShaderDirectX::OnGPUDestroy() noexcept
 	{
-	
+		m_pShader.Reset();
 	}
 	
 	void WShaderDirectX::OnEnable() noexcept

@@ -4,31 +4,31 @@
 
 #pragma once
 
-#include "Whale/Platform/WRenderingPipeline.hpp"
+#include "Whale/Platform/WMaterial.hpp"
 #include "HDirectXHeader.hpp"
 #include "WRendererDirectX.hpp"
 
 namespace Whale::DirectX
 {
+	
 	///
-	/// DirectX 渲染管线
-	class WRenderingPipelineDirectX : public WRenderingPipeline
+	/// DirectX 材质
+	class WHALE_API WMaterialDirectX : public WMaterial
 	{
 	public:
 		
-		explicit WRenderingPipelineDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
+		explicit WMaterialDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
 	
 	public:
 		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
-		
-		void OnGPUCreate(const WRenderingPipelineArg &arg) noexcept override;
+		void OnGPUCreate(const WMaterialArg &arg) noexcept override;
 		
 		void OnGPUDestroy() noexcept override;
 		
-		void OnUse() noexcept override;
+		void OnUse() const noexcept override;
 		
 		void OnEnable() noexcept override;
 		
@@ -37,8 +37,6 @@ namespace Whale::DirectX
 	private:
 		
 		WRendererDirectX *m_pRenderer;
-		
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> pID3D12PipelineState;
 		
 	};
 	
