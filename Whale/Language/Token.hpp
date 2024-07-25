@@ -25,6 +25,97 @@ namespace Whale
 	};
 	
 	///
+	/// 符号类型
+	enum ETokenType
+	{
+		ETokenTypeEOF              = -1,
+		ETokenTypeIllegal          = 0,
+		ETokenTypeIdentifier       = 1, // identifier
+		ETokenTypeString           = 2, // string
+		ETokenTypeChar             = 3, // char
+		ETokenTypeNumber           = 4, // number
+		//
+		ETokenTypeExclamationPoint = '!',
+		// ETokenTypeString            = '"', // string
+		ETokenTypeWellNumber       = '#',
+		ETokenTypeDollarSign       = '$',
+		ETokenTypePerCent          = '%',
+		ETokenTypeAmpersand        = '&',
+		// ETokenTypeChar              = '\'', // char
+		ETokenTypeParenLeft        = '(',
+		ETokenTypeParenRight       = ')',
+		ETokenTypeAsterisk         = '*',
+		ETokenTypePlusSign         = '+',
+		ETokenTypeComma            = ',',
+		ETokenTypeSub              = '-',
+		ETokenTypePoint            = '.',
+		ETokenTypeSlash            = '/',
+		// ETokenTypeNumber            = '0', // number
+		ETokenTypeColon            = ':',
+		ETokenTypeSemicolon        = ';',
+		ETokenTypeLessThanSign     = '<',
+		ETokenTypeEqualSign        = '=',
+		ETokenTypeGreaterThanSign  = '>',
+		ETokenTypeQuestionMark     = '?',
+		ETokenTypeAtSign           = '@',
+		//
+		ETokenTypeBracketLeft      = '[',
+		ETokenTypeBackslash        = '\\',
+		ETokenTypeBracketRight     = ']',
+		ETokenTypeBracketCaret     = '^',
+		ETokenTypeBracketUnderline = '_',
+		ETokenTypeBackquote        = '`',
+		//
+		ETokenTypeBraceLeft        = '{',
+		ETokenTypeOr               = '|',
+		ETokenTypeBraceRight       = '}',
+		ETokenTypeTilde            = '~'
+	};
+	
+	///
+	/// 符号类型数据
+	template<class ElemT>
+	struct FTokenTypeData
+	{
+	public:
+		
+		using String = Container::TFString<ElemT>;
+	
+	public:
+		
+		ETokenType type;
+		
+		String name;
+		
+	};
+	
+	///
+	/// 符号
+	template<class ElemT>
+	class WHALE_API TWToken
+	{
+	public:
+		
+		using String = Container::TFString<ElemT>;
+	
+	public:
+		
+		TWToken(FTokenPos pos, ETokenType type, String str) : m_pos(Whale::Move(pos)), m_type(type),
+		                                                      m_str(Whale::Move(str)) {}
+	
+	public:
+		
+		FTokenPos m_pos;
+		
+		ETokenType m_type;
+		
+		String m_str;
+		
+	};
+	
+	#if false
+	
+	///
 	/// 符号
 	template<class ElemT>
 	class WHALE_API TWToken : public WObject
@@ -96,7 +187,7 @@ namespace Whale
 	public:
 		
 		explicit TWOperatorToken(const FTokenPos &pos, ElemT anOperator) : TWToken<ElemT>(pos),
-		                                                                   m_operator(anOperator) {}
+																		   m_operator(anOperator) {}
 	
 	public:
 		
@@ -136,7 +227,7 @@ namespace Whale
 	public:
 		
 		explicit TWIdentifierToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
-		                                                                           m_string(anString) {}
+																				   m_string(anString) {}
 	
 	public:
 		
@@ -160,10 +251,11 @@ namespace Whale
 	inline TWToken<CharW>::String WHALE_API
 	TWIdentifierToken<CharW>::GetTypeString() const noexcept { return L"Identifier"; }
 	
+	
 	///
-	/// 字面量
+	/// 字符字面量
 	template<class ElemT>
-	class WHALE_API TWLiteralToken : public TWToken<ElemT>, public FObjectCloneable<TWLiteralToken<ElemT>>
+	class WHALE_API TWCharToken : public TWToken<ElemT>, public FObjectCloneable<TWCharToken<ElemT>>
 	{
 	public:
 		
@@ -171,10 +263,49 @@ namespace Whale
 	
 	public:
 		
-		TWLiteralToken() : m_string() {}
+		TWCharToken() : m_char() {}
 		
-		explicit TWLiteralToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
-		                                                                        m_string(anString) {}
+		explicit TWCharToken(const FTokenPos &pos, const ElemT &anChar) : TWToken<ElemT>(pos),
+																		  m_char(anChar) {}
+	
+	public:
+		
+		[[nodiscard]]
+		String ToString() const noexcept override { return String(&m_char, 1); }
+		
+		[[nodiscard]]
+		String GetTypeString() const noexcept override;
+	
+	public:
+		
+		ElemT m_char;
+		
+	};
+	
+	template<>
+	inline TWToken<CharA>::String WHALE_API
+	TWCharToken<CharA>::GetTypeString() const noexcept { return "Char"; }
+	
+	template<>
+	inline TWToken<CharW>::String WHALE_API
+	TWCharToken<CharW>::GetTypeString() const noexcept { return L"Char"; }
+	
+	
+	///
+	/// 字符串字面量
+	template<class ElemT>
+	class WHALE_API TWStringToken : public TWToken<ElemT>, public FObjectCloneable<TWStringToken<ElemT>>
+	{
+	public:
+		
+		using String = typename TWToken<ElemT>::String;
+	
+	public:
+		
+		TWStringToken() : m_string() {}
+		
+		explicit TWStringToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+																			   m_string(anString) {}
 	
 	public:
 		
@@ -192,11 +323,49 @@ namespace Whale
 	
 	template<>
 	inline TWToken<CharA>::String WHALE_API
-	TWLiteralToken<CharA>::GetTypeString() const noexcept { return "Literal"; }
+	TWStringToken<CharA>::GetTypeString() const noexcept { return "String"; }
 	
 	template<>
 	inline TWToken<CharW>::String WHALE_API
-	TWLiteralToken<CharW>::GetTypeString() const noexcept { return L"Literal"; }
+	TWStringToken<CharW>::GetTypeString() const noexcept { return L"String"; }
 	
+	///
+	/// 数字字面量
+	template<class ElemT>
+	class WHALE_API TWNumberToken : public TWToken<ElemT>, public FObjectCloneable<TWNumberToken<ElemT>>
+	{
+	public:
+		
+		using String = typename TWToken<ElemT>::String;
+	
+	public:
+		
+		TWNumberToken() : m_string() {}
+		
+		explicit TWNumberToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+																			   m_string(anString) {}
+	
+	public:
+		
+		[[nodiscard]]
+		String ToString() const noexcept override { return m_string; }
+		
+		[[nodiscard]]
+		String GetTypeString() const noexcept override;
+	
+	public:
+		
+		String m_string;
+		
+	};
+	
+	template<>
+	inline TWToken<CharA>::String WHALE_API
+	TWNumberToken<CharA>::GetTypeString() const noexcept { return "Number"; }
+	
+	template<>
+	inline TWToken<CharW>::String WHALE_API
+	TWNumberToken<CharW>::GetTypeString() const noexcept { return L"Number"; }
+	#endif
 	
 } // Whale

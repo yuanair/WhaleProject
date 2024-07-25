@@ -7,8 +7,11 @@
 #include "Whale/Core/FDebug.hpp"
 #include "Whale/Core/TFConsole.hpp"
 #include "Whale/Language/Json/TFValue.hpp"
+#include "Whale/Language/Lexer.hpp"
+#include "Whale/Core/Container/StringStream.hpp"
 
 #include <map>
+#include <format>
 
 using namespace Whale;
 
@@ -28,6 +31,8 @@ public:
 public:
 	
 	void Run(const String &command);
+	
+	TFUniquePtr<TWToken<ElemT>> NextToken();
 
 public:
 	
@@ -35,27 +40,62 @@ public:
 	
 	Container::TFArray<String> errors;
 	
+	TFUniquePtr<TWLexer<ElemT>> pLexer;
+	
 	FileStream &in;
 	
 	FileStream &out;
 	
+	Bool isExit = false;
+	
 };
+
+template<class ElemT>
+TFUniquePtr<TWToken<ElemT>> CommandManager<ElemT>::NextToken()
+{
+	TFUniquePtr<TWToken<ElemT>> pToken = pLexer->Read();
+	out.WriteLine(std::format(WHALE_TEXT("{}: {}"), (int32) pToken->m_type, pToken->m_str.CStr()).c_str());
+	return pToken;
+}
 
 template<class ElemT>
 void CommandManager<ElemT>::Run(const String &command)
 {
-	auto iter = this->commands.find(command);
-	if (iter == this->commands.end())
+	Container::StringStreamReaderT ss(command);
+	pLexer = MakeUnique<TWLexer<ElemT>>(ss);
+	
+	auto pToken = NextToken();
+	
+	if (pToken->m_type == ETokenTypeIdentifier)
+	{
+		auto iter = this->commands.find(pToken->m_str);
+		if (iter == this->commands.end())
+		{
+			errors.Append(WHALE_TEXT("Unknown command!"));
+			return;
+		}
+		if (!iter->second)
+		{
+			errors.Append(WHALE_TEXT("Command is not link!"));
+			return;
+		}
+		iter->second(*this);
+	}
+	else
 	{
 		errors.Append(WHALE_TEXT("Unknown command!"));
-		return;
 	}
-	if (!iter->second)
+	
+	
+	for (auto &error: pLexer->GetErrors())
 	{
-		errors.Append(WHALE_TEXT("Command is not link!"));
-		return;
+		errors.Append(
+			std::format(
+				WHALE_TEXT("Error: ({}, {}): {}: {}"), error.pos.line, error.pos.column, (int32) error.error,
+				error.message.CStr()
+			).c_str());
 	}
-	iter->second(*this);
+	
 }
 
 template<class ElemT>

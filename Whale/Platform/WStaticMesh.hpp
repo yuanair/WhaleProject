@@ -8,7 +8,8 @@
 #include "Whale/Core/TFMath.hpp"
 #include "Whale/Core/Memory.hpp"
 #include "Whale/Core/Container/TFArray.hpp"
-#include "WShader.hpp"
+#include "WMaterial.hpp"
+#include "TIGPUResource.hpp"
 
 namespace Whale
 {
@@ -28,38 +29,40 @@ namespace Whale
 		
 		using Vertex = FVertex;
 	
-	public:
-		
-		///
-		/// \return 获取网格体数据字节大小
-		[[nodiscard]]
-		SizeT GetByteSize() const { return sizeof(Vertex) * this->vertexes.GetLength(); }
-		
-		///
-		/// 加载网格体
-		virtual void Load() = 0;
-	
-	protected:
+	private:
 		
 		void OnRender() override = 0;
 	
 	public:
 		
+		///
+		/// \return 获取网格体数据字节大小
 		[[nodiscard]]
-		const Container::TFArray<Vertex> &GetVertexes() const { return this->vertexes; }
-		
-		void SetVertexes(const Container::TFArray<Vertex> &vertexesArg) { this->vertexes = vertexesArg; }
+		SizeT GetByteSize() const { return sizeof(Vertex) * this->m_vertexes.GetLength(); }
+	
+	public:
 		
 		[[nodiscard]]
-		const Container::TFArray<TFWeakPtr<WShader>> &GetPShaders() const { return this->pShaders; }
+		const Container::TFArray<Vertex> &GetVertexes() const { return this->m_vertexes; }
 		
-		void SetPShader(const Container::TFArray<TFWeakPtr<WShader>> &pShadersArg) { this->pShaders = pShadersArg; }
+		void SetVertexes(Container::TFArray<Vertex> vertexesArg)
+		{
+			this->m_vertexes = Whale::Move(vertexesArg);
+		}
+		
+		[[nodiscard]]
+		const Container::TFArray<TFWeakPtr<WMaterial>> &GetPMaterials() const { return this->m_pMaterials; }
+		
+		void SetPMaterials(Container::TFArray<TFWeakPtr<WMaterial>> pMaterials)
+		{
+			this->m_pMaterials = Whale::Move(pMaterials);
+		}
 	
 	private:
 		
-		Container::TFArray<Vertex> vertexes;
+		Container::TFArray<Vertex> m_vertexes;
 		
-		Container::TFArray<TFWeakPtr<WShader>> pShaders;
+		Container::TFArray<TFWeakPtr<WMaterial>> m_pMaterials;
 		
 	};
 	

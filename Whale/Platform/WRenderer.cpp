@@ -6,23 +6,13 @@
 
 #include "Whale/Platform/DirectX/WRendererDirectX.hpp"
 #include "Whale/Platform/OpenGL/WRendererOpenGL.hpp"
+#include "WWindowRenderTarget.hpp"
+#include "WShader.hpp"
+#include "WStaticMesh.hpp"
+#include "WBitmap.hpp"
 
 namespace Whale
 {
-	
-	WRenderer::WRenderer()
-	{
-		if (pRenderer != nullptr)
-		{
-			throw;
-		}
-		pRenderer = this;
-	}
-	
-	WRenderer::~WRenderer()
-	{
-		pRenderer = nullptr;
-	}
 	
 	TFUniquePtr<WRenderer> WRenderer::CreateRenderer(ERendererType type)
 	{
@@ -39,8 +29,6 @@ namespace Whale
 				return nullptr;
 		}
 	}
-	
-	WRenderer *WRenderer::pRenderer = nullptr;
 	
 	StringA WRenderer::ToStringA(ERendererType type)
 	{
@@ -70,6 +58,26 @@ namespace Whale
 			default:
 				return L"<unknown-type>";
 		}
+	}
+	
+	TFWeakPtr<WWindowRenderTarget> WRenderer::MakeWindowRenderTarget()
+	{
+		return DynamicPointerCast<WWindowRenderTarget>(m_pRenderTargets.Append(OnMakeWindowRenderTarget()));
+	}
+	
+	TFWeakPtr<WShader> WRenderer::MakeShader()
+	{
+		return m_pShaders.Append(OnMakeShader());
+	}
+	
+	TFWeakPtr<WStaticMesh> WRenderer::MakeStaticMesh()
+	{
+		return m_pStaticMeshes.Append(OnMakeStaticMesh());
+	}
+	
+	TFWeakPtr<WBitmap> WRenderer::MakeBitmap()
+	{
+		return DynamicPointerCast<WBitmap>(m_pImages.Append(OnMakeBitmap()));
 	}
 	
 	

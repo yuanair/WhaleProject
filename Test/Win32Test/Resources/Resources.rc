@@ -1,0 +1,7 @@
+
+#include <winver.h>
+#include "./Resources.h"
+
+IDI_APP_ICON ICON "./GenesisCubeIcon.ico"
+IDI_APP_ICON_SM ICON "./GenesisCubeIconSm.ico"
+

@@ -18,21 +18,27 @@ namespace Whale::DirectX
 	{
 	public:
 		
-		inline static std::string GetStaticNameA() { return "DirectX"; }
+		void OnGPUCreate() noexcept override;
 		
-		inline static std::wstring GetStaticNameW() { return L"DirectX"; }
+		void OnGPUDestroy() noexcept override;
+		
+		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
-	public:
+	private:
 		
-		void Create() override;
+		void OnRender() override;
 		
-		TFUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() override;
+		TFUniquePtr<WWindowRenderTarget> OnMakeWindowRenderTarget() override;
 		
-		TFUniquePtr<WShader> CreateShader() override;
+		TFUniquePtr<WShader> OnMakeShader() override;
 		
-		TFUniquePtr<WStaticMesh> CreateStaticMesh() override;
+		TFUniquePtr<WStaticMesh> OnMakeStaticMesh() override;
 		
-		void Render() override;
+		TFUniquePtr<WBitmap> OnMakeBitmap() override;
+		
+		void OnEnable() noexcept override;
+		
+		void OnDisable() noexcept override;
 	
 	private:
 		
@@ -43,12 +49,6 @@ namespace Whale::DirectX
 		
 		[[nodiscard]]
 		inline ERendererType GetType() const override { return ERendererTypeDirectX; }
-		
-		[[nodiscard]]
-		inline std::string GetNameA() const override { return GetStaticNameA(); }
-		
-		[[nodiscard]]
-		inline std::wstring GetNameW() const override { return GetStaticNameW(); }
 	
 	public:
 
@@ -81,7 +81,7 @@ namespace Whale::DirectX
 		// 每个描述符元素的大小
 		uint32 nRTVDescriptorSize = 0;
 		
-		//
+		// WIC
 		FWICForDirectX wicForDirectX;
 		
 	};

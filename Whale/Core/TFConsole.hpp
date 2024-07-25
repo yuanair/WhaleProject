@@ -106,7 +106,7 @@ namespace Whale
 	template<class ElemT>
 	void TFConsole<ElemT>::ClearInBuffer() noexcept
 	{
-		in.ReadToNewLine();
+		if (!FLocale::IsNewLine(in.Peek())) in.ReadToNewLine();
 	}
 	
 	template<class ElemT>

@@ -23,6 +23,11 @@ namespace Whale
 		return boost::locale::conv::from_utf(text.CStr(), toEncoding.CStr()).c_str();
 	}
 	
+	Bool FLocale::IsEOF(int32 ch)
+	{
+		return ch == EOF || ch == WEOF;
+	}
+	
 	Bool FLocale::IsSpace(int32 ch)
 	{
 		switch (ch)
@@ -43,6 +48,8 @@ namespace Whale
 	{
 		switch (ch)
 		{
+			case EOF:
+			case WEOF:
 			case '\0':
 			case '\t':
 			case '\n':
@@ -100,6 +107,81 @@ namespace Whale
 	Bool FLocale::IsCtrl(int32 ch)
 	{
 		return (ch >= '\x00' && ch <= '\x1F') || ch == '\x7F';
+	}
+	
+	int32 FLocale::Escape(int32 ch)
+	{
+		switch (ch)
+		{
+			case '0':
+				return '\0';
+			case '1':
+				return '\1';
+			case '2':
+				return '\2';
+			case '3':
+				return '\3';
+			case '4':
+				return '\4';
+			case '5':
+				return '\5';
+			case '6':
+				return '\6';
+			case '7':
+			case 'a':
+				return '\a';
+			case 'b':
+				return '\b';
+			case 'f':
+				return '\f';
+			case 'n':
+				return '\n';
+			case 'r':
+				return '\r';
+			case 't':
+				return '\t';
+			case 'v':
+				return '\v';
+			default:
+				return ch;
+		}
+	}
+	
+	int32 FLocale::Unescape(int32 ch)
+	{
+		switch (ch)
+		{
+			case '\0':
+				return '0';
+			case '\1':
+				return '1';
+			case '\2':
+				return '2';
+			case '\3':
+				return '3';
+			case '\4':
+				return '4';
+			case '\5':
+				return '5';
+			case '\6':
+				return '6';
+			case '\a': // '\7'
+				return 'a';
+			case '\b':
+				return 'b';
+			case '\f':
+				return 'f';
+			case '\n':
+				return 'n';
+			case '\r':
+				return 'r';
+			case '\t':
+				return 't';
+			case '\v':
+				return 'v';
+			default:
+				return ch;
+		}
 	}
 	
 	

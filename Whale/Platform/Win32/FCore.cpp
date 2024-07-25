@@ -3,10 +3,9 @@
 //
 
 #include "FCore.hpp"
-#include "Whale/Core/FDebug.hpp"
-#include "Whale/Core/WProgram.hpp"
 
 #include <windows.h>
+#include <ShlObj.h>
 
 namespace Whale::Win32
 {
@@ -83,8 +82,8 @@ namespace Whale::Win32
 		execInfo.lpFile = strApp.CStr();
 		execInfo.cbSize = sizeof(execInfo);
 		execInfo.lpVerb = "runas";
-		execInfo.fMask = SEE_MASK_NO_CONSOLE;
-		execInfo.nShow = SW_SHOWDEFAULT;
+		execInfo.fMask  = SEE_MASK_NO_CONSOLE;
+		execInfo.nShow  = SW_SHOWDEFAULT;
 		
 		::ShellExecuteExA(&execInfo);
 	}
@@ -96,52 +95,53 @@ namespace Whale::Win32
 		execInfo.lpFile = strApp.CStr();
 		execInfo.cbSize = sizeof(execInfo);
 		execInfo.lpVerb = L"runas";
-		execInfo.fMask = SEE_MASK_NO_CONSOLE;
-		execInfo.nShow = SW_SHOWDEFAULT;
+		execInfo.fMask  = SEE_MASK_NO_CONSOLE;
+		execInfo.nShow  = SW_SHOWDEFAULT;
 		
 		::ShellExecuteExW(&execInfo);
 	}
 	
 	bool FCore::IsRunAsAdministrator()
 	{
-		::BOOL fIsRunAsAdmin = FALSE;
-		::DWORD dwError = ERROR_SUCCESS;
-		::PSID pAdministratorsGroup = nullptr;
-		
-		::SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
-		if (!::AllocateAndInitializeSid(
-			&NtAuthority,
-			2,
-			SECURITY_BUILTIN_DOMAIN_RID,
-			DOMAIN_ALIAS_RID_ADMINS,
-			0, 0, 0, 0, 0, 0,
-			&pAdministratorsGroup
-		))
-		{
-			dwError = ::GetLastError();
-			goto Cleanup;
-		}
-		
-		if (!::CheckTokenMembership(nullptr, pAdministratorsGroup, &fIsRunAsAdmin))
-		{
-			dwError = ::GetLastError();
-			goto Cleanup;
-		}
-
-Cleanup:
-		
-		if (pAdministratorsGroup)
-		{
-			::FreeSid(pAdministratorsGroup);
-			pAdministratorsGroup = nullptr;
-		}
-		
-		if (ERROR_SUCCESS != dwError)
-		{
-			FDebug::LogError(TagW, MessageToStringW(HRESULT_FROM_WIN32(dwError)).CStr());
-		}
-		
-		return fIsRunAsAdmin;
+		return IsUserAnAdmin();
+//		::BOOL fIsRunAsAdmin = FALSE;
+//		::DWORD dwError = ERROR_SUCCESS;
+//		::PSID pAdministratorsGroup = nullptr;
+//
+//		::SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+//		if (!::AllocateAndInitializeSid(
+//			&NtAuthority,
+//			2,
+//			SECURITY_BUILTIN_DOMAIN_RID,
+//			DOMAIN_ALIAS_RID_ADMINS,
+//			0, 0, 0, 0, 0, 0,
+//			&pAdministratorsGroup
+//		))
+//		{
+//			dwError = ::GetLastError();
+//			goto Cleanup;
+//		}
+//
+//		if (!::CheckTokenMembership(nullptr, pAdministratorsGroup, &fIsRunAsAdmin))
+//		{
+//			dwError = ::GetLastError();
+//			goto Cleanup;
+//		}
+//
+//Cleanup:
+//
+//		if (pAdministratorsGroup)
+//		{
+//			::FreeSid(pAdministratorsGroup);
+//			pAdministratorsGroup = nullptr;
+//		}
+//
+//		if (ERROR_SUCCESS != dwError)
+//		{
+//			FDebug::LogError(TagW, MessageToStringW(HRESULT_FROM_WIN32(dwError)).CStr());
+//		}
+//
+//		return fIsRunAsAdmin;
 	}
 	
 	

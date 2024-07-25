@@ -6,6 +6,7 @@
 
 #include "Whale/Platform/WShader.hpp"
 #include "HDirectXHeader.hpp"
+#include "WRendererDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -16,13 +17,50 @@ namespace Whale::DirectX
 	{
 	public:
 		
-		bool CreateFromFile(const StringW &fileName) override;
+		explicit WShaderDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
+	
+	public:
 		
-		void Use() override;
+		static Bool GetTarget(StringA &target, EShaderType type)
+		{
+			switch (type)
+			{
+				case EShaderTypeVertex:
+					target = "vs_5_0";
+					return true;
+				case EShaderTypePixel:
+					target = "ps_5_0";
+					return true;
+				case EShaderTypeUnknown:
+				default:
+					target = "unknown";
+					return false;
+			}
+		}
+	
+	public:
+		
+		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
 		
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> pID3D12PipelineState;
+		Bool OnGPUCreate(const FShaderArg &arg) noexcept override;
+		
+		void OnGPUDestroy() noexcept override;
+		
+		void OnEnable() noexcept override;
+		
+		void OnDisable() noexcept override;
+	
+	public:
+		
+		const Microsoft::WRL::ComPtr<ID3DBlob> &GetPShader() const noexcept { return m_pShader; }
+	
+	private:
+		
+		WRendererDirectX *m_pRenderer;
+		
+		Microsoft::WRL::ComPtr<ID3DBlob> m_pShader;
 		
 	};
 	

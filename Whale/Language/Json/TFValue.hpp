@@ -170,9 +170,9 @@ namespace Whale::Json
 		
 		[[nodiscard]] Bool Has(const String &key) const noexcept;
 		
-		[[nodiscard]] Bool Remove(SizeT index) const noexcept;
+		Bool Remove(SizeT index) noexcept;
 		
-		[[nodiscard]] Bool Remove(const String &key) const noexcept;
+		Bool Remove(const String &key) noexcept;
 		
 		///
 		/// \return json格式字符串

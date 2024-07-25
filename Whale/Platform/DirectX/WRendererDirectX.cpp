@@ -7,14 +7,51 @@
 #include "WShaderDirectX.hpp"
 #include "WWindowRenderTargetDirectX.hpp"
 #include "WStaticMeshDirectX.hpp"
+#include "WBitmapDirectX.hpp"
 
 namespace Whale::DirectX
 {
 	
-	void WRendererDirectX::Create()
+	TFUniquePtr<WWindowRenderTarget> WRendererDirectX::OnMakeWindowRenderTarget()
+	{
+		return MakeUnique<WWindowRenderTargetDirectX>(this);
+	}
+	
+	TFUniquePtr<WShader> WRendererDirectX::OnMakeShader()
+	{
+		return MakeUnique<WShaderDirectX>(this);
+	}
+	
+	TFUniquePtr<WStaticMesh> WRendererDirectX::OnMakeStaticMesh()
+	{
+		return MakeUnique<WStaticMeshDirectX>(this);
+	}
+	
+	TFUniquePtr<WBitmap> WRendererDirectX::OnMakeBitmap()
+	{
+		return MakeUnique<WBitmapDirectX>(this);
+	}
+	
+	void WRendererDirectX::EnableDebugLayer()
+	{
+#if defined(DEBUG) || defined(_DEBUG)
+		THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&this->pID3D12Debug)));
+		this->pID3D12Debug->EnableDebugLayer();
+#endif
+	}
+	
+	void WRendererDirectX::OnRender()
+	{
+		for (auto &ptr: this->m_pRenderTargets)
+		{
+			ptr->Render();
+		}
+	}
+	
+	void WRendererDirectX::OnGPUCreate() noexcept
 	{
 		Microsoft::WRL::ComPtr<IDXGIAdapter1> pIAdapter;
-		uint32 dxgiFactoryFlags = 0;
+		uint32                                dxgiFactoryFlags = 0;
 
 #if defined(DEBUG) || defined(_DEBUG)
 		EnableDebugLayer();
@@ -23,7 +60,7 @@ namespace Whale::DirectX
 		
 		// 创建dxgi工厂
 		THROW_IF_FAILED(
-			CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&this->pIDXGIFactory))
+			CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(this->pIDXGIFactory.ReleaseAndGetAddressOf()))
 		);
 		
 		// 遍历适配器
@@ -44,16 +81,18 @@ namespace Whale::DirectX
 		}
 		// 创建D3D12.1的设备
 		THROW_IF_FAILED(
-			D3D12CreateDevice(pIAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&this->pID3D12Device))
+			D3D12CreateDevice(
+				pIAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(this->pID3D12Device.ReleaseAndGetAddressOf()))
 		);
 		
 		// 创建命令队列接口
 		D3D12_COMMAND_QUEUE_DESC queueDesc
-			{
-				.Type = D3D12_COMMAND_LIST_TYPE_DIRECT
-			};
+			                         {
+				                         .Type = D3D12_COMMAND_LIST_TYPE_DIRECT
+			                         };
 		THROW_IF_FAILED(
-			this->pID3D12Device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&this->pID3D12CommandQueue))
+			this->pID3D12Device->CreateCommandQueue(
+				&queueDesc, IID_PPV_ARGS(this->pID3D12CommandQueue.ReleaseAndGetAddressOf()))
 		);
 		
 		// 创建根描述符
@@ -77,18 +116,18 @@ namespace Whale::DirectX
 		stRootParameters[0].InitAsDescriptorTable(1, &stDSPRanges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 		
 		D3D12_STATIC_SAMPLER_DESC stSamplerDesc = {};
-		stSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-		stSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		stSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		stSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-		stSamplerDesc.MipLODBias = 0;
-		stSamplerDesc.MaxAnisotropy = 0;
-		stSamplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-		stSamplerDesc.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-		stSamplerDesc.MinLOD = 0.0f;
-		stSamplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-		stSamplerDesc.ShaderRegister = 0;
-		stSamplerDesc.RegisterSpace = 0;
+		stSamplerDesc.Filter           = D3D12_FILTER_MIN_MAG_MIP_POINT;
+		stSamplerDesc.AddressU         = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		stSamplerDesc.AddressV         = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		stSamplerDesc.AddressW         = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+		stSamplerDesc.MipLODBias       = 0;
+		stSamplerDesc.MaxAnisotropy    = 0;
+		stSamplerDesc.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
+		stSamplerDesc.BorderColor      = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+		stSamplerDesc.MinLOD           = 0.0f;
+		stSamplerDesc.MaxLOD           = D3D12_FLOAT32_MAX;
+		stSamplerDesc.ShaderRegister   = 0;
+		stSamplerDesc.RegisterSpace    = 0;
 		stSamplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 		
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC stRootSignatureDesc;
@@ -99,11 +138,12 @@ namespace Whale::DirectX
 		Microsoft::WRL::ComPtr<ID3DBlob> pISignatureBlob;
 		Microsoft::WRL::ComPtr<ID3DBlob> pIErrorBlob;
 		THROW_IF_FAILED(D3DX12SerializeVersionedRootSignature(
-			&stRootSignatureDesc, stFeatureData.HighestVersion, &pISignatureBlob, &pIErrorBlob
+			&stRootSignatureDesc, stFeatureData.HighestVersion, pISignatureBlob.ReleaseAndGetAddressOf(),
+			pIErrorBlob.ReleaseAndGetAddressOf()
 		));
 		THROW_IF_FAILED(this->pID3D12Device->CreateRootSignature(
 			0, pISignatureBlob->GetBufferPointer(), pISignatureBlob->GetBufferSize(),
-			IID_PPV_ARGS(&this->pID3D12RootSignature)));
+			IID_PPV_ARGS(this->pID3D12RootSignature.ReleaseAndGetAddressOf())));
 		
 		// 得到每个描述符元素的大小
 		this->nRTVDescriptorSize = this->pID3D12Device->GetDescriptorHandleIncrementSize(
@@ -113,57 +153,46 @@ namespace Whale::DirectX
 		// 创建命令列表分配器
 		THROW_IF_FAILED(
 			this->pID3D12Device->CreateCommandAllocator(
-				D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&this->pID3D12CommandAllocator))
+				D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(this->pID3D12CommandAllocator.ReleaseAndGetAddressOf()))
 		);
 		// 创建图形命令列表
 		THROW_IF_FAILED(
 			this->pID3D12Device->CreateCommandList(
 				0, D3D12_COMMAND_LIST_TYPE_DIRECT, this->pID3D12CommandAllocator.Get(), nullptr,
-				IID_PPV_ARGS(&this->pID3D12CommandList))
+				IID_PPV_ARGS(this->pID3D12CommandList.ReleaseAndGetAddressOf()))
 		);
 		// 创建一个同步对象——围栏，用于等待渲染完成，因为现在Draw Call是异步的了
 		THROW_IF_FAILED(
 			this->pID3D12Device->CreateFence(
-				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&this->pID3D12Fence)));
+				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(this->pID3D12Fence.ReleaseAndGetAddressOf())));
 		this->n64FenceValue = 1;
 		// 创建一个Event同步对象，用于等待围栏事件通知
-		this->hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		this->hFenceEvent   = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 		if (this->hFenceEvent == nullptr)
 		{
 			THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()));
 		}
-		
 	}
 	
-	TFUniquePtr<WWindowRenderTarget> WRendererDirectX::CreateWindowRenderTarget()
+	void WRendererDirectX::OnGPUDestroy() noexcept
 	{
-		return MakeUnique<WWindowRenderTargetDirectX>();
+		this->pIDXGIFactory->Release();
+		this->pID3D12Device->Release();
 	}
 	
-	TFUniquePtr<WShader> WRendererDirectX::CreateShader()
+	Bool WRendererDirectX::IsGPUResourceCreated() const noexcept
 	{
-		return MakeUnique<WShaderDirectX>();
+		return this->pID3D12Device;
 	}
 	
-	TFUniquePtr<WStaticMesh> WRendererDirectX::CreateStaticMesh()
+	void WRendererDirectX::OnEnable() noexcept
 	{
-		return MakeUnique<WStaticMeshDirectX>();
+	
 	}
 	
-	void WRendererDirectX::EnableDebugLayer()
+	void WRendererDirectX::OnDisable() noexcept
 	{
-#if defined(DEBUG) || defined(_DEBUG)
-		THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&this->pID3D12Debug)));
-		this->pID3D12Debug->EnableDebugLayer();
-#endif
-	}
 	
-	void WRendererDirectX::Render()
-	{
-		for (auto &ptr: this->renderTargets)
-		{
-			ptr.Lock()->OnRender();
-		}
 	}
 	
 } // Whale

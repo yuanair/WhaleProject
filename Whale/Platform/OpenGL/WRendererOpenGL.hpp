@@ -15,32 +15,34 @@ namespace Whale::OpenGL
 	{
 	public:
 		
-		inline static std::string GetStaticNameA() { return "OpenGL"; }
+		void OnGPUCreate() noexcept override;
 		
-		inline static std::wstring GetStaticNameW() { return L"OpenGL"; }
+		void OnGPUDestroy() noexcept override;
+		
+		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
-	public: // override
+	private:
 		
-		void Create() override;
+		void OnRender() override;
 		
-		TFUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() override;
+		void OnEnable() noexcept override;
 		
-		TFUniquePtr<WShader> CreateShader() override;
+		void OnDisable() noexcept override;
+	
+	private:
 		
-		TFUniquePtr<WStaticMesh> CreateStaticMesh() override;
+		TFUniquePtr<WWindowRenderTarget> OnMakeWindowRenderTarget() override;
 		
-		void Render() override;
+		TFUniquePtr<WShader> OnMakeShader() override;
+		
+		TFUniquePtr<WStaticMesh> OnMakeStaticMesh() override;
+		
+		TFUniquePtr<WBitmap> OnMakeBitmap() override;
 	
 	public:
 		
 		[[nodiscard]]
 		inline ERendererType GetType() const override { return ERendererTypeOpenGL; }
-		
-		[[nodiscard]]
-		inline std::string GetNameA() const override { return GetStaticNameA(); }
-		
-		[[nodiscard]]
-		inline std::wstring GetNameW() const override { return GetStaticNameW(); }
 		
 	};
 	

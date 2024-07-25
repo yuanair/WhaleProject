@@ -437,7 +437,7 @@ namespace Whale::Json
 	}
 	
 	template<class CharT>
-	Bool TFValue<CharT>::Remove(SizeT index) const noexcept
+	Bool TFValue<CharT>::Remove(SizeT index) noexcept
 	{
 		if (!IsArray()) return false;
 		if (index >= this->value.pArray->GetLength()) return false;
@@ -445,7 +445,7 @@ namespace Whale::Json
 	}
 	
 	template<class CharT>
-	Bool TFValue<CharT>::Remove(const TFValue::String &key) const noexcept
+	Bool TFValue<CharT>::Remove(const TFValue::String &key) noexcept
 	{
 		if (!IsObject()) return false;
 		return this->value.pObject->erase(key) != 0;

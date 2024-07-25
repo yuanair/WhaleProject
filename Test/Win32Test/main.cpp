@@ -2,7 +2,12 @@
 #include "Whale/Core/WProgram.hpp"
 #include "Whale/Platform/Win32/WWindow.hpp"
 #include "Whale/Platform/WRenderer.hpp"
+#include "Whale/Platform/WShader.hpp"
+#include "Whale/Platform/WStaticMesh.hpp"
+#include "Whale/Platform/WWindowRenderTarget.hpp"
 #include "Whale/Language/Json/TFValue.hpp"
+
+#include "Test/Win32Test/Resources/Resources.h"
 
 #include <boost/json.hpp>
 
@@ -25,8 +30,6 @@ public:
 
 protected:
 	
-	void OnTick(float deltaTIme) override;
-	
 	Win32::LResult OnDestroy() override
 	{
 		Win32::FCore::Exit();
@@ -37,11 +40,12 @@ public:
 	
 	class Program &program;
 	
-	[[nodiscard]]auto &GetPRenderTarget() const { return pRenderTarget; }
+	[[nodiscard]]
+	auto &GetPRenderTarget() const noexcept { return pRenderTarget; }
 
 private:
 	
-	TFSharedPtr<WWindowRenderTarget> pRenderTarget;
+	TFWeakPtr<WWindowRenderTarget> pRenderTarget;
 	
 };
 
@@ -59,22 +63,16 @@ public:
 	
 	void InitDirectX();
 
-protected:
-	
-	void OnTick(float deltaTIme) override
-	{
-		Win32::WWindow::OnTick(deltaTIme);
-	}
-
 public:
 	
 	class Program &program;
 	
-	[[nodiscard]]auto &GetPRenderTarget() const { return pRenderTarget; }
+	[[nodiscard]]
+	auto &GetPRenderTarget() const noexcept { return pRenderTarget; }
 
 private:
 	
-	TFSharedPtr<WWindowRenderTarget> pRenderTarget;
+	TFWeakPtr<WWindowRenderTarget> pRenderTarget;
 	
 };
 
@@ -86,9 +84,8 @@ public:
 
 public:
 	
-	const StringA dataDirectoryA;
-	
-	const StringW dataDirectoryW;
+	const StringA                             dataDirectoryA;
+	const StringW                             dataDirectoryW;
 
 public:
 	
@@ -128,21 +125,15 @@ private:
 		struct WindowData
 		{
 			StringA name;
-		} windowData;
+		}       windowData;
 		StringA shader;
-	} data;
-	
-	TFUniquePtr<MyWindow> pWindow;
-	
-	TFUniquePtr<MyWindow2> pWindow2;
-	
+	}                                         data;
+	TFUniquePtr<MyWindow>                     pWindow;
+	TFUniquePtr<MyWindow2>                    pWindow2;
 	TFUniquePtr<Win32::WWindow::WWindowClass> pWindowClass;
-	
-	TFUniquePtr<WRenderer> pRender;
-	
-	TFSharedPtr<WShader> pShader;
-	
-	TFSharedPtr<WStaticMesh> pMesh;
+	TFUniquePtr<WRenderer>                    pRender;
+	TFWeakPtr<WShader>                        pShader;
+	TFWeakPtr<WStaticMesh>                    pMesh;
 
 public:
 	
@@ -162,19 +153,6 @@ public:
 
 void Program::InitData()
 {
-	Json::JsonT testValue;
-	testValue = true;
-	testValue = 578;
-	testValue = 3.14159;
-	testValue = WHALE_TEXT("Hello Json");
-	testValue = {
-		Json::JsonT{1.0},
-		Json::JsonT{5},
-		Json::JsonT{10}
-	};
-	
-	testValue[WHALE_TEXT("Hi")] = WHALE_TEXT("Hello");
-	testValue[WHALE_TEXT("100")] = WHALE_TEXT("800");
 	
 	std::ifstream dataFile{(dataDirectoryA + "/data.json").CStr()};
 	if (!dataFile.is_open())
@@ -194,18 +172,18 @@ void Program::InitData()
 		}
 		dataObject = dataValue.as_object();
 	}
-	this->data.toEncoding = dataObject["toEncoding"].as_string().c_str();
-	this->data.fromEncoding = dataObject["fromEncoding"].as_string().c_str();
+	this->data.toEncoding      = dataObject["toEncoding"].as_string().c_str();
+	this->data.fromEncoding    = dataObject["fromEncoding"].as_string().c_str();
 	this->data.windowData.name = dataObject["windowData"].as_object()["name"].as_string().c_str();
 	this->data.windowData.name = FLocale::Between(
 		this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
 	);
-	this->data.shader = dataDirectoryA + dataObject["shader"].as_string().c_str();
+	this->data.shader          = dataDirectoryA + dataObject["shader"].as_string().c_str();
 	
 	pWindowClass = MakeUnique<Win32::WWindow::WWindowClass>(
 		Win32::FCore::GetInstance(), WHALE_TEXT("WhaleTestWindowClass")
 	);
-	if (!pWindowClass->Register())
+	if (!pWindowClass->Register(Win32::FCore::GetIcon(IDI_APP_ICON), Win32::FCore::GetIcon(IDI_APP_ICON_SM)))
 	{
 		throw FException((
 			                 "Register Window Class Failed!\r\nError: " +
@@ -244,55 +222,60 @@ void Program::InitData()
 void Program::InitDirectX()
 {
 	pRender = WRenderer::CreateRenderer(ERendererTypeDirectX);
-	pShader = pRender->CreateShader();
-	pMesh = pRender->CreateStaticMesh();
-	pRender->Create();
-	pShader->CreateFromFile(FLocale::ToUTFString(data.shader, data.fromEncoding));
-	pMesh->SetVertexes(
-		{
-			FVertex{{0.0f, 0.25f, 0.0f, 1.0f},
-			        {1.0f, 0.0f,  0.0f, 1.0f}},
-			FVertex{{0.25f, -0.25f, 0.0f, 1.0f},
-			        {0.0f,  1.0f,   0.0f, 1.0f}},
-			FVertex{{-0.25f, -0.25f, 0.0f, 1.0f},
-			        {0.0f,   0.0f,   1.0f, 1.0f}}
-		}
-	);
-	pMesh->SetPShader({pShader});
-	pMesh->Load();
+	pRender->GPUCreateAndEnable();
+	pShader = pRender->MakeShader();
+	pMesh   = pRender->MakeStaticMesh();
+	pShader.Lock()->CreateFromFile(FLocale::ToUTFString(data.shader, data.fromEncoding));
+	pShader.Lock()->Enable();
+	pMesh.Lock()->SetVertexes
+		(
+			{
+				FVertex{{-0.5f, 0.5f, 0.0f, 1.0f},
+				        {1.0f,  0.0f, 0.0f, 1.0f}},
+				FVertex{{0.5f, 0.5f, 0.0f, 1.0f},
+				        {0.0f, 1.0f, 0.0f, 1.0f}},
+				FVertex{{0.5f, -0.5f, 0.0f, 1.0f},
+				        {0.0f, 0.0f,  1.0f, 1.0f}},
+				FVertex{{-0.5f, 0.5f, 0.0f, 1.0f},
+				        {1.0f,  0.0f, 0.0f, 1.0f}},
+				FVertex{{0.5f, -0.5f, 0.0f, 1.0f},
+				        {0.0f, 0.0f,  1.0f, 1.0f}},
+				FVertex{{-0.5f, -0.5f, 0.0f, 1.0f},
+				        {0.0f,  0.0f,  1.0f, 1.0f}}
+			}
+		);
+	pMesh.Lock()->SetPShader({pShader});
+	pMesh.Lock()->GPUCreateAndEnable();
 	
 	pWindow->InitDirectX();
 	pWindow2->InitDirectX();
-	
-	
-	pRender->renderTargets.emplace_back(pWindow->GetPRenderTarget());
-	pRender->renderTargets.emplace_back(pWindow2->GetPRenderTarget());
-	
-	pWindow->GetPRenderTarget()->renderObjects.Append(pMesh);
+	pWindow->GetPRenderTarget().Lock()->m_renderObjects.Append(pMesh);
 }
 
 void MyWindow::InitDirectX()
 {
-	
-	pRenderTarget = program.GetPRender()->CreateWindowRenderTarget();
-	pRenderTarget->Create(*this);
+	pRenderTarget = program.GetPRender()->MakeWindowRenderTarget();
+	pRenderTarget.Lock()->Create({.m_window=*this, .m_frameBackBufferCount=3});
+	pRenderTarget.Lock()->Enable();
 }
 
 void MyWindow2::InitDirectX()
 {
-	pRenderTarget = program.GetPRender()->CreateWindowRenderTarget();
-	pRenderTarget->Create(*this);
-}
-
-void MyWindow::OnTick(float deltaTIme)
-{
-	WWindow::OnTick(deltaTIme);
+	pRenderTarget = program.GetPRender()->MakeWindowRenderTarget();
+	pRenderTarget.Lock()->Create({.m_window=*this, .m_frameBackBufferCount=2});
+	pRenderTarget.Lock()->Enable();
 }
 
 
 int WhaleMain()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
+	Bool isRunAsAdministrator = Win32::FCore::IsRunAsAdministrator();
+	FDebug::Log(
+		WHALE_TEXT("IsRunAsAdministrator"),
+		isRunAsAdministrator ? WHALE_TEXT("true") : WHALE_TEXT("false"),
+		isRunAsAdministrator ? Info : Fatal
+	);
 	return Program().Run(WHALE_TEXT(""));
 }
 

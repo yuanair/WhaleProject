@@ -47,11 +47,15 @@ namespace Whale
 		}
 		
 		///
+		/// \return 是否为EOF或WEOF
+		static Bool IsEOF(int32 ch);
+		
+		///
 		/// \return 是否为空白字符
 		static Bool IsSpace(int32 ch);
 		
 		///
-		/// \return 是否为空白字符（包括0）
+		/// \return 是否为空白字符（包括0, EOF与WEOF）
 		static Bool IsSpaceIncludeNull(int32 ch);
 		
 		///
@@ -89,6 +93,16 @@ namespace Whale
 		///
 		/// \return 是否为控制符号
 		static Bool IsCtrl(int32 ch);
+		
+		///
+		/// 单字符转义（'n' -> '\\n'）
+		/// \return 转义后的字符
+		static int32 Escape(int32 ch);
+		
+		///
+		/// 单字符反转义（'\\n' -> 'n'）
+		/// \return 反转义后的字符
+		static int32 Unescape(int32 ch);
 		
 	};
 	

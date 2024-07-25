@@ -56,7 +56,7 @@ namespace Whale
 		
 		boost::log::add_common_attributes();
 		
-		logger = boost::make_shared<Logger>();
+		logger  = boost::make_shared<Logger>();
 		wLogger = boost::make_shared<WLogger>();
 		
 	}
@@ -67,7 +67,10 @@ namespace Whale
 		BOOST_LOG_SEV(*logger, level) << "[" << sourceLocation.FileName() << "(" << sourceLocation.Line() << ", "
 		                              << sourceLocation.Column() << ")][" << sourceLocation.FunctionName() << "]" << tag
 		                              << ": " << message;
-		if (level >= EDebugLevel::Warning) FDebug::LogFlush();
+		if (level >= EDebugLevel::Warning)
+		{
+			FDebug::LogFlush();
+		}
 	}
 	
 	template<class T, class U>
@@ -77,7 +80,10 @@ namespace Whale
 		                               << sourceLocation.Column() << L")][" << sourceLocation.FunctionName() << L"]"
 		                               << tag
 		                               << L": " << message;
-		if (level >= EDebugLevel::Warning) FDebug::LogFlush();
+		if (level >= EDebugLevel::Warning)
+		{
+			FDebug::LogFlush();
+		}
 	}
 	
 	

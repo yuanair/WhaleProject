@@ -6,23 +6,45 @@
 
 #include "Whale/Core/WObject.hpp"
 #include "Whale/Core/Container/TFString.hpp"
+#include "TIGPUResource.hpp"
 
 namespace Whale
 {
+	
+	///
+	/// 着色器类型
+	enum EShaderType
+	{
+		EShaderTypeUnknown  = 0,
+		EShaderTypeVertex   = 1,
+		EShaderTypePixel    = 2,
+		EShaderTypeFragment = EShaderTypePixel
+	};
+	
+	///
+	/// 着色器参数
+	struct WHALE_API FShaderArg
+	{
+		/// 着色器文件名
+		StringW     m_fileName;
+		/// 着色器类型
+		EShaderType m_type     = EShaderTypeUnknown;
+		/// 入口点
+		StringA     entryPoint = "main";
+	};
+	
+	
+	template<>
+	void WHALE_API ToString(StringA &target, EShaderType arg) noexcept;
+	
+	template<>
+	void WHALE_API ToString(StringW &target, EShaderType arg) noexcept;
+	
 	///
 	/// 着色器
-	class WHALE_API WShader : public WObject
+	class WHALE_API WShader : public WObject, public TIGPUResource<const FShaderArg, Bool>
 	{
 	public:
-		
-		///
-		/// \param fileName 文件名
-		/// \returns 是否成功
-		virtual bool CreateFromFile(const StringW &fileName) = 0;
-		
-		///
-		/// 使用着色器
-		virtual void Use() = 0;
 		
 	};
 	

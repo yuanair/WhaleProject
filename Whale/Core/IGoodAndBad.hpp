@@ -11,17 +11,23 @@ namespace Whale
 	
 	///
 	/// 好坏接口
-	class IGoodAndBad
+	class WHALE_API IGoodAndBad
 	{
+	public:
+		
+		IGoodAndBad() noexcept = default;
+		
+		virtual ~IGoodAndBad() noexcept = default;
+	
 	public:
 		
 		///
 		/// \return 坏的
-		virtual Bool operator!() const noexcept { return Bad(); }
+		Bool operator!() const noexcept { return Bad(); }
 		
 		///
 		/// \return 好的
-		virtual explicit operator Bool() const noexcept { return Good(); }
+		explicit operator Bool() const noexcept { return Good(); }
 	
 	public:
 		

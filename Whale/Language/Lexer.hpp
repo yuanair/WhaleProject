@@ -17,6 +17,8 @@ namespace Whale
 	{
 		ELexerErrorUnknown = 0,
 		ELexerErrorUnknownChar,
+		ELexerErrorMissingClosingQuote,
+		ELexerErrorIncorrectNumberOfCharConstants
 	};
 	
 	///
@@ -60,9 +62,15 @@ namespace Whale
 	
 	public:
 		
-		explicit TWLexer(TIStreamReader<ElemT> &streamReader) : m_streamReader(streamReader),
-		                                                        m_stateFunction(&TWLexer::SpaceNextState),
-		                                                        m_peek() {}
+		explicit TWLexer(TIStreamReader<ElemT> &streamReader)
+			: m_pos(1, 0),
+			  m_streamReader(streamReader),
+			  m_stateFunction(&TWLexer::SpaceNextState),
+			  m_peek(),
+			  m_errors()
+		{
+			Read();
+		}
 		
 		~TWLexer() noexcept override {}
 	
@@ -84,13 +92,13 @@ namespace Whale
 		
 		TFUniquePtr<TWToken<ElemT>> Peek() noexcept override
 		{
-			return TFUniquePtr<TWToken<ElemT>>(dynamic_cast<TWToken<ElemT> *>(m_peek->Clone().Release()));
+			return MakeUnique<TWToken<ElemT>>(*m_peek);
 		}
 		
 		TFUniquePtr<TWToken<ElemT>> Read() noexcept override
 		{
 			TFUniquePtr<TWToken<ElemT>> result = Whale::Move(this->m_peek);
-			this->m_peek = (this->*m_stateFunction)();
+			while (!(this->m_peek = (this->*m_stateFunction)()));
 			return result;
 		}
 		
@@ -143,8 +151,15 @@ namespace Whale
 		
 		void NextChar() noexcept
 		{
-			GetInputStream().Read();
-			m_pos.column++;
+			if (FLocale::IsNewLine(GetInputStream().Read()))
+			{
+				m_pos.line++;
+				m_pos.column = 0;
+			}
+			else
+			{
+				m_pos.column++;
+			}
 		}
 		
 		TFUniquePtr<TWToken<ElemT>> SpaceNextState();
@@ -152,6 +167,10 @@ namespace Whale
 		TFUniquePtr<TWToken<ElemT>> IdentifierNextState();
 		
 		TFUniquePtr<TWToken<ElemT>> NumberNextState();
+		
+		TFUniquePtr<TWToken<ElemT>> CharNextState();
+		
+		TFUniquePtr<TWToken<ElemT>> StringNextState();
 	
 	private:
 		
@@ -175,7 +194,7 @@ namespace Whale
 			ElemT elem = GetInputStream().Peek();
 			if (GetInputStream().Bad())
 			{
-				return MakeToken<TWEOFToken<ElemT>>();
+				return MakeToken<TWToken<ElemT>>(ETokenTypeEOF, String());
 			}
 			else if (FLocale::IsSpaceIncludeNull(elem))
 			{
@@ -189,6 +208,18 @@ namespace Whale
 			else if (IsIdentifierStart(elem))
 			{
 				m_stateFunction = &TWLexer::IdentifierNextState;
+				return nullptr;
+			}
+			else if ('\'' == elem)
+			{
+				m_stateFunction = &TWLexer::CharNextState;
+				NextChar();
+				return nullptr;
+			}
+			else if ('"' == elem)
+			{
+				m_stateFunction = &TWLexer::StringNextState;
+				NextChar();
 				return nullptr;
 			}
 			else
@@ -225,7 +256,7 @@ namespace Whale
 			NextChar();
 		}
 		m_stateFunction = &TWLexer::SpaceNextState;
-		return MakeToken<TWIdentifierToken<ElemT>>(buffer);
+		return MakeToken<TWToken<ElemT>>(ETokenTypeIdentifier, buffer);
 	}
 	
 	template<class ElemT>
@@ -249,12 +280,100 @@ namespace Whale
 			}
 			else
 			{
-			
+				break;
 			}
 			NextChar();
 		}
 		m_stateFunction = &TWLexer::SpaceNextState;
-		return MakeToken<TWLiteralToken<ElemT>>(buffer);
+		return MakeToken<TWToken<ElemT>>(ETokenTypeNumber, buffer);
+	}
+	
+	template<class ElemT>
+	TFUniquePtr<TWToken<ElemT>> TWLexer<ElemT>::CharNextState()
+	{
+		String buffer;
+		while (true)
+		{
+			ElemT elem = GetInputStream().Peek();
+			if (GetInputStream().Bad() || FLocale::IsNewLine(elem))
+			{
+				AppendError(
+					ELexerErrorMissingClosingQuote, FLocale::AToString<String>("missing closing quote ['] ", "UTF-8"));
+				break;
+			}
+			else if ('\\' == elem)
+			{
+				NextChar();
+				elem = GetInputStream().Peek();
+				if (GetInputStream().Bad())
+				{
+					AppendError(
+						ELexerErrorMissingClosingQuote,
+						FLocale::AToString<String>("missing closing quote ['] ", "UTF-8"));
+					break;
+				}
+				buffer.Append(FLocale::Escape(elem));
+			}
+			else if ('\'' == elem)
+			{
+				NextChar();
+				break;
+			}
+			else
+			{
+				buffer.Append(elem);
+			}
+			NextChar();
+		}
+		if (buffer.GetLength() != 1)
+		{
+			AppendError(
+				ELexerErrorIncorrectNumberOfCharConstants,
+				FLocale::AToString<String>("The number of characters must be one", "UTF-8"));
+		}
+		m_stateFunction = &TWLexer::SpaceNextState;
+		return MakeToken<TWToken<ElemT>>(ETokenTypeChar, buffer);
+	}
+	
+	template<class ElemT>
+	TFUniquePtr<TWToken<ElemT>> TWLexer<ElemT>::StringNextState()
+	{
+		String buffer;
+		while (true)
+		{
+			ElemT elem = GetInputStream().Peek();
+			if (GetInputStream().Bad() || FLocale::IsNewLine(elem))
+			{
+				AppendError(
+					ELexerErrorMissingClosingQuote, FLocale::AToString<String>("missing closing quote [\"] ", "UTF-8"));
+				break;
+			}
+			else if ('\\' == elem)
+			{
+				NextChar();
+				elem = GetInputStream().Peek();
+				if (GetInputStream().Bad())
+				{
+					AppendError(
+						ELexerErrorMissingClosingQuote,
+						FLocale::AToString<String>("missing closing quote [\"] ", "UTF-8"));
+					break;
+				}
+				buffer.Append(FLocale::Escape(elem));
+			}
+			else if ('"' == elem)
+			{
+				NextChar();
+				break;
+			}
+			else
+			{
+				buffer.Append(elem);
+			}
+			NextChar();
+		}
+		m_stateFunction = &TWLexer::SpaceNextState;
+		return MakeToken<TWToken<ElemT>>(ETokenTypeString, buffer);
 	}
 	
 	

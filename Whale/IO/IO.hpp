@@ -95,7 +95,11 @@ namespace Whale::IO
 		
 		FFileStream &ReadTo(const std::function<Bool(int32)> &stopFunction) noexcept;
 		
-		FFileStream &ReadTo(String &str, const std::function<Bool(int32)> &stopFunction) noexcept;
+		FFileStream &ReadTo(const std::function<Bool(int32)> &stopFunction, String &str) noexcept;
+		
+		FFileStream &ReadToBack(const std::function<Bool(int32)> &stopFunction) noexcept;
+		
+		FFileStream &ReadToBack(const std::function<Bool(int32)> &stopFunction, String &str) noexcept;
 		
 		FFileStream &ReadToNewLine() noexcept;
 		

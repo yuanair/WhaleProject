@@ -8,6 +8,8 @@
 
 namespace Whale
 {
+
+
 #pragma region RemoveConst
 	
 	template<class T>
@@ -203,7 +205,7 @@ namespace Whale
 #else
 	
 	template<class, class>
-	inline constexpr Bool IsSameValue = false;
+	inline constexpr Bool IsSameValue       = false;
 	template<class T>
 	inline constexpr Bool IsSameValue<T, T> = true;
 	

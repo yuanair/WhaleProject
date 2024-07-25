@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include "Whale/Platform/WRenderTarget.hpp"
+#include "Whale/Platform/WWindowRenderTarget.hpp"
 #include "HDirectXHeader.hpp"
+#include "WRendererDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -16,30 +17,35 @@ namespace Whale::DirectX
 	{
 	public:
 		
-		///
-		/// 创建
-		/// \param window 渲染窗口
-		void Create(const Win32::WWindow &window) override;
+		explicit WWindowRenderTargetDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
 	
-	protected:
+	public:
 		
-		void OnRender() override;
+		void Create(const FWRTCreateArg &arg) override;
 	
 	private:
 		
-		const uint32 nFrameBackBufCount = 3;
+		void OnRender() override;
 		
-		std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> pID3D12RenderTargets;
+		void OnEnable() noexcept override;
 		
-		Microsoft::WRL::ComPtr<IDXGISwapChain3> pIDXGISwapChain;
+		void OnDisable() noexcept override;
+	
+	private:
+		
+		WRendererDirectX *m_pRenderer;
+		
+		Container::TFArray<Microsoft::WRL::ComPtr<ID3D12Resource>> m_pID3D12RenderTargets;
+		
+		Microsoft::WRL::ComPtr<IDXGISwapChain3> m_pIDXGISwapChain;
 		
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> pID3D12RTVHeap;
 		
-		D3D12_VIEWPORT stViewPort;
+		D3D12_VIEWPORT m_stViewPort{};
 		
-		D3D12_RECT stScissorRect;
+		D3D12_RECT m_stScissorRect{};
 		
-		uint32 nFrameIndex = 0;
+		uint32 m_nFrameIndex = 0;
 		
 	};
 	

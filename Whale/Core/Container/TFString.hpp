@@ -63,24 +63,24 @@ namespace Whale::Container
 			TFArray<ElemT>::Relength(newLength + 1);
 		}
 		
-		ElemT &Append(const ElemT &elem) noexcept override
+		ElemT &Append(ElemT elem) noexcept override
 		{
 			SizeT oldLength = GetLength();
 			Relength(oldLength + 1);
-			ElemT &result = this->At(oldLength) = elem;
+			ElemT &result                  = this->At(oldLength) = elem;
 			this->ProtectedAt(GetLength()) = 0;
 			return result;
 		}
 		
-		ElemT &Append(const TFArray<ElemT> &array) noexcept override
+		ElemT &Append(TFArray<ElemT> array) noexcept override
 		{
 			SizeT oldLength = GetLength();
 			Relength(oldLength + array.GetLength());
-			for (SizeT index = 0; index < array.GetLength(); index++)
+			for (SizeT index   = 0; index < array.GetLength(); index++)
 			{
-				this->At(oldLength + index) = array.At(index);
+				this->At(oldLength + index) = Whale::Move(array.At(index));
 			}
-			ElemT &result = this->At(GetLength() - 1);
+			ElemT      &result = this->At(GetLength() - 1);
 			this->ProtectedAt(GetLength()) = 0;
 			return result;
 		}
@@ -200,9 +200,9 @@ namespace Whale::Container
 	template<class ElemT>
 	Bool TFString<ElemT>::operator<(const TFString &other) const
 	{
-		SizeT thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
-		for (SizeT index = 0; index < minSize; index++)
+		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
+		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar < otherChar) return true;
@@ -215,9 +215,9 @@ namespace Whale::Container
 	template<class ElemT>
 	Bool TFString<ElemT>::operator<=(const TFString &other) const
 	{
-		SizeT thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
-		for (SizeT index = 0; index < minSize; index++)
+		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
+		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar <= otherChar) return true;
@@ -230,9 +230,9 @@ namespace Whale::Container
 	template<class ElemT>
 	Bool TFString<ElemT>::operator>(const TFString &other) const
 	{
-		SizeT thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
-		for (SizeT index = 0; index < minSize; index++)
+		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
+		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar > otherChar) return true;
@@ -245,9 +245,9 @@ namespace Whale::Container
 	template<class ElemT>
 	Bool TFString<ElemT>::operator>=(const TFString &other) const
 	{
-		SizeT thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT minSize = TFMath<SizeT>::Min(thisLength, otherLength);
-		for (SizeT index = 0; index < minSize; index++)
+		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
+		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
 			if (thisChar >= otherChar) return true;
@@ -264,5 +264,72 @@ namespace Whale
 	using Container::StringA;
 	using Container::StringW;
 	using Container::StringT;
+	
+	
+	template<class Arg>
+	StringA ToStringA(Arg &&arg) noexcept
+	{
+		StringA result;
+		ToString(result, Whale::Forward<Arg>(arg));
+		return result;
+	}
+	
+	template<class Arg>
+	StringW ToStringW(Arg &&arg) noexcept
+	{
+		StringW result;
+		ToString(result, Whale::Forward<Arg>(arg));
+		return result;
+	}
+	
+	
+	template<class Arg>
+	void ToString(StringA &target, Arg arg) noexcept = delete;
+	
+	template<class Arg>
+	void ToString(StringW &target, Arg arg) noexcept = delete;
+	
+	template<>
+	void ToString(StringA &target, const CharW *arg) noexcept = delete;
+	
+	template<>
+	void ToString(StringW &target, const CharA *arg) noexcept = delete;
+	
+	template<>
+	void WHALE_API ToString(StringA &target, const CharA *arg) noexcept
+	{
+		target = arg;
+	}
+	
+	template<>
+	void WHALE_API ToString(StringW &target, const CharW *arg) noexcept
+	{
+		target = arg;
+	}
+	
+	template<>
+	void WHALE_API ToString(StringA &target, const StringA &arg) noexcept
+	{
+		target = arg;
+	}
+	
+	template<>
+	void WHALE_API ToString(StringW &target, const StringW &arg) noexcept
+	{
+		target = arg;
+	}
+	
+	template<>
+	void WHALE_API ToString(StringA &target, Bool arg) noexcept
+	{
+		target = arg ? "true" : "false";
+	}
+	
+	template<>
+	void WHALE_API ToString(StringW &target, Bool arg) noexcept
+	{
+		target = arg ? L"true" : L"false";
+	}
+	
 }
 

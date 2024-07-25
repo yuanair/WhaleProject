@@ -4,20 +4,17 @@
 
 #pragma once
 
-#include "Whale/Core/WObject.hpp"
+#include "Whale/Core/TypeDef.hpp"
+#include "WImage.hpp"
 
 namespace Whale
 {
 	///
 	/// 位图
-	class WBitmap : public WObject
+	class WHALE_API WBitmap : public WImage
 	{
 	public:
-		
-		///
-		/// 从文件加载
-		/// \param fileName 文件名
-		virtual void LoadFromFile(const std::wstring &fileName) = 0;
+	
 		
 	};
 	

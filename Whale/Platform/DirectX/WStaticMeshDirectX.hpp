@@ -6,6 +6,7 @@
 
 #include "Whale/Platform/WStaticMesh.hpp"
 #include "HDirectXHeader.hpp"
+#include "WRendererDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -16,17 +17,33 @@ namespace Whale::DirectX
 	{
 	public:
 		
-		void Load() override;
-	
-	protected:
-		
-		void OnRender() override;
+		explicit WStaticMeshDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
 	
 	private:
 		
+		void OnRender() override;
+	
+	public:
+		
+		void OnGPUCreate() noexcept override;
+		
+		void OnGPUDestroy() noexcept override;
+		
+		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
+	
+	private:
+		
+		void OnEnable() noexcept override;
+		
+		void OnDisable() noexcept override;
+	
+	private:
+		
+		WRendererDirectX *m_pRenderer;
+		
 		Microsoft::WRL::ComPtr<ID3D12Resource> pID3D12VertexBuffer;
 		
-		D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+		D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 		
 	};
 	

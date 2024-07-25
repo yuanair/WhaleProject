@@ -17,13 +17,13 @@ else ()
 endif ()
 
 # Wall
-add_compile_options(-Wall)
+# add_compile_options(-Wall)
 
 # no exception
 # add_compile_options(-fno-exceptions)
 
 # UNICODE
-add_definitions("-DUNICODE" "-D_UNICODE")
+add_definitions(-DUNICODE -D_UNICODE)
 
 # output
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)

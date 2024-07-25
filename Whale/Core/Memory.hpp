@@ -45,17 +45,13 @@ namespace Whale
 	
 	public:
 		
-		TFUniquePtr(const TFUniquePtr &other) = delete;
-		
-		TFUniquePtr &operator=(const TFUniquePtr &other) noexcept = delete;
-	
-	public:
-		
 		constexpr TFUniquePtr() noexcept: ptr(nullptr) {}
 		
 		constexpr TFUniquePtr(NullPtrT) noexcept: ptr(nullptr) {} // NOLINT(*-explicit-constructor)
 		
 		explicit TFUniquePtr(ElemT *ptr) noexcept: ptr(ptr) {}
+		
+		TFUniquePtr(const TFUniquePtr &other) = delete;
 		
 		TFUniquePtr(TFUniquePtr &&other) noexcept: ptr(other.Release()) {}
 		
@@ -65,13 +61,15 @@ namespace Whale
 		template<typename T>
 		TFUniquePtr(TFUniquePtr<T> &&other) noexcept: ptr(other.Release()) {} // NOLINT(*-explicit-constructor)
 		
-		~TFUniquePtr() noexcept { Reset(); }
+		~TFUniquePtr() noexcept override { Reset(); }
 	
 	public:
 		
 		Bool operator==(const TFUniquePtr &other) const noexcept { return this->GetPtr() == other.GetPtr(); }
 		
 		Bool operator!=(const TFUniquePtr &other) const noexcept { return this->GetPtr() != other.GetPtr(); }
+		
+		TFUniquePtr &operator=(const TFUniquePtr &other) = delete;
 		
 		TFUniquePtr &operator=(TFUniquePtr &&other) noexcept
 		{
@@ -240,28 +238,35 @@ namespace Whale
 	protected:
 		
 		constexpr _TFPtrBase() noexcept
-			: ptr(nullptr), useCount(nullptr) {}
+			: m_ptr(nullptr), m_useCount(nullptr) {}
 		
-		~_TFPtrBase() = default;
+		~_TFPtrBase() override = default;
 	
 	public:
 		
-		[[nodiscard]] Bool Good() const noexcept override { return this->ptr != nullptr; }
+		[[nodiscard]] Bool Good() const noexcept override { return this->m_ptr != nullptr; }
 		
-		[[nodiscard]] Bool Bad() const noexcept override { return this->ptr == nullptr; }
+		[[nodiscard]] Bool Bad() const noexcept override { return this->m_ptr == nullptr; }
+		
+		///
+		/// \return 获取指针
+		[[nodiscard]] ElemT *Get() const noexcept
+		{
+			return this->m_ptr;
+		}
 		
 		///
 		/// \return 获取使用引用计数
 		[[nodiscard]] AtomicCounterT GetUseCount() const noexcept
 		{
-			return this->useCount ? this->useCount->GetUses() : 0;
+			return this->m_useCount ? this->m_useCount->GetUses() : 0;
 		}
 		
 		///
 		/// \return 获取查看引用计数
 		[[nodiscard]] AtomicCounterT GetWeakCount() const noexcept
 		{
-			return this->useCount ? this->useCount->GetWeaks() : 0;
+			return this->m_useCount ? this->m_useCount->GetWeaks() : 0;
 		}
 	
 	protected:
@@ -269,27 +274,44 @@ namespace Whale
 		template<class T>
 		void MoveConstructFrom(_TFPtrBase<T> &&other)
 		{
-			this->ptr = other.ptr;
-			this->useCount = other.useCount;
-			other.ptr = nullptr;
-			other.useCount = nullptr;
+			this->m_ptr      = other.m_ptr;
+			this->m_useCount = other.m_useCount;
+			other.m_ptr      = nullptr;
+			other.m_useCount = nullptr;
 		}
 		
 		template<class T>
-		void CopyConstructFrom(const _TFPtrBase<T> &other)
+		void CopyConstructFrom(const TFSharedPtr<T> &other)
 		{
 			other.IncrementUse();
-			this->ptr = other.ptr;
-			this->useCount = other.useCount;
+			this->m_ptr      = other.m_ptr;
+			this->m_useCount = other.m_useCount;
+		}
+		
+		template<class T>
+		void AliasConstructFrom(const TFSharedPtr<T> &other, ElemT *ptr) noexcept
+		{
+			other.IncrementUse();
+			this->m_ptr      = ptr;
+			this->m_useCount = other.m_useCount;
+		}
+		
+		template<class T>
+		void AliasMoveConstructFrom(TFSharedPtr<T> &&other, ElemT *ptr) noexcept
+		{
+			this->m_ptr      = ptr;
+			this->m_useCount = other.m_useCount;
+			other.m_ptr      = nullptr;
+			other.m_useCount = nullptr;
 		}
 		
 		template<class T>
 		bool ConstructFromWeak(const TFWeakPtr<T> &other) noexcept
 		{
-			if (other.useCount && other.useCount->IncrementUseNoZero())
+			if (other.m_useCount && other.m_useCount->IncrementUseNoZero())
 			{
-				this->ptr = other.ptr;
-				this->useCount = other.useCount;
+				this->m_ptr      = other.m_ptr;
+				this->m_useCount = other.m_useCount;
 				return true;
 			}
 			
@@ -299,41 +321,41 @@ namespace Whale
 		template<class T>
 		void WeaklyConstructFrom(const _TFPtrBase<T> &other) noexcept
 		{
-			if (other.useCount)
+			if (other.m_useCount)
 			{
-				this->ptr = other.ptr;
-				this->useCount = other.useCount;
-				this->useCount->IncrementWeak();
+				this->m_ptr      = other.m_ptr;
+				this->m_useCount = other.m_useCount;
+				this->m_useCount->IncrementWeak();
 			}
 			else
 			{
-				WHALE_ASSERT(!this->ptr && !this->useCount);
+				WHALE_ASSERT(!this->m_ptr && !this->m_useCount);
 			}
 		}
 		
-		void IncrementUse() const noexcept { if (this->useCount) this->useCount->IncrementUse(); }
+		void IncrementUse() const noexcept { if (this->m_useCount) this->m_useCount->IncrementUse(); }
 		
-		void IncrementWeak() const noexcept { if (this->useCount) this->useCount->IncrementWeak(); }
+		void IncrementWeak() const noexcept { if (this->m_useCount) this->m_useCount->IncrementWeak(); }
 		
-		void DecrementUse() noexcept { if (this->useCount) this->useCount->DecrementUse(); }
+		void DecrementUse() noexcept { if (this->m_useCount) this->m_useCount->DecrementUse(); }
 		
-		void DecrementWeak() noexcept { if (this->useCount) this->useCount->DecrementWeak(); }
+		void DecrementWeak() noexcept { if (this->m_useCount) this->m_useCount->DecrementWeak(); }
 		
 		void BaseSwap(_TFPtrBase &other) noexcept
 		{
-			Whale::Swap(this->ptr, other.ptr);
-			Whale::Swap(this->useCount, other.useCount);
+			Whale::Swap(this->m_ptr, other.m_ptr);
+			Whale::Swap(this->m_useCount, other.m_useCount);
 		}
 	
 	protected:
 		
-		[[nodiscard]] ElemT *GetPtr() const noexcept { return this->ptr; }
+		[[nodiscard]] ElemT *GetPtr() const noexcept { return this->m_ptr; }
 	
 	protected:
 		
-		ElemT *ptr;
+		ElemT *m_ptr;
 		
-		_FUseCountBase *useCount;
+		_FUseCountBase *m_useCount;
 		
 	};
 	
@@ -355,6 +377,18 @@ namespace Whale
 		constexpr TFSharedPtr(NullPtrT) noexcept {}; // NOLINT(*-explicit-constructor)
 		
 		explicit TFSharedPtr(ElemT *ptr) { EnableShared(ptr); }
+		
+		template<class T>
+		TFSharedPtr(const TFSharedPtr<T> &other, ElemT *ptr) noexcept
+		{
+			this->AliasConstructFrom(other, ptr);
+		}
+		
+		template<class T>
+		TFSharedPtr(TFSharedPtr<T> &&other, ElemT *ptr) noexcept
+		{
+			this->AliasMoveConstructFrom(Whale::Move(other), ptr);
+		}
 		
 		TFSharedPtr(const TFSharedPtr &other) { this->CopyConstructFrom(other); }
 		
@@ -393,7 +427,7 @@ namespace Whale
 			}
 		}
 		
-		~TFSharedPtr() noexcept { this->DecrementUse(); }
+		~TFSharedPtr() noexcept override { this->DecrementUse(); }
 	
 	public:
 		
@@ -434,13 +468,13 @@ namespace Whale
 			return *this;
 		}
 		
-		ElemT *operator->() const noexcept { return this->ptr; }
+		ElemT *operator->() const noexcept { return this->m_ptr; }
 		
-		ElemT &operator*() const noexcept { return *this->ptr; }
+		ElemT &operator*() const noexcept { return *this->m_ptr; }
 		
-		ElemT &operator[](SizeT index) const noexcept { return this->ptr[index]; }
+		ElemT &operator[](SizeT index) const noexcept { return this->m_ptr[index]; }
 		
-		explicit operator Bool() { return this->ptr != nullptr; }
+		explicit operator Bool() { return this->m_ptr != nullptr; }
 	
 	public:
 		
@@ -505,7 +539,7 @@ namespace Whale
 			this->MoveConstructFrom(Whale::Move(other));
 		}
 		
-		~TFWeakPtr() noexcept { this->DecrementWeak(); }
+		~TFWeakPtr() noexcept override { this->DecrementWeak(); }
 	
 	public:
 		
@@ -577,6 +611,50 @@ namespace Whale
 		
 	};
 	
+	
+	///
+	/// 创建
+	/// \return 独有指针
+	template<class ElemT, class... Args>
+	TFUniquePtr<ElemT> MakeUnique(Args &&... args);
+	
+	///
+	/// 创建
+	/// \return 共享指针
+	template<class ElemT, class... Args>
+	TFSharedPtr<ElemT> MakeShared(Args &&... args);
+	
+	/// 静态复制转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> StaticPointerCast(const TFSharedPtr<T2> &other) noexcept;
+	
+	/// 静态移动转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> StaticPointerCast(TFSharedPtr<T2> &&other) noexcept;
+	
+	/// const复制转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> ConstPointerCast(const TFSharedPtr<T2> &other) noexcept;
+	
+	/// const移动转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> ConstPointerCast(TFSharedPtr<T2> &&other) noexcept;
+	
+	/// 强制复制转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> ReinterpretPointerCast(const TFSharedPtr<T2> &other) noexcept;
+	
+	/// 强制移动转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> ReinterpretPointerCast(TFSharedPtr<T2> &&other) noexcept;
+	
+	/// 动态复制转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> DynamicPointerCast(const TFSharedPtr<T2> &other) noexcept;
+	
+	/// 动态移动转换指针
+	template<class T1, class T2>
+	TFSharedPtr<T1> DynamicPointerCast(TFSharedPtr<T2> &&other) noexcept;
 	
 } // Whale
 

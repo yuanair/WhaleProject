@@ -8,12 +8,21 @@
 #include "Whale/Core/WProgram.hpp"
 #include "Whale/Core/FDebug.hpp"
 #include "Whale/Core/Memory.hpp"
-#include "WRenderTarget.hpp"
-#include "WShader.hpp"
-#include "WStaticMesh.hpp"
+#include "TIGPUResource.hpp"
 
 namespace Whale
 {
+	class WRenderTarget;
+	
+	class WWindowRenderTarget;
+	
+	class WShader;
+	
+	class WStaticMesh;
+	
+	class WImage;
+	
+	class WBitmap;
 	
 	///
 	/// 渲染器类型
@@ -26,13 +35,19 @@ namespace Whale
 	
 	///
 	/// 渲染器
-	class WHALE_API WRenderer : public WObject
+	class WHALE_API WRenderer : public WObject, public TIGPUResource<void>
 	{
 	public:
 		
-		WRenderer();
+		WRenderer() = default;
 		
-		~WRenderer() override;
+		WRenderer(const WRenderer &) = delete;
+		
+		~WRenderer() override = default;
+	
+	public:
+		
+		WRenderer &operator=(const WRenderer &) = delete;
 	
 	public:
 		
@@ -50,30 +65,6 @@ namespace Whale
 		/// \param type
 		/// \return
 		static StringW ToStringW(ERendererType type);
-		
-		///
-		/// 获取渲染器
-		/// \tparam T
-		/// \return
-		template<class T = WRenderer>
-		inline static T *GetPRenderer()
-		{
-			return dynamic_cast<T *>(pRenderer);
-		}
-		
-		///
-		/// 获取渲染器
-		/// \tparam T
-		/// \return
-		template<class T = WRenderer>
-		inline static T &GetRenderer()
-		{
-			if (auto ptr = GetPRenderer<T>()) return *ptr;
-			throw FInvalidCastException((
-				                            "The renderer should be " + T::GetStaticNameA() + ", but it is " +
-				                            WRenderer::GetPRenderer()->GetNameA()
-			                            ).c_str());
-		}
 	
 	public:
 		
@@ -83,42 +74,50 @@ namespace Whale
 		virtual ERendererType GetType() const = 0;
 		
 		///
-		/// \return 名称
-		[[nodiscard]]
-		virtual std::string GetNameA() const = 0;
-		
-		///
-		/// \return 名称
-		[[nodiscard]]
-		virtual std::wstring GetNameW() const = 0;
-		
-		///
-		/// 创建渲染器
-		virtual void Create() = 0;
-		
-		///
 		/// 创建窗口渲染目标
-		virtual TFUniquePtr<WWindowRenderTarget> CreateWindowRenderTarget() = 0;
+		TFWeakPtr<WWindowRenderTarget> MakeWindowRenderTarget();
 		
 		///
 		/// 创建着色器
-		virtual TFUniquePtr<WShader> CreateShader() = 0;
+		TFWeakPtr<WShader> MakeShader();
 		
 		///
 		/// 创建网格体
-		virtual TFUniquePtr<WStaticMesh> CreateStaticMesh() = 0;
+		TFWeakPtr<WStaticMesh> MakeStaticMesh();
+		
+		///
+		/// 创建图片
+		TFWeakPtr<WBitmap> MakeBitmap();
 		
 		///
 		/// 渲染
-		virtual void Render() = 0;
-	
-	public:
-		
-		std::vector<TFWeakPtr<WRenderTarget>> renderTargets;
+		void Render() { if (this->IsEnabled()) OnRender(); }
 	
 	private:
 		
-		static WRenderer *pRenderer;
+		virtual void OnRender() = 0;
+		
+		virtual TFUniquePtr<WWindowRenderTarget> OnMakeWindowRenderTarget() = 0;
+		
+		virtual TFUniquePtr<WShader> OnMakeShader() = 0;
+		
+		virtual TFUniquePtr<WStaticMesh> OnMakeStaticMesh() = 0;
+		
+		virtual TFUniquePtr<WBitmap> OnMakeBitmap() = 0;
+	
+	public:
+		
+		// 渲染目标
+		Container::TFArray<TFSharedPtr<WRenderTarget>> m_pRenderTargets;
+		
+		// 着色器
+		Container::TFArray<TFSharedPtr<WShader>> m_pShaders;
+		
+		// 静态网格体
+		Container::TFArray<TFSharedPtr<WStaticMesh>> m_pStaticMeshes;
+		
+		// 图片
+		Container::TFArray<TFSharedPtr<WImage>> m_pImages;
 		
 	};
 	

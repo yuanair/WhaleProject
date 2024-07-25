@@ -75,18 +75,6 @@ namespace Whale::IO
 	}
 	
 	template<class ElemT>
-	FFileStream<ElemT> &FFileStream<ElemT>::ReadToNewLine() noexcept
-	{
-		while (true)
-		{
-			if (Bad()) return *this;
-			if (FLocale::IsNewLine(this->m_peek)) break;
-			Read();
-		}
-		return *this;
-	}
-	
-	template<class ElemT>
 	FFileStream<ElemT> &FFileStream<ElemT>::Write(const String &str) noexcept
 	{
 		for (ElemT ch: str)
@@ -120,8 +108,8 @@ namespace Whale::IO
 		while (true)
 		{
 			if (Bad()) return *this;
-			if (!FLocale::IsSpaceIncludeNull(this->m_peek)) break;
 			Read();
+			if (!FLocale::IsSpaceIncludeNull(this->m_peek)) break;
 		}
 		while (true)
 		{
@@ -146,6 +134,12 @@ namespace Whale::IO
 		while (true)
 		{
 			if (Bad()) return *this;
+			Read();
+			if ('\0' != this->m_peek) break;
+		}
+		while (true)
+		{
+			if (Bad()) return *this;
 			if (stopFunction(this->m_peek)) break;
 			Read();
 		}
@@ -154,22 +148,74 @@ namespace Whale::IO
 	
 	template<class ElemT>
 	FFileStream<ElemT> &
-	FFileStream<ElemT>::ReadTo(FFileStream::String &str, const std::function<Bool(int32)> &stopFunction) noexcept
+	FFileStream<ElemT>::ReadTo(const std::function<Bool(int32)> &stopFunction, String &str) noexcept
 	{
 		while (true)
 		{
 			if (Bad()) return *this;
+			Read();
+			if ('\0' != this->m_peek) break;
+		}
+		while (true)
+		{
+			if (Bad()) return *this;
 			if (stopFunction(this->m_peek)) break;
-			str.Append((ElemT) this->m_peek);
+			str.Append(this->m_peek);
 			Read();
 		}
 		return *this;
 	}
 	
 	template<class ElemT>
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadToBack(const std::function<Bool(int32)> &stopFunction) noexcept
+	{
+		while (true)
+		{
+			if (Bad()) return *this;
+			Read();
+			if ('\0' != this->m_peek) break;
+		}
+		while (true)
+		{
+			if (Bad()) return *this;
+			if (stopFunction(this->m_peek)) break;
+			Read();
+		}
+		Read();
+		return *this;
+	}
+	
+	template<class ElemT>
+	FFileStream<ElemT> &
+	FFileStream<ElemT>::ReadToBack(const std::function<Bool(int32)> &stopFunction, String &str) noexcept
+	{
+		while (true)
+		{
+			if (Bad()) return *this;
+			Read();
+			if ('\0' != this->m_peek) break;
+		}
+		while (true)
+		{
+			if (Bad()) return *this;
+			if (stopFunction(this->m_peek)) break;
+			str.Append(this->m_peek);
+			Read();
+		}
+		Read();
+		return *this;
+	}
+	
+	template<class ElemT>
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadToNewLine() noexcept
+	{
+		return ReadTo([](int32 elem) -> Bool { return FLocale::IsNewLine(elem) || FLocale::IsEOF(elem); });
+	}
+	
+	template<class ElemT>
 	FFileStream<ElemT> &FFileStream<ElemT>::ReadLine(FFileStream::String &str) noexcept
 	{
-		return ReadTo(str, [](int32 elem) -> Bool { return FLocale::IsNewLine(elem); });
+		return ReadTo([](int32 elem) -> Bool { return FLocale::IsNewLine(elem) || FLocale::IsEOF(elem); }, str);
 	}
 	
 	template<class ElemT>

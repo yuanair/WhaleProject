@@ -90,17 +90,12 @@ namespace Whale::Container
 		///
 		/// 添加元素
 		/// \param elem
-		virtual ElemT &Append(const ElemT &elem) noexcept;
+		virtual ElemT &Append(ElemT elem) noexcept;
 		
 		///
 		/// 添加元素
 		/// \param array
-		virtual ElemT &Append(const TFArray &array) noexcept;
-		
-		///
-		/// 添加元素
-		/// \param array
-		virtual ElemT &Append(TFArray &&array) noexcept;
+		virtual ElemT &Append(TFArray array) noexcept;
 	
 	public:
 		
@@ -306,9 +301,9 @@ namespace Whale::Container
 	template<class ElemT>
 	void TFArray<ElemT>::Relength(SizeT newLength) noexcept
 	{
-		auto newPtr = WHALE_NEW_CLIENT ElemT[newLength];
-		auto minLength = TFMath<SizeT>::Min(this->length, newLength);
-		for (SizeT index = 0; index < minLength; index++)
+		auto       newPtr    = WHALE_NEW_CLIENT ElemT[newLength];
+		auto       minLength = TFMath<SizeT>::Min(this->length, newLength);
+		for (SizeT index     = 0; index < minLength; index++)
 		{
 			newPtr[index] = Whale::Move(this->ptr[index]);
 		}
@@ -317,27 +312,15 @@ namespace Whale::Container
 	}
 	
 	template<class ElemT>
-	ElemT &TFArray<ElemT>::Append(const ElemT &elem) noexcept
+	ElemT &TFArray<ElemT>::Append(ElemT elem) noexcept
 	{
 		SizeT oldLength = GetLength();
 		Relength(oldLength + 1);
-		return At(oldLength) = elem;
+		return At(oldLength) = Whale::Move(elem);
 	}
 	
 	template<class ElemT>
-	ElemT &TFArray<ElemT>::Append(const TFArray &array) noexcept
-	{
-		SizeT oldLength = GetLength();
-		Relength(oldLength + array.GetLength());
-		for (SizeT index = 0; index < array.GetLength(); index++)
-		{
-			At(oldLength + index) = array.At(index);
-		}
-		return At(GetLength() - 1);
-	}
-	
-	template<class ElemT>
-	ElemT &TFArray<ElemT>::Append(TFArray &&array) noexcept
+	ElemT &TFArray<ElemT>::Append(TFArray array) noexcept
 	{
 		SizeT oldLength = GetLength();
 		Relength(oldLength + array.GetLength());
@@ -345,7 +328,6 @@ namespace Whale::Container
 		{
 			At(oldLength + index) = Whale::Move(array.At(index));
 		}
-		array.Clear();
 		return At(GetLength() - 1);
 	}
 	

@@ -5,37 +5,28 @@
 #pragma once
 
 #include "Whale/Core/WObject.hpp"
-#include "Whale/Platform/Win32/WWindow.hpp"
 #include "Whale/Core/Memory.hpp"
 #include "Whale/Core/Container/TFArray.hpp"
 #include "WRenderObject.hpp"
+#include "WRenderer.hpp"
 
 namespace Whale
 {
 	///
 	/// 渲染目标
-	class WHALE_API WRenderTarget : public WObject
+	class WHALE_API WRenderTarget : public WObject, public Tool::IEnable
 	{
 	public:
+		
+		void Render() { if (IsEnabled()) OnRender(); }
+	
+	private:
 		
 		virtual void OnRender() = 0;
 	
 	public:
 		
-		Container::TFArray<TFWeakPtr<WRenderObject>> renderObjects;
-		
-	};
-	
-	///
-	/// 窗口渲染目标
-	class WHALE_API WWindowRenderTarget : public WRenderTarget
-	{
-	public:
-		
-		///
-		/// 创建
-		/// \param window 渲染窗口
-		virtual void Create(const Win32::WWindow &window) = 0;
+		Container::TFArray<TFWeakPtr<WRenderObject>> m_renderObjects;
 		
 	};
 	

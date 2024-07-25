@@ -3,7 +3,9 @@
 file(GLOB ${PROJECT_NAME}Data "./Data/*.*")
 add_definitions(-DCMAKE_PROJECT_NAME="${PROJECT_NAME}")
 
-add_executable(${PROJECT_NAME} WIN32 main.cpp)
+add_executable(${PROJECT_NAME} WIN32 main.cpp ./Resources/Resources.rc)
+
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC WhaleCore

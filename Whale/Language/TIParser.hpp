@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Whale/Core/TypeDef.hpp"
+#include "TILexer.hpp"
 
 namespace Whale
 {

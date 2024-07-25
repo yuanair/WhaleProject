@@ -6,6 +6,7 @@
 
 #include "Whale/Platform/WBitmap.hpp"
 #include "HDirectXHeader.hpp"
+#include "WRendererDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -16,17 +17,31 @@ namespace Whale::DirectX
 	{
 	public:
 		
-		void LoadFromFile(const std::wstring &fileName) override;
+		explicit WBitmapDirectX(WRendererDirectX *pRenderer) : m_pRenderer(pRenderer) {}
+	
+	public:
+		
+		void LoadFromFile(const StringW &fileName) override;
 	
 	private:
 		
-		DXGI_FORMAT stTextureFormat;
+		void OnEnable() noexcept override;
 		
-		uint32 nWidth;
+		void OnDisable() noexcept override;
+	
+	private:
 		
-		uint32 nHeight;
+		WRendererDirectX *m_pRenderer;
 		
-		uint32 nBPP;
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_pResource;
+		
+		DXGI_FORMAT m_stTextureFormat{};
+		
+		uint32 m_width = 0;
+		
+		uint32 m_height = 0;
+		
+		uint32 m_BPP = 0;
 		
 	};
 	

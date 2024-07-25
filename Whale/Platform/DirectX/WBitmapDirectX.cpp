@@ -8,18 +8,17 @@
 
 namespace Whale::DirectX
 {
-	void WBitmapDirectX::LoadFromFile(const std::wstring &fileName)
+	void WBitmapDirectX::LoadFromFile(const StringW &fileName)
 	{
-		Microsoft::WRL::ComPtr<IWICBitmapDecoder> pIWICDecoder;
+		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
 		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
-		auto &renderer = WRenderer::GetRenderer<WRendererDirectX>();
 		// 使用WIC创建并加载一个2D纹理
 		
 		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
 		
 		THROW_IF_FAILED(
-			renderer.wicForDirectX.GetPIWICFactory()->CreateDecoderFromFilename(
-				fileName.c_str(),              // 文件名
+			m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateDecoderFromFilename(
+				fileName.CStr(),              // 文件名
 				nullptr,                            // 不指定解码器，使用默认
 				GENERIC_READ,                    // 访问权限
 				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
@@ -38,10 +37,10 @@ namespace Whale::DirectX
 		//通过第一道转换之后获取DXGI的等价格式
 		if (FWICForDirectX::GetTargetPixelFormat(&wpf, &tgFormat))
 		{
-			this->stTextureFormat = FWICForDirectX::GetDXGIFormatFromPixelFormat(&tgFormat);
+			this->m_stTextureFormat = FWICForDirectX::GetDXGIFormatFromPixelFormat(&tgFormat);
 		}
 		
-		if (DXGI_FORMAT_UNKNOWN == this->stTextureFormat)
+		if (DXGI_FORMAT_UNKNOWN == this->m_stTextureFormat)
 		{
 			// 不支持的图片格式 目前退出了事
 			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
@@ -57,7 +56,7 @@ namespace Whale::DirectX
 			// 我们需要做的就是转换图片格式为能够直接对应DXGI格式的形式
 			//创建图片格式转换器
 			Microsoft::WRL::ComPtr<IWICFormatConverter> pIConverter;
-			THROW_IF_FAILED(renderer.wicForDirectX.GetPIWICFactory()->CreateFormatConverter(&pIConverter));
+			THROW_IF_FAILED(m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateFormatConverter(&pIConverter));
 			
 			//初始化一个图片转换器，实际也就是将图片数据进行了格式转换
 			THROW_IF_FAILED(
@@ -78,11 +77,11 @@ namespace Whale::DirectX
 			THROW_IF_FAILED(pIWICFrame.As(&pIBMP));
 		}
 		//获得图片大小（单位：像素）
-		THROW_IF_FAILED(pIBMP->GetSize(&this->nWidth, &this->nHeight));
+		THROW_IF_FAILED(pIBMP->GetSize(&this->m_width, &this->m_height));
 		
 		//获取图片像素的位大小的BPP（Bits Per Pixel）信息，用以计算图片行数据的真实大小（单位：字节）
 		Microsoft::WRL::ComPtr<IWICComponentInfo> pIWIComponentInfo;
-		THROW_IF_FAILED(renderer.wicForDirectX.GetPIWICFactory()->CreateComponentInfo(
+		THROW_IF_FAILED(m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateComponentInfo(
 			tgFormat, pIWIComponentInfo.GetAddressOf()));
 		
 		WICComponentType type;
@@ -97,10 +96,20 @@ namespace Whale::DirectX
 		THROW_IF_FAILED(pIWIComponentInfo.As(&pIWICPixelInfo));
 		
 		// 到这里终于可以得到BPP了，这也是我看的比较吐血的地方，为了BPP居然饶了这么多环节
-		THROW_IF_FAILED(pIWICPixelInfo->GetBitsPerPixel(&this->nBPP));
+		THROW_IF_FAILED(pIWICPixelInfo->GetBitsPerPixel(&this->m_BPP));
 		
 		// 计算图片实际的行大小（单位：字节），这里使用了一个上取整除法即（A+B-1）/B ，
 		// 这曾经被传说是微软的面试题,希望你已经对它了如指掌
-		uint32 nPicRowPitch = (uint64_t(this->nWidth) * uint64_t(this->nBPP) + 7u) / 8u;
+		uint32 nPicRowPitch = (uint64_t(this->m_width) * uint64_t(this->m_BPP) + 7u) / 8u;
+	}
+	
+	void WBitmapDirectX::OnEnable() noexcept
+	{
+	
+	}
+	
+	void WBitmapDirectX::OnDisable() noexcept
+	{
+	
 	}
 } // Whale
