@@ -40,13 +40,13 @@ namespace Whale::Container
 	
 	public:
 		
-		inline void Deallocate(ElemT *const ptr, const size_t count)
+		inline void Deallocate(ElemT *const ptr, const SizeT count)
 		{
 			WHALE_ASSERT(ptr != nullptr || count == 0, L"null pointer cannot point to a block of non-zero size");
 			PrivateDeallocate(ptr, sizeof(ElemT) * count);
 		}
 		
-		inline __declspec(allocator) ElemT *Allocate(const size_t count)
+		inline ElemT *Allocate(const SizeT count)
 		{
 			static_assert(sizeof(ElemT) > 0, "ElemT must be complete before calling allocate.");
 			return static_cast<ElemT *>(PrivateAllocate(sizeof(ElemT) * count));
@@ -54,7 +54,7 @@ namespace Whale::Container
 	
 	private:
 		
-		static inline __declspec(allocator) void *PrivateAllocate(const size_t bytes)
+		static inline void *PrivateAllocate(const size_t bytes)
 		{
 			return ::operator new(bytes);
 		}
