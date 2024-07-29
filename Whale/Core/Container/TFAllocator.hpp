@@ -54,12 +54,12 @@ namespace Whale::Container
 	
 	private:
 		
-		static inline void *PrivateAllocate(const size_t bytes)
+		static inline void *PrivateAllocate(const SizeT bytes)
 		{
 			return ::operator new(bytes);
 		}
 		
-		static inline void PrivateDeallocate(void *ptr, size_t bytes) noexcept
+		static inline void PrivateDeallocate(void *ptr, SizeT bytes) noexcept
 		{
 			::operator delete(ptr, bytes);
 		}
