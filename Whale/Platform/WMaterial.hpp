@@ -22,9 +22,12 @@ namespace Whale
 	
 	///
 	/// 材质
-	class WHALE_API WMaterial : public WObject, public TIGPUResource<const WMaterialArg>
+	class WHALE_API WMaterial : public WObject, public TIGPUResource
 	{
 	public:
+		
+		/// 创建
+		virtual void Create(const WMaterialArg &arg) noexcept = 0;
 		
 		void Use() const noexcept { if (this->IsEnabled()) OnUse(); }
 	

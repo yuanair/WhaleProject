@@ -62,7 +62,13 @@ namespace Whale
 		
 		WObject();
 		
+		WObject(const WObject &other) = default;
+		
 		~WObject() override;
+	
+	protected:
+		
+		WObject &operator=(const WObject &other) = default;
 		
 	};
 	

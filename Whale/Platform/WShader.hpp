@@ -42,9 +42,11 @@ namespace Whale
 	
 	///
 	/// 着色器
-	class WHALE_API WShader : public WObject, public TIGPUResource<const FShaderArg, Bool>
+	class WHALE_API WShader : public WObject, public TIGPUResource
 	{
 	public:
+		
+		virtual Bool CreateFromFile(const FShaderArg &arg) noexcept = 0;
 		
 	};
 	

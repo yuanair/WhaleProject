@@ -22,9 +22,12 @@ namespace Whale
 	
 	///
 	/// 渲染管线 (OpenGL: Program, DirectX: PipelineState)
-	class WHALE_API WRenderingPipeline : public WObject, public TIGPUResource<const WRenderingPipelineArg>
+	class WHALE_API WRenderingPipeline : public WObject, public TIGPUResource
 	{
 	public:
+		
+		/// 从着色器创建
+		virtual Bool CreateFromShader(const WRenderingPipelineArg &arg) noexcept = 0;
 		
 		///
 		/// 使用渲染管线

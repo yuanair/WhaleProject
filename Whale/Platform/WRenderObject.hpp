@@ -12,7 +12,7 @@ namespace Whale
 {
 	///
 	/// 渲染对象
-	class WHALE_API WRenderObject : public WObject, public TIGPUResource<void>
+	class WHALE_API WRenderObject : public WObject, public TIGPUResource
 	{
 	public:
 		

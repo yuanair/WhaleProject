@@ -29,9 +29,12 @@ namespace Whale
 	
 	///
 	/// 位图
-	class WHALE_API WBitmap : public WImage, public TIGPUResource<const WBitmapArg, Bool>
+	class WHALE_API WBitmap : public WImage, public TIGPUResource
 	{
 	public:
+		
+		/// 从文件创建
+		virtual Bool CreateFromFile(const WBitmapArg &arg) noexcept = 0;
 		
 		void Use() noexcept { if (this->IsEnabled()) OnUse(); }
 	

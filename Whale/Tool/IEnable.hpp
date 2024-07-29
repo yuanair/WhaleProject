@@ -31,11 +31,13 @@ namespace Whale
 			OnDisable();
 		}
 		
+		/// 是否已启用（可重载）
+		[[nodiscard]] virtual Bool IsEnabled() const noexcept = 0;
+	
+	protected:
+		
 		/// 是否已启用（不可重载）
 		[[nodiscard]] Bool GetEnabled() const noexcept { return m_enable; }
-		
-		/// 是否已启用（可重载）
-		[[nodiscard]] virtual Bool IsEnabled() const noexcept { return m_enable; }
 	
 	private:
 		

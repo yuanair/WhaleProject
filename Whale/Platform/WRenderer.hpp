@@ -39,7 +39,7 @@ namespace Whale
 	
 	///
 	/// 渲染器
-	class WHALE_API WRenderer : public WObject, public TIGPUResource<void>
+	class WHALE_API WRenderer : public WObject, public TIGPUResource
 	{
 	public:
 		

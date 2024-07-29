@@ -33,7 +33,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 include_directories(".")
 
 # sub
-add_subdirectory(eigen-3.4.0)
 add_subdirectory(GLAD)
 add_subdirectory(Test)
 add_subdirectory(Whale)

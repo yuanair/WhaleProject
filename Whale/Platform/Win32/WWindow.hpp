@@ -140,6 +140,10 @@ namespace Whale::Win32
 		///
 		/// \return 桌面窗口
 		static HWindow DesktopWindow();
+		
+		///
+		/// \return 桌面窗口大小
+		static Eigen::Vector2i DesktopWindowSize();
 	
 	public:
 		

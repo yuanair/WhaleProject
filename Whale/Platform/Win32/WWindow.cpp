@@ -43,7 +43,7 @@ namespace Whale::Win32
 	
 	WWindow::WWindow()
 		: inputPoint{}, hCursor{::LoadCursor(nullptr, IDC_ARROW)},
-		  minSize{}, maxSize{}, mousePosition{}
+		  minSize{}, maxSize{DesktopWindowSize()}, mousePosition{}
 	{
 	
 	}
@@ -81,9 +81,6 @@ namespace Whale::Win32
 		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
 	)
 	{
-		WWindow desktop;
-		desktop.Bind(DesktopWindow());
-		this->maxSize        = desktop.GetRect()({2, 3});
 		this->hWindow.handle = ::CreateWindowEx(
 			WS_EX_ACCEPTFILES,
 			windowClass.GetName().CStr(), windowName.CStr(),
@@ -321,6 +318,13 @@ namespace Whale::Win32
 	HWindow WWindow::DesktopWindow()
 	{
 		return {::GetDesktopWindow()};
+	}
+	
+	Eigen::Vector2i WWindow::DesktopWindowSize()
+	{
+		RECT rect;
+		::GetWindowRect(::GetDesktopWindow(), &rect);
+		return {rect.right - rect.left, rect.bottom - rect.top};
 	}
 	
 	Eigen::Vector4i WWindow::GetRect() const
