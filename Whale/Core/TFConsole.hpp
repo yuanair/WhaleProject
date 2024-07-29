@@ -61,11 +61,11 @@ namespace Whale
 	
 	public:
 		
-		FileStream out{stdout, false};
+		FileStream out{stdout, false, true};
 		
-		FileStream in{stdin, false};
+		FileStream in{stdin, false, true};
 		
-		FileStream err{stderr, false};
+		FileStream err{stderr, false, true};
 		
 	};
 	

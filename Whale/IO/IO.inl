@@ -56,6 +56,7 @@ namespace Whale::IO
 	FFileStream<ElemT> &FFileStream<ElemT>::Write(ElemT elem) noexcept
 	{
 		FilePut(this->m_file, elem);
+		if (m_isFlushNewline && FLocale::IsNewLine(elem)) Flush();
 		return *this;
 	}
 	
@@ -63,7 +64,7 @@ namespace Whale::IO
 	template<class... Args>
 	FFileStream<ElemT> &FFileStream<ElemT>::Writes(Args... args) noexcept
 	{
-		(... && FilePut(this->m_file, args));
+		(... && Write(args));
 		return *this;
 	}
 	

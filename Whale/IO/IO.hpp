@@ -45,7 +45,8 @@ namespace Whale::IO
 		///
 		/// \param file 文件流
 		/// \param isCloseF 是否需要关闭
-		FFileStream(FILE *file, Bool isCloseF) noexcept: m_file(file), m_now(0), m_peek(0), m_isCloseF(isCloseF) {}
+		/// \param isFlushNewline 换行是否需要刷新
+		FFileStream(FILE *file, Bool isCloseF, Bool isFlushNewline) noexcept: m_file(file), m_now(0), m_peek(0), m_isCloseF(isCloseF), m_isFlushNewline(isFlushNewline) {}
 		
 		FFileStream(const FFileStream &) = delete;
 		
@@ -146,6 +147,13 @@ namespace Whale::IO
 		///
 		/// \param isCloseF 如果C流必须关闭，则为true。
 		void SetIsCloseF(Bool isCloseF) noexcept { this->m_isCloseF = isCloseF; }
+		
+		///
+		/// \return 如果换行需要刷新，则为true。
+		[[nodiscard]] const Bool &GetIsFlushNewline() const{return m_isFlushNewline;}
+		
+		/// \param isFlushNewline 如果换行需要刷新，则为true。
+		void SetIsFlushNewline(const Bool &isFlushNewline){m_isFlushNewline = isFlushNewline;}
 	
 	private:
 		
@@ -153,6 +161,7 @@ namespace Whale::IO
 		int32 m_now;
 		int32 m_peek;
 		Bool m_isCloseF;
+		Bool m_isFlushNewline;
 		
 	};
 	
