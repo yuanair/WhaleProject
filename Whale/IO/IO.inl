@@ -23,13 +23,13 @@ namespace Whale::IO
 	template<>
 	inline void WHALE_API FileOpen(FILE **file, const CharA* fileName, const CharA* mode) noexcept
 	{
-		*file = ::fopen(file, fileName, mode);
+		*file = ::fopen(fileName, mode);
 	}
 	
 	template<>
 	inline void WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
 	{
-		*file = ::_wfopen_s(file, fileName, mode);
+		*file = ::_wfopen_s(fileName, mode);
 	}
 	
 	#endif
