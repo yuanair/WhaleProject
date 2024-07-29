@@ -59,9 +59,9 @@ namespace Whale::Container
 			return ::operator new(bytes);
 		}
 		
-		static inline void PrivateDeallocate(void *ptr, SizeT bytes) noexcept
+		static inline void PrivateDeallocate(void *ptr, const SizeT bytes) noexcept
 		{
-			::operator delete(ptr, bytes);
+			::operator delete(ptr);
 		}
 	
 	private:
