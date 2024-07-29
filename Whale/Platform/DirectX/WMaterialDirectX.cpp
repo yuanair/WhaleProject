@@ -4,34 +4,38 @@
 
 #include "WMaterialDirectX.hpp"
 
-namespace Whale
+namespace Whale::DirectX
 {
-	Bool DirectX::WMaterialDirectX::IsGPUResourceCreated() const noexcept
+	Bool WMaterialDirectX::IsGPUResourceCreated() const noexcept
 	{
-		return 0;
+		return true;
 	}
 	
-	void DirectX::WMaterialDirectX::OnGPUCreate(const WMaterialArg &arg) noexcept
-	{
-	
-	}
-	
-	void DirectX::WMaterialDirectX::OnGPUDestroy() noexcept
+	void WMaterialDirectX::OnGPUCreate(const WMaterialArg &arg) noexcept
 	{
 	
 	}
 	
-	void DirectX::WMaterialDirectX::OnUse() const noexcept
+	void WMaterialDirectX::OnGPUDestroy() noexcept
 	{
 	
 	}
 	
-	void DirectX::WMaterialDirectX::OnEnable() noexcept
+	void WMaterialDirectX::OnUse() const noexcept
+	{
+		for (auto &pWeak: GetPBitmaps())
+		{
+			auto pBitmap = pWeak.Lock();
+			if (!pBitmap || !pBitmap->IsEnabled()) continue;
+		}
+	}
+	
+	void WMaterialDirectX::OnEnable() noexcept
 	{
 	
 	}
 	
-	void DirectX::WMaterialDirectX::OnDisable() noexcept
+	void WMaterialDirectX::OnDisable() noexcept
 	{
 	
 	}

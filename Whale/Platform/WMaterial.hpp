@@ -7,6 +7,7 @@
 #include "Whale/Core/WObject.hpp"
 #include "TIGPUResource.hpp"
 #include "WRenderingPipeline.hpp"
+#include "WBitmap.hpp"
 
 namespace Whale
 {
@@ -39,10 +40,19 @@ namespace Whale
 		{
 			m_pRenderingPipelines = Whale::Move(pRenderingPipelines);
 		}
+		
+		[[nodiscard]] auto &GetPBitmaps() const noexcept { return m_pBitmaps; }
+		
+		void SetPBitmaps(Container::TFArray<TFWeakPtr<WBitmap>> pBitmaps) noexcept
+		{
+			m_pBitmaps = Whale::Move(pBitmaps);
+		}
 	
 	private:
 		
 		Container::TFArray<TFWeakPtr<WRenderingPipeline>> m_pRenderingPipelines;
+		
+		Container::TFArray<TFWeakPtr<WBitmap>> m_pBitmaps;
 		
 	};
 	

@@ -23,14 +23,18 @@ namespace Whale::DirectX
 			return false;
 		}
 		Win32::FResult hr = D3DCompileFromFile(
-			arg.m_fileName.CStr(), nullptr, nullptr, arg.entryPoint.CStr(), target.CStr(), compileFlags, 0,
+			arg.m_fileName.CStr(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, arg.entryPoint.CStr(), target.CStr(),
+			compileFlags, 0,
 			m_pShader.ReleaseAndGetAddressOf(), pErrorMsgs.ReleaseAndGetAddressOf()
 		);
+		hr.SetIsThrowIfFailedAtDestructTime(false);
 		if (hr.IsFailed())
 		{
 			if (!pErrorMsgs) THROW_IF_FAILED(hr);
+			auto buffer = reinterpret_cast<const char *>(pErrorMsgs->GetBufferPointer());
 			FDebug::LogError(
-				TagA, target + " shader error: " + reinterpret_cast<const char *>(pErrorMsgs->GetBufferPointer()));
+				TagA, "\n" + target + " shader error: \n" + buffer
+			);
 			return false;
 		}
 		

@@ -6,7 +6,7 @@
 
 #include "Whale/Tool/Core.hpp"
 
-namespace Whale::Tool
+namespace Whale
 {
 	
 	///

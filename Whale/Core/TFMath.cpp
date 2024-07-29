@@ -6,10 +6,6 @@
 
 namespace Whale
 {
-	
-	void Test()
-	{
-	
-	}
+
 	
 } // Whale

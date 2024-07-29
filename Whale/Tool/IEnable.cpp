@@ -4,6 +4,6 @@
 
 #include "IEnable.hpp"
 
-namespace Whale::Tool
+namespace Whale
 {
 } // Whale

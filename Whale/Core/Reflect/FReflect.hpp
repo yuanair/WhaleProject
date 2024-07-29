@@ -54,15 +54,15 @@ namespace Whale::Reflect
 	template<class T>
 	WType &FReflect::Register()
 	{
-		if constexpr (IsClassValue<T>)
+		if constexpr (std::is_class_v<T>)
 		{
-			return classes.emplace_back(typeid(T).name(), IsClassValue<T>, IsFinalValue<T>);
+			return classes.emplace_back(typeid(T).name(), std::is_class_v<T>, std::is_final_v<T>);
 		}
-		else if constexpr (IsEnumValue<T>)
+		else if constexpr (std::is_enum_v<T>)
 		{
 			return enums.emplace_back(typeid(T).name());
 		}
-		else if constexpr (IsUnionValue<T>)
+		else if constexpr (std::is_union_v<T>)
 		{
 			return unions.emplace_back(typeid(T).name());
 		}

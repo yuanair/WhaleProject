@@ -4,16 +4,23 @@
 
 #pragma once
 
-#include "DirectX-Headers-main/include/directx/d3dx12.h"
+#include <directx/d3dx12.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 #include <dwrite_3.h>
+#include <initguid.h>
 
 #include <wrl/client.h>
 
 #include "Whale/Platform/Win32/FResult.hpp"
 
 #define THROW_IF_FAILED(hr) (Whale::Win32::FResult{hr}.ThrowIfFailed(""))
+
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "d3dCompiler.lib")
+
 
 namespace Whale::DirectX
 {

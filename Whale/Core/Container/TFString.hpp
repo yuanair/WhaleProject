@@ -84,6 +84,19 @@ namespace Whale::Container
 			this->ProtectedAt(GetLength()) = 0;
 			return result;
 		}
+		
+		ElemT &Append(TFString str) noexcept
+		{
+			SizeT oldLength = GetLength();
+			Relength(oldLength + str.GetLength());
+			for (SizeT index   = 0; index < str.GetLength(); index++)
+			{
+				this->At(oldLength + index) = Whale::Move(str.At(index));
+			}
+			ElemT      &result = this->At(GetLength() - 1);
+			this->ProtectedAt(GetLength()) = 0;
+			return result;
+		}
 	
 	public:
 		

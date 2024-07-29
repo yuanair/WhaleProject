@@ -334,28 +334,28 @@ namespace Whale::Container
 	template<class ElemT>
 	ElemT &TFArray<ElemT>::At(SizeT index) noexcept
 	{
-		WHALE_ASSERT(index < GetLength());
+		WHALE_ASSERT(index < GetLength(), L"index too big");
 		return this->ptr[index];
 	}
 	
 	template<class ElemT>
 	const ElemT &TFArray<ElemT>::At(SizeT index) const noexcept
 	{
-		WHALE_ASSERT(index < GetLength());
+		WHALE_ASSERT(index < GetLength(), L"index too big");
 		return this->ptr[index];
 	}
 	
 	template<class ElemT>
 	ElemT &TFArray<ElemT>::ProtectedAt(SizeT index) noexcept
 	{
-		WHALE_ASSERT(index < this->length);
+		WHALE_ASSERT(index < this->length, L"index too big");
 		return this->ptr[index];
 	}
 	
 	template<class ElemT>
 	const ElemT &TFArray<ElemT>::ProtectedAt(SizeT index) const noexcept
 	{
-		WHALE_ASSERT(index < this->length);
+		WHALE_ASSERT(index < this->length, L"index too big");
 		return this->ptr[index];
 	}
 	

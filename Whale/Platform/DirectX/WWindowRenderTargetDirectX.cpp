@@ -21,7 +21,7 @@ namespace Whale::DirectX
 		
 		{
 			auto rect = arg.m_window.GetRect();
-			this->m_stScissorRect = CD3DX12_RECT{0, 0, rect.width, rect.height};
+			this->m_stScissorRect = CD3DX12_RECT{0, 0, rect.z() - rect.x(), rect.w() - rect.y()};
 			this->m_stViewPort    = CD3DX12_VIEWPORT{
 				0.0f, 0.0f, static_cast<float>(this->m_stScissorRect.right),
 				static_cast<float>(this->m_stScissorRect.bottom)

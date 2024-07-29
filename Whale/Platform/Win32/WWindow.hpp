@@ -9,6 +9,8 @@
 #include "Whale/Core/WObject.hpp"
 #include "Whale/Core/Container/TFString.hpp"
 
+#include <Eigen/Core>
+
 namespace Whale::Win32
 {
 	// 窗口
@@ -316,11 +318,10 @@ namespace Whale::Win32
 		///
 		/// \return 窗口矩形
 		[[nodiscard]]
-		FRectI GetRect() const;
+		Eigen::Vector4i GetRect() const;
 		
-		///
-		/// \param rect 窗口矩形
-		void SetRect(const FRectI &rect);
+		/// 设置窗口矩形
+		void SetRect(const Eigen::Vector4i &rect);
 		
 		///
 		/// \return 窗口句柄
@@ -335,38 +336,27 @@ namespace Whale::Win32
 	
 	protected:
 		
-		///
 		/// 是否启用OnChar事件
-		///
-		Bool bEnableOnChar = false;
-		
-		///
+		Bool bEnableOnChar   = false;
 		/// 是否启用OnString事件
-		///
 		Bool bEnableOnString = false;
 		
-		///
 		/// 输入位置，用于输入法定位
-		///
-		FPoint2I inputPoint;
+		Eigen::Vector2i inputPoint;
 		
-		///
 		/// 鼠标光标
-		HCursor hCursor;
+		HCursor         hCursor;
+		/// 鼠标位置
+		Eigen::Vector2i mousePosition;
 		
-		///
 		/// 窗口最小大小
-		FSize2I minSize;
-		
-		///
+		Eigen::Vector2i minSize;
 		/// 窗口最大大小
-		FSize2I maxSize;
+		Eigen::Vector2i maxSize;
 	
 	private:
 		
 		HWindow hWindow;
-		
-		FPoint2I mousePosition;
 		
 	};
 	

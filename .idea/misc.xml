@@ -5,6 +5,7 @@
     <sourceRoots>
       <file path="$PROJECT_DIR$/DirectX-Headers-main" />
       <file path="$PROJECT_DIR$/boost_1_85_0" />
+      <file path="$PROJECT_DIR$/eigen-3.4.0" />
     </sourceRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/.vs" />

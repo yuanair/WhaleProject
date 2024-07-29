@@ -21,9 +21,15 @@ namespace Whale::DirectX
 	
 	public:
 		
-		void LoadFromFile(const StringW &fileName) override;
+		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
+		
+		void OnUse() noexcept override;
+		
+		Bool OnGPUCreate(const WBitmapArg &arg) noexcept override;
+		
+		void OnGPUDestroy() noexcept override;
 		
 		void OnEnable() noexcept override;
 		
@@ -34,14 +40,14 @@ namespace Whale::DirectX
 		WRendererDirectX *m_pRenderer;
 		
 		Microsoft::WRL::ComPtr<ID3D12Resource> m_pResource;
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
 		
-		DXGI_FORMAT m_stTextureFormat{};
+		DXGI_FORMAT                        m_stTextureFormat{};
+		D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_stTxtLayouts{};
 		
-		uint32 m_width = 0;
-		
+		uint32 m_width  = 0;
 		uint32 m_height = 0;
-		
-		uint32 m_BPP = 0;
+		uint32 m_BPP    = 0;
 		
 	};
 	

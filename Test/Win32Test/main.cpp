@@ -1,5 +1,5 @@
 ﻿#include "Whale/Core/FDebug.hpp"
-#include "Whale/Core/WProgram.hpp"
+#include "Whale/Platform/WProgram.hpp"
 #include "Whale/Platform/Win32/WWindow.hpp"
 #include "Whale/Platform/WRenderer.hpp"
 #include "Whale/Platform/WShader.hpp"
@@ -10,6 +10,7 @@
 #include "Test/Win32Test/Resources/Resources.h"
 
 #include <boost/json.hpp>
+#include <Eigen/Core>
 
 #include <fstream>
 
@@ -250,18 +251,30 @@ void Program::InitDirectX()
 	pMesh.Lock()->SetVertexes
 		(
 			{
-				FVertex{{-0.5f, 0.5f, 0.0f, 1.0f},
-				        {1.0f,  0.0f, 0.0f, 1.0f}},
-				FVertex{{0.5f, 0.5f, 0.0f, 1.0f},
-				        {0.0f, 1.0f, 0.0f, 1.0f}},
-				FVertex{{0.5f, -0.5f, 0.0f, 1.0f},
-				        {0.0f, 0.0f,  1.0f, 1.0f}},
-				FVertex{{-0.5f, 0.5f, 0.0f, 1.0f},
-				        {1.0f,  0.0f, 0.0f, 1.0f}},
-				FVertex{{0.5f, -0.5f, 0.0f, 1.0f},
-				        {0.0f, 0.0f,  1.0f, 1.0f}},
-				FVertex{{-0.5f, -0.5f, 0.0f, 1.0f},
-				        {0.0f,  0.0f,  1.0f, 1.0f}}
+				{{-0.5f, 0.5f,  0.0f, 1.0f},
+					{1.0f, 0.0f, 0.0f, 1.0f},
+					{0.0f, 0.0f, 0.0f},
+					{0.0f, 1.0f}},
+				{{0.5f,  0.5f,  0.0f, 1.0f},
+					{0.0f, 1.0f, 0.0f, 1.0f},
+					{0.0f, 0.0f, 0.0f},
+					{1.0f, 1.0f}},
+				{{0.5f,  -0.5f, 0.0f, 1.0f},
+					{0.0f, 0.0f, 1.0f, 1.0f},
+					{0.0f, 0.0f, 0.0f},
+					{1.0f, 0.0f}},
+				{{-0.5f, 0.5f,  0.0f, 1.0f},
+					{1.0f, 0.0f, 0.0f, 1.0f},
+					{0.0f, 0.0f, 0.0f},
+					{0.0f, 1.0f}},
+				{{0.5f,  -0.5f, 0.0f, 1.0f},
+					{0.0f, 0.0f, 1.0f, 1.0f},
+					{0.0f, 0.0f, 0.0f},
+					{1.0f, 0.0f}},
+				{{-0.5f, -0.5f, 0.0f, 1.0f},
+					{0.0f, 0.0f, 1.0f, 1.0f},
+					{0.0f, 0.0f, 0.0f},
+					{0.0f, 0.0f}}
 			}
 		);
 	pMesh.Lock()->SetPMaterials({pMaterial});

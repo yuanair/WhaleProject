@@ -13,7 +13,7 @@ namespace Whale
 	///
 	/// GPU资源
 	template<class CreateArg, class Result = void>
-	class WHALE_API TIGPUResource : public Tool::IEnable
+	class WHALE_API TIGPUResource : public IEnable
 	{
 	public:
 		
@@ -50,13 +50,13 @@ namespace Whale
 		
 		[[nodiscard]] Bool IsEnabled() const noexcept override
 		{
-			return Tool::IEnable::IsEnabled() && IsGPUResourceCreated();
+			return IEnable::IsEnabled() && IsGPUResourceCreated();
 		}
 		
 	};
 	
 	template<>
-	class WHALE_API TIGPUResource<void, void> : public Tool::IEnable
+	class WHALE_API TIGPUResource<void, void> : public IEnable
 	{
 	public:
 		
@@ -93,7 +93,7 @@ namespace Whale
 		
 		[[nodiscard]] Bool IsEnabled() const noexcept override
 		{
-			return Tool::IEnable::IsEnabled() && IsGPUResourceCreated();
+			return IEnable::IsEnabled() && IsGPUResourceCreated();
 		}
 		
 	};

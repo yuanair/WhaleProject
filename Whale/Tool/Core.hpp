@@ -6,11 +6,8 @@
 
 #include "Whale/Core/TypeDef.hpp"
 
-namespace Whale::Tool
+namespace Whale
 {
-	
-	constexpr const CharA TagA[] = "Whale::Tool";
-	constexpr const CharW TagW[] = L"Whale::Tool";
 	
 	///
 	/// 工具核心库

@@ -329,7 +329,7 @@ namespace Whale
 			}
 			else
 			{
-				WHALE_ASSERT(!this->m_ptr && !this->m_useCount);
+				WHALE_ASSERT(!this->m_ptr && !this->m_useCount, L"!this->m_ptr && !this->m_useCount");
 			}
 		}
 		

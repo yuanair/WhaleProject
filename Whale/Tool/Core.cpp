@@ -4,6 +4,6 @@
 
 #include "Core.hpp"
 
-namespace Whale::Tool
+namespace Whale
 {
 } // Whale

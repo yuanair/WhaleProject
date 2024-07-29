@@ -11,14 +11,18 @@
 #include "WMaterial.hpp"
 #include "TIGPUResource.hpp"
 
+#include <Eigen/Core>
+
 namespace Whale
 {
 	///
 	/// 顶点
 	struct WHALE_API FVertex
 	{
-		float4 positionOS;
-		float4 color;
+		Eigen::Vector4f positionOS{};
+		Eigen::Vector4f color{};
+		Eigen::Vector3f normalOS{};
+		Eigen::Vector2f texcoord{};
 	};
 	
 	///

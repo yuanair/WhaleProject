@@ -11,14 +11,10 @@ namespace Whale
 {
 	///
 	/// 图片
-	class WHALE_API WImage : public WObject, public Tool::IEnable
+	class WHALE_API WImage : public WObject
 	{
 	public:
-		
-		///
-		/// 从文件加载
-		/// \param fileName 文件名
-		virtual void LoadFromFile(const StringW &fileName) = 0;
+	
 		
 	};
 	

@@ -6,10 +6,6 @@
 
 #include "FCore.hpp"
 
-#include "Whale/Core/FDebug.hpp"
-#include "Whale/Core/WProgram.hpp"
-
-
 #include <windows.h>
 #include <windowsx.h>
 
@@ -20,23 +16,23 @@ namespace Whale::Win32
 	
 	bool WWindow::WWindowClass::Register(HIcon hIcon, HIcon hIconSm)
 	{
-		if (hIcon.handle == nullptr) hIcon.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
+		if (hIcon.handle == nullptr) hIcon.handle     = ::LoadIcon(nullptr, IDI_APPLICATION);
 		if (hIconSm.handle == nullptr) hIconSm.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
 		WNDCLASSEX wnd
-			{
-				.cbSize = sizeof(wnd),
-				.style = CS_VREDRAW | CS_HREDRAW,
-				.lpfnWndProc = (WNDPROC) (&WWindow::WindowProc),
-				.cbClsExtra = 0,
-				.cbWndExtra = sizeof(WWindow *),
-				.hInstance = (HINSTANCE) hInstance.handle,
-				.hIcon = (HICON) hIcon.handle,
-				.hCursor = nullptr,
-				.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH),
-				.lpszMenuName = nullptr,
-				.lpszClassName = name.CStr(),
-				.hIconSm = (HICON) hIconSm.handle,
-			};
+			           {
+				           .cbSize = sizeof(wnd),
+				           .style = CS_VREDRAW | CS_HREDRAW,
+				           .lpfnWndProc = (WNDPROC) (&WWindow::WindowProc),
+				           .cbClsExtra = 0,
+				           .cbWndExtra = sizeof(WWindow *),
+				           .hInstance = (HINSTANCE) hInstance.handle,
+				           .hIcon = (HICON) hIcon.handle,
+				           .hCursor = nullptr,
+				           .hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH),
+				           .lpszMenuName = nullptr,
+				           .lpszClassName = name.CStr(),
+				           .hIconSm = (HICON) hIconSm.handle,
+			           };
 		return (bool) ::RegisterClassEx(&wnd);
 	}
 	
@@ -87,7 +83,7 @@ namespace Whale::Win32
 	{
 		WWindow desktop;
 		desktop.Bind(DesktopWindow());
-		this->maxSize = desktop.GetRect().GetSize();
+		this->maxSize        = desktop.GetRect()({2, 3});
 		this->hWindow.handle = ::CreateWindowEx(
 			WS_EX_ACCEPTFILES,
 			windowClass.GetName().CStr(), windowName.CStr(),
@@ -163,12 +159,12 @@ namespace Whale::Win32
 			{
 				int32 newMouseX = GET_X_LPARAM(lParam);
 				int32 newMouseY = GET_Y_LPARAM(lParam);
-				int32 deltaX = newMouseX - mousePosition.x;
-				int32 deltaY = newMouseY - mousePosition.y;
-				mousePosition.x = newMouseX;
-				mousePosition.y = newMouseY;
+				int32 deltaX    = newMouseX - mousePosition.x();
+				int32 deltaY    = newMouseY - mousePosition.y();
+				mousePosition.x() = newMouseX;
+				mousePosition.y() = newMouseY;
 				return OnMouseMoved(
-					EventOnMouseMoveArgs{mousePosition.x, mousePosition.y, deltaX, deltaY}
+					EventOnMouseMoveArgs{mousePosition.x(), mousePosition.y(), deltaX, deltaY}
 				);
 			}
 			case WM_ACTIVATE:
@@ -204,10 +200,10 @@ namespace Whale::Win32
 				return OnChar((TCHAR) wParam);
 			case WM_GETMINMAXINFO:
 			{
-				((MINMAXINFO *) lParam)->ptMinTrackSize.x = this->minSize.width;
-				((MINMAXINFO *) lParam)->ptMinTrackSize.y = this->minSize.height;
-				((MINMAXINFO *) lParam)->ptMaxTrackSize.x = this->maxSize.width;
-				((MINMAXINFO *) lParam)->ptMaxTrackSize.y = this->maxSize.height;
+				((MINMAXINFO *) lParam)->ptMinTrackSize.x = this->minSize.x();
+				((MINMAXINFO *) lParam)->ptMinTrackSize.y = this->minSize.y();
+				((MINMAXINFO *) lParam)->ptMaxTrackSize.x = this->maxSize.x();
+				((MINMAXINFO *) lParam)->ptMaxTrackSize.y = this->maxSize.y();
 				return 0;
 			}
 			case WM_IME_STARTCOMPOSITION:
@@ -219,10 +215,10 @@ namespace Whale::Win32
 				if (hIMC)
 				{
 					CANDIDATEFORM candidateForm;
-					candidateForm.dwIndex = 0;
-					candidateForm.dwStyle = CFS_CANDIDATEPOS;
-					candidateForm.ptCurrentPos.x = inputPoint.x;
-					candidateForm.ptCurrentPos.y = inputPoint.y;
+					candidateForm.dwIndex        = 0;
+					candidateForm.dwStyle        = CFS_CANDIDATEPOS;
+					candidateForm.ptCurrentPos.x = inputPoint.x();
+					candidateForm.ptCurrentPos.y = inputPoint.y();
 					ImmSetCandidateWindow(hIMC, &candidateForm);
 				}
 				else FDebug::LogError(TagW, L"ImmGetContext Failed");
@@ -232,10 +228,10 @@ namespace Whale::Win32
 			}
 			case WM_IME_COMPOSITION:
 			{
-				HIMC hIMC;
-				DWORD dwSize;
+				HIMC    hIMC;
+				DWORD   dwSize;
 				HGLOBAL hstr;
-				LPTSTR lpstr;
+				LPTSTR  lpstr;
 				if (!bEnableOnString) return DefaultWindowProc(this->hWindow, msg, wParam, lParam);
 				if (lParam & GCS_RESULTSTR)
 				{
@@ -298,7 +294,7 @@ namespace Whale::Win32
 	
 	StringA WWindow::GetNameA() const
 	{
-		int32 length = ::GetWindowTextLengthA((HWND) this->hWindow.handle) + 1;
+		int32   length = ::GetWindowTextLengthA((HWND) this->hWindow.handle) + 1;
 		StringA buffer{nullptr, (SizeT) length};
 		::GetWindowTextA((HWND) this->hWindow.handle, buffer.GetPtr(), length);
 		return buffer;
@@ -306,7 +302,7 @@ namespace Whale::Win32
 	
 	StringW WWindow::GetNameW() const
 	{
-		int32 length = ::GetWindowTextLengthW((HWND) this->hWindow.handle) + 1;
+		int32   length = ::GetWindowTextLengthW((HWND) this->hWindow.handle) + 1;
 		StringW buffer{nullptr, (SizeT) length};
 		::GetWindowTextW((HWND) this->hWindow.handle, buffer.GetPtr(), length);
 		return buffer;
@@ -327,16 +323,16 @@ namespace Whale::Win32
 		return {::GetDesktopWindow()};
 	}
 	
-	FRectI WWindow::GetRect() const
+	Eigen::Vector4i WWindow::GetRect() const
 	{
 		RECT rect;
 		::GetWindowRect((HWND) hWindow.handle, &rect);
-		return Whale::FRectI(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		return {rect.left, rect.top, rect.right, rect.bottom};
 	}
 	
-	void WWindow::SetRect(const FRectI &rect)
+	void WWindow::SetRect(const Eigen::Vector4i &rect)
 	{
-		::MoveWindow((HWND) hWindow.handle, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, true);
+		::MoveWindow((HWND) hWindow.handle, rect.x(), rect.y(), rect.z(), rect.w(), true);
 	}
 	
 	

@@ -5,7 +5,7 @@
 #include "FResult.hpp"
 
 #include "Whale/Core/FDebug.hpp"
-#include "Whale/Core/WProgram.hpp"
+#include "Whale/Platform/WProgram.hpp"
 #include "Whale/Platform/Win32/FCore.hpp"
 
 #include <format>

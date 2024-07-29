@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Whale/Core/WObject.hpp"
-#include "Whale/Core/WProgram.hpp"
+#include "WProgram.hpp"
 #include "Whale/Core/FDebug.hpp"
 #include "Whale/Core/Memory.hpp"
 #include "TIGPUResource.hpp"
