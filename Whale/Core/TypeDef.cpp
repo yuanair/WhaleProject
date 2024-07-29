@@ -11,7 +11,6 @@
 #else
 
 #include "Whale/Core/FDebug.hpp"
-#include "WProgram.hpp"
 
 #endif
 
