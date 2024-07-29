@@ -18,6 +18,12 @@ namespace Whale::IO
 	constexpr const CharW TagW[] = L"Whale::IO";
 	
 	template<class ElemT>
+	int32 FileOpen(FILE **file, ElemT fileName, ElemT mode) noexcept
+	{
+		static_assert("Not implemented");
+	}
+	
+	template<class ElemT>
 	int32 FileGet(FILE *file) noexcept
 	{
 		static_assert("Not implemented");
@@ -43,10 +49,17 @@ namespace Whale::IO
 		FFileStream() noexcept: m_file(nullptr), m_now(0), m_peek(0), m_isCloseF(false) {}
 		
 		///
+		/// \param fileName 文件名
+		/// \param mode 打开模式
+		/// \param isCloseF 是否需要关闭
+		/// \param isFlushNewline 换行是否需要刷新
+		FFileStream(const String& fileName, const String& mode, Bool isCloseF = true, Bool isFlushNewline = true) noexcept { Open(fileName, mode, isCloseF, isFlushNewline);}
+		
+		///
 		/// \param file 文件流
 		/// \param isCloseF 是否需要关闭
 		/// \param isFlushNewline 换行是否需要刷新
-		FFileStream(FILE *file, Bool isCloseF, Bool isFlushNewline) noexcept: m_file(file), m_now(0), m_peek(0), m_isCloseF(isCloseF), m_isFlushNewline(isFlushNewline) {}
+		FFileStream(FILE *file, Bool isCloseF, Bool isFlushNewline = true) noexcept { Reset(file, isCloseF, isFlushNewline); }
 		
 		FFileStream(const FFileStream &) = delete;
 		
@@ -58,16 +71,23 @@ namespace Whale::IO
 	
 	public:
 		
+		/// 打开文件
+		/// \param fileName 文件名
+		/// \param mode 打开模式
+		/// \param isCloseF 是否需要关闭
+		/// \param isFlushNewline 换行是否需要刷新
+		FFileStream& Open(const String& fileName, const String& mode, Bool isCloseF = true, Bool isFlushNewline = true) noexcept;
+		
+		///
+		/// \param file 文件流
+		/// \param isCloseF 是否需要关闭
+		/// \param isFlushNewline 换行是否需要刷新
+		FFileStream& Reset(FILE *file, Bool isCloseF, Bool isFlushNewline = true) noexcept;
+		
 		///
 		/// 关闭文件
 		/// \return 是否成功
-		Bool Close() noexcept;
-	
-	public:
-		
-		[[nodiscard]] Bool Good() const noexcept override { return !(IsError() || IsEOF()); }
-		
-		[[nodiscard]] Bool Bad() const noexcept override { return IsError() || IsEOF(); }
+		FFileStream& Close() noexcept;
 		
 		[[nodiscard]] Bool IsOpen() const noexcept { return this->m_file != 0; }
 		
@@ -75,16 +95,8 @@ namespace Whale::IO
 		
 		[[nodiscard]] Bool IsEOF() const noexcept { return ::feof(this->m_file) != 0; }
 		
-		int32 Peek() noexcept override { return GetPeek(); }
-		
-		int32 Read() noexcept override;
-		
-		FFileStream &Write(ElemT elem) noexcept override;
-		
 		template<class... Args>
 		FFileStream &Writes(Args... args) noexcept;
-		
-		FFileStream &Flush() noexcept override;
 		
 		FFileStream &Write(const String &str) noexcept;
 		
@@ -114,17 +126,19 @@ namespace Whale::IO
 		/// 清空错误
 		const FFileStream &ClearError() const noexcept;
 		
-		///
-		/// \param file 文件流
-		/// \param isCloseF 是否需要关闭
-		void Reset(FILE *file, Bool isCloseF)
-		{
-			this->m_file = file;
-			this->m_now = 0;
-			this->m_peek = 0;
-			this->m_isCloseF = isCloseF;
-			Read();
-		}
+	public:
+		
+		[[nodiscard]] Bool Good() const noexcept override { return !(IsError() || IsEOF()); }
+		
+		[[nodiscard]] Bool Bad() const noexcept override { return IsError() || IsEOF(); }
+		
+		int32 Peek() noexcept override { return GetPeek(); }
+		
+		int32 Read() noexcept override;
+		
+		FFileStream &Write(ElemT elem) noexcept override;
+		
+		FFileStream &Flush() noexcept override;
 	
 	public:
 		
@@ -157,11 +171,11 @@ namespace Whale::IO
 	
 	private:
 		
-		FILE *m_file;
-		int32 m_now;
-		int32 m_peek;
-		Bool m_isCloseF;
-		Bool m_isFlushNewline;
+		FILE *m_file{};
+		int32 m_now{};
+		int32 m_peek{};
+		Bool m_isCloseF{};
+		Bool m_isFlushNewline{};
 		
 	};
 	

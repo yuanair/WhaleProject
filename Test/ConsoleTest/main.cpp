@@ -101,9 +101,11 @@ int WhaleMain()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
 	
-	ConsoleT console;
+	ConsoleT        console;
+	IO::FileStreamT &in = console.in;
+	IO::FileStreamT out{WHALE_TEXT("./test.txt"), WHALE_TEXT("w")};
 	
-	MyCommandManager commandManager{console.in, console.out};
+	MyCommandManager commandManager{in, out};
 	commandManager.commands.insert(
 		{
 			{WHALE_TEXT("exit"),       [](MyCommandManager &commandManager) -> void { commandManager.isExit = true; }},
@@ -118,20 +120,20 @@ int WhaleMain()
 	while (!commandManager.isExit)
 	{
 		StringT command{};
-		console.Write(WHALE_TEXT("> "));
-		console.ReadLine(command);
+		out.Write(WHALE_TEXT("> "));
+		in.ReadLine(command);
 		
 		commandManager.Run(command);
 		for (auto &item: commandManager.errors)
 		{
-			console.WriteLine(item);
+			out.WriteLine(item);
 		}
 		
 		commandManager.errors.Clear();
 		// console.ClearError();
 		console.ClearInBuffer();
 	}
-	console.WriteLine(WHALE_TEXT("Thanks for using"));
+	out.WriteLine(WHALE_TEXT("Thanks for using"));
 	
 	FDebug::LogClose();
 	value = nullptr;

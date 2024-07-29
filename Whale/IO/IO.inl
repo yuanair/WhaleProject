@@ -3,6 +3,17 @@
 
 namespace Whale::IO
 {
+	template<>
+	inline int32 WHALE_API FileOpen(FILE **file, const CharA* fileName, const CharA* mode) noexcept
+	{
+		return ::fopen_s(file, fileName, mode);
+	}
+	
+	template<>
+	inline int32 WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
+	{
+		return ::_wfopen_s(file, fileName, mode);
+	}
 	
 	template<>
 	inline int32 WHALE_API FileGet<CharA>(FILE *file) noexcept
@@ -35,13 +46,35 @@ namespace Whale::IO
 	}
 	
 	template<class ElemT>
-	Bool FFileStream<ElemT>::Close() noexcept
+	FFileStream<ElemT>& FFileStream<ElemT>::Open(const String& fileName, const String& mode, Bool isCloseF, Bool isFlushNewline) noexcept
 	{
-		Bool result = true;
-		if (m_file == nullptr) return true;
-		if (m_isCloseF) { result = ::fclose(this->m_file) == 0; }
+		Close();
+		FileOpen(&this->m_file, fileName.CStr(), mode.CStr());
+		this->m_peek = 0;
+		this->m_now = 0;
+		this->m_isCloseF = isCloseF;
+		this->m_isFlushNewline = isFlushNewline;
+		return *this;
+	}
+	
+	template<class ElemT>
+	FFileStream<ElemT>& FFileStream<ElemT>::Reset(FILE *file, Bool isCloseF, Bool isFlushNewline) noexcept
+	{
+		Close();
+		this->m_file = file;
+		this->m_now = 0;
+		this->m_peek = 0;
+		this->m_isCloseF = isCloseF;
+		this->m_isFlushNewline = isFlushNewline;
+		return *this;
+	}
+	
+	template<class ElemT>
+	FFileStream<ElemT>& FFileStream<ElemT>::Close() noexcept
+	{
+		if (m_file && m_isCloseF) { ::fclose(this->m_file); }
 		this->m_file = nullptr;
-		return result;
+		return *this;
 	}
 	
 	template<class ElemT>
