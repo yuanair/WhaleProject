@@ -18,7 +18,7 @@ namespace Whale::IO
 	constexpr const CharW TagW[] = L"Whale::IO";
 	
 	template<class ElemT>
-	int32 FileOpen(FILE **file, ElemT fileName, ElemT mode) noexcept
+	void FileOpen(FILE **file, ElemT fileName, ElemT mode) noexcept
 	{
 		static_assert("Not implemented");
 	}

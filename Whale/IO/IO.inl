@@ -3,17 +3,36 @@
 
 namespace Whale::IO
 {
+	
+	#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC
+	
 	template<>
-	inline int32 WHALE_API FileOpen(FILE **file, const CharA* fileName, const CharA* mode) noexcept
+	inline void WHALE_API FileOpen(FILE **file, const CharA* fileName, const CharA* mode) noexcept
 	{
-		return ::fopen_s(file, fileName, mode);
+		::fopen_s(file, fileName, mode);
 	}
 	
 	template<>
-	inline int32 WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
+	inline void WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
 	{
-		return ::_wfopen_s(file, fileName, mode);
+		::_wfopen_s(file, fileName, mode);
 	}
+	
+	#else
+	
+	template<>
+	inline void WHALE_API FileOpen(FILE **file, const CharA* fileName, const CharA* mode) noexcept
+	{
+		*file = ::fopen(file, fileName, mode);
+	}
+	
+	template<>
+	inline void WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
+	{
+		*file = ::_wfopen_s(file, fileName, mode);
+	}
+	
+	#endif
 	
 	template<>
 	inline int32 WHALE_API FileGet<CharA>(FILE *file) noexcept
