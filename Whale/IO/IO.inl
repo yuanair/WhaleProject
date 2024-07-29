@@ -29,7 +29,7 @@ namespace Whale::IO
 	template<>
 	inline void WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
 	{
-		*file = ::fopen(FLocale::UTFToString(fileName).CStr(), mode);
+		*file = ::fopen(FLocale::UTFToString(fileName, "UTF-8").CStr(), mode);
 	}
 	
 	#endif
