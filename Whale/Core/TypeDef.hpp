@@ -89,10 +89,10 @@
 
 // assert
 
-#ifdef _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
 #define WHALE_ASSERT(expression, message) ((!!(expression)) || (::Whale::FatalMessage(message, WHALE_WIDE(__FILE__), __LINE__, WHALE_WIDE(__FUNCSIG__)), 0))
 #else
-#define WHALE_ASSERT(expression) ((void)0)
+#define WHALE_ASSERT(expression, message) ((void)0)
 #endif
 
 // WHALE_API
