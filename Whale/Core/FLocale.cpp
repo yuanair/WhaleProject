@@ -46,21 +46,7 @@ namespace Whale
 	
 	Bool FLocale::IsSpaceIncludeNull(int32 ch)
 	{
-		switch (ch)
-		{
-			case EOF:
-			case WEOF:
-			case '\0':
-			case '\t':
-			case '\n':
-			case '\v':
-			case '\f':
-			case '\r':
-			case ' ':
-				return true;
-			default:
-				return false;
-		}
+		return EOF == ch || WEOF == ch || '\0' == ch || IsSpace(ch);
 	}
 	
 	Bool FLocale::IsNewLine(int32 ch)
