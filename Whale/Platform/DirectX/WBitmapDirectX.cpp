@@ -90,7 +90,9 @@ namespace Whale::DirectX
 			if (Win32::FResult(HRESULT_FROM_WIN32(GetLastError())).IsFailed()) return false;
 		}
 		
-		#if false
+		UINT8 *pData = nullptr;
+		
+		#if true
 		
 		//从图片中读取出数据
 		THROW_IF_FAILED(pIBMP->CopyPixels(
@@ -106,7 +108,7 @@ namespace Whale::DirectX
 			const UINT textureSize       = static_cast<UINT>(n64UploadBufferSize);
 			UINT       nTexturePixelSize = static_cast<UINT>(n64UploadBufferSize / m_height / m_width);
 			
-			UINT8 *pData = reinterpret_cast<UINT8 *>(pbPicData);
+			pData = reinterpret_cast<UINT8 *>(pbPicData);
 			
 			for (UINT n = 0; n < textureSize; n += nTexturePixelSize)
 			{
@@ -151,7 +153,7 @@ namespace Whale::DirectX
 		// 然后我们按行将数据复制到上传堆中
 		// 需要注意的是之所以按行拷贝是因为GPU资源的行大小
 		// 与实际图片的行大小是有差异的,二者的内存边界对齐要求是不一样的
-		BYTE *pData = nullptr;
+		pData = nullptr;
 		THROW_IF_FAILED(m_pUpload->Map(0, nullptr, reinterpret_cast<void **>(&pData)));
 		
 		BYTE       *pDestSlice = reinterpret_cast<BYTE *>(pData) + m_stTxtLayouts.Offset;
@@ -170,6 +172,25 @@ namespace Whale::DirectX
 		
 		// 释放图片数据，做一个干净的程序员
 		::HeapFree(::GetProcessHeap(), 0, pbPicData);
+		
+		
+		//向命令队列发出从上传堆复制纹理数据到默认堆的命令
+		CD3DX12_TEXTURE_COPY_LOCATION Dst(m_pResource.Get(), 0);
+		CD3DX12_TEXTURE_COPY_LOCATION Src(m_pUpload.Get(), m_stTxtLayouts);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
+		
+		//设置一个资源屏障，同步并确认复制操作完成
+		//直接使用结构体然后调用的形式
+		D3D12_RESOURCE_BARRIER stResBar = {};
+		stResBar.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		stResBar.Flags                  = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		stResBar.Transition.pResource   = m_pResource.Get();
+		stResBar.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+		stResBar.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		stResBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(1, &stResBar);
+		
 		
 		//10、创建SRV堆 (Shader Resource View Heap)
 		D3D12_DESCRIPTOR_HEAP_DESC stSRVHeapDesc = {};
@@ -190,24 +211,6 @@ namespace Whale::DirectX
 		stSRVDesc.Texture2D.MipLevels     = 1;
 		m_pRenderer->GetPid3D12Device()->CreateShaderResourceView(
 			m_pResource.Get(), &stSRVDesc, m_pSRVHeap->GetCPUDescriptorHandleForHeapStart());
-		
-		
-		//向命令队列发出从上传堆复制纹理数据到默认堆的命令
-		CD3DX12_TEXTURE_COPY_LOCATION Dst(m_pResource.Get(), 0);
-		CD3DX12_TEXTURE_COPY_LOCATION Src(m_pUpload.Get(), m_stTxtLayouts);
-		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
-		
-		//设置一个资源屏障，同步并确认复制操作完成
-		//直接使用结构体然后调用的形式
-		D3D12_RESOURCE_BARRIER stResBar = {};
-		stResBar.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		stResBar.Flags                  = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		stResBar.Transition.pResource   = m_pResource.Get();
-		stResBar.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-		stResBar.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		stResBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		
-		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(1, &stResBar);
 		
 		m_pRenderer->GetPCommandList()->Run();
 		m_pRenderer->GetPCommandList()->Wait();
