@@ -4,6 +4,7 @@
 
 #include "WBitmapDirectX.hpp"
 #include "WRendererDirectX.hpp"
+#include "WCommandListDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -227,7 +228,7 @@ namespace Whale::DirectX
 		//向命令队列发出从上传堆复制纹理数据到默认堆的命令
 		CD3DX12_TEXTURE_COPY_LOCATION Dst(m_pResource.Get(), 0);
 		CD3DX12_TEXTURE_COPY_LOCATION Src(m_pUpload.Get(), m_stTxtLayouts);
-		m_pRenderer->GetPid3D12CommandList()->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
 		
 		//设置一个资源屏障，同步并确认复制操作完成
 		//直接使用结构体然后调用的形式
@@ -239,7 +240,7 @@ namespace Whale::DirectX
 		stResBar.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 		stResBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		
-		m_pRenderer->GetPid3D12CommandList()->ResourceBarrier(1, &stResBar);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(1, &stResBar);
 		
 		// 执行命令列表并等待纹理资源上传完成，这一步是必须的
 //		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandList()->Close());

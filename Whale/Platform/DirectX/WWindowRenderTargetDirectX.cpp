@@ -4,6 +4,7 @@
 
 #include "WWindowRenderTargetDirectX.hpp"
 #include "WRendererDirectX.hpp"
+#include "WCommandListDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -46,7 +47,7 @@ namespace Whale::DirectX
 		
 		THROW_IF_FAILED(
 			m_pRenderer->GetPidxgiFactory()->CreateSwapChainForHwnd(
-				m_pRenderer->GetPid3D12CommandQueue().Get(),
+				m_pRenderer->GetPCommandList()->GetPID3D12CommandQueue().Get(),
 				(HWND) arg.m_window.GetHWindow().handle,
 				&swapChainDesc,
 				nullptr,
@@ -96,19 +97,19 @@ namespace Whale::DirectX
 			FDebug::LogError(TagA, "m_pRenderer isn't create");
 			return;
 		}
-		m_pRenderer->GetPid3D12CommandList()->SetGraphicsRootSignature
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetGraphicsRootSignature
 			(
 				m_pRenderer->GetPid3D12RootSignature().Get()
 			);
-		m_pRenderer->GetPid3D12CommandList()->RSSetViewports(1, &this->m_stViewPort);
-		m_pRenderer->GetPid3D12CommandList()->RSSetScissorRects(1, &this->m_stScissorRect);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->RSSetViewports(1, &this->m_stViewPort);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->RSSetScissorRects(1, &this->m_stScissorRect);
 		
 		// 通过资源屏障判定后缓冲已经切换完毕可以开始渲染了
 		auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
 			this->m_pID3D12RenderTargets[this->m_nFrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET
 		);
-		m_pRenderer->GetPid3D12CommandList()->ResourceBarrier(
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(
 			1, &resourceBarrier
 		);
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
@@ -117,10 +118,10 @@ namespace Whale::DirectX
 		);
 		
 		//设置渲染目标
-		m_pRenderer->GetPid3D12CommandList()->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 		// 继续记录命令，并真正开始新一帧的渲染
 		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-		m_pRenderer->GetPid3D12CommandList()->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 		
 		// ...
 		for (auto &item: this->m_renderObjects)
@@ -133,38 +134,42 @@ namespace Whale::DirectX
 			this->m_pID3D12RenderTargets[this->m_nFrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PRESENT
 		);
-		m_pRenderer->GetPid3D12CommandList()->ResourceBarrier(
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(
 			1, &resourceBarrier
 		);
+		
+		m_pRenderer->GetPCommandList()->Run();
 		//关闭命令列表，可以去执行了
-		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandList()->Close());
-		//执行命令列表
-		ID3D12CommandList *ppCommandLists[] = {m_pRenderer->GetPid3D12CommandList().Get()};
-		m_pRenderer->GetPid3D12CommandQueue()->ExecuteCommandLists(1, ppCommandLists);
+//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandList()->Close());
+//		//执行命令列表
+//		ID3D12CommandList *ppCommandLists[] = {m_pRenderer->GetPid3D12CommandList().Get()};
+//		m_pRenderer->GetPid3D12CommandQueue()->ExecuteCommandLists(1, ppCommandLists);
 		
 		//提交画面
 		THROW_IF_FAILED(this->m_pIDXGISwapChain->Present(1, 0));
-		//开始同步GPU与CPU的执行，先记录围栏标记值
-		const uint64 fence = m_pRenderer->GetN64FenceValue();
-		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandQueue()->Signal(m_pRenderer->GetPid3D12Fence().Get(), fence));
-		m_pRenderer->AddN64FenceValue();
-		
-		// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
-		if (m_pRenderer->GetPid3D12Fence()->GetCompletedValue() < fence)
-		{
-			THROW_IF_FAILED(
-				m_pRenderer->GetPid3D12Fence()->SetEventOnCompletion(fence, m_pRenderer->GetHFenceEvent()));
-			WaitForSingleObject(m_pRenderer->GetHFenceEvent(), INFINITE);
-		}
+		m_pRenderer->GetPCommandList()->Wait();
+//		//开始同步GPU与CPU的执行，先记录围栏标记值
+//		const uint64 fence = m_pRenderer->GetN64FenceValue();
+//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandQueue()->Signal(m_pRenderer->GetPid3D12Fence().Get(), fence));
+//		m_pRenderer->AddN64FenceValue();
+//
+//		// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
+//		if (m_pRenderer->GetPid3D12Fence()->GetCompletedValue() < fence)
+//		{
+//			THROW_IF_FAILED(
+//				m_pRenderer->GetPid3D12Fence()->SetEventOnCompletion(fence, m_pRenderer->GetHFenceEvent()));
+//			WaitForSingleObject(m_pRenderer->GetHFenceEvent(), INFINITE);
+//		}
 		
 		//到这里说明一个命令队列完整的执行完了，在这里就代表我们的一帧已经渲染完了，接着准备执行下一帧//渲染
 		//获取新的后缓冲序号，因为Present真正完成时后缓冲的序号就更新了
 		this->m_nFrameIndex = this->m_pIDXGISwapChain->GetCurrentBackBufferIndex();
-		//命令分配器先Reset一下
-		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandAllocator()->Reset());
-		//Reset命令列表，并重新指定命令分配器和PSO对象
-		THROW_IF_FAILED(
-			m_pRenderer->GetPid3D12CommandList()->Reset(m_pRenderer->GetPid3D12CommandAllocator().Get(), nullptr));
+		m_pRenderer->GetPCommandList()->Reset();
+//		//命令分配器先Reset一下
+//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandAllocator()->Reset());
+//		//Reset命令列表，并重新指定命令分配器和PSO对象
+//		THROW_IF_FAILED(
+//			m_pRenderer->GetPid3D12CommandList()->Reset(m_pRenderer->GetPid3D12CommandAllocator().Get(), nullptr));
 	}
 	
 	void WWindowRenderTargetDirectX::OnEnable() noexcept

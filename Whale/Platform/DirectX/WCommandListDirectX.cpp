@@ -44,9 +44,46 @@ namespace Whale::DirectX
 		return true;
 	}
 	
+	Bool WCommandListDirectX::Run() noexcept
+	{
+		//关闭命令列表，可以去执行了
+		THROW_IF_FAILED(m_pID3D12CommandList->Close());
+		//执行命令列表
+		ID3D12CommandList *ppCommandLists[] = {m_pID3D12CommandList.Get()};
+		m_pID3D12CommandQueue->ExecuteCommandLists(1, ppCommandLists);
+		return true;
+	}
+	
+	Bool WCommandListDirectX::Wait() noexcept
+	{
+		//开始同步GPU与CPU的执行，先记录围栏标记值
+		const uint64 fence = m_n64FenceValue;
+		THROW_IF_FAILED(m_pID3D12CommandQueue->Signal(m_pID3D12Fence.Get(), fence));
+		++m_n64FenceValue;
+		
+		// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
+		if (m_pID3D12Fence->GetCompletedValue() < fence)
+		{
+			THROW_IF_FAILED(
+				m_pID3D12Fence->SetEventOnCompletion(fence, m_hFenceEvent));
+			WaitForSingleObject(m_hFenceEvent, INFINITE);
+		}
+		return true;
+	}
+	
+	Bool WCommandListDirectX::Reset() noexcept
+	{
+		//命令分配器先Reset一下
+		THROW_IF_FAILED(m_pID3D12CommandAllocator->Reset());
+		//Reset命令列表，并重新指定命令分配器和PSO对象
+		THROW_IF_FAILED(
+			m_pID3D12CommandList->Reset(m_pID3D12CommandAllocator.Get(), nullptr));
+		return true;
+	}
+	
 	Bool WCommandListDirectX::IsGPUResourceCreated() const noexcept
 	{
-		return 0;
+		return m_pID3D12CommandList;
 	}
 	
 	void WCommandListDirectX::OnResourceDestroy() noexcept

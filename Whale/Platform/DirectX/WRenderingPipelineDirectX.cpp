@@ -4,6 +4,7 @@
 
 #include "WRenderingPipelineDirectX.hpp"
 #include "WShaderDirectX.hpp"
+#include "WCommandListDirectX.hpp"
 
 namespace Whale
 {
@@ -76,7 +77,7 @@ namespace Whale
 	
 	void DirectX::WRenderingPipelineDirectX::OnUse() noexcept
 	{
-		m_pRenderer->GetPid3D12CommandList()->SetPipelineState(this->m_pID3D12PipelineState.Get());
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetPipelineState(this->m_pID3D12PipelineState.Get());
 	}
 	
 	void DirectX::WRenderingPipelineDirectX::OnEnable() noexcept

@@ -22,6 +22,12 @@ namespace Whale::DirectX
 	public:
 		
 		Bool Init() noexcept;
+		
+		Bool Run() noexcept;
+		
+		Bool Wait() noexcept;
+		
+		Bool Reset() noexcept;
 	
 	public:
 		
@@ -34,6 +40,12 @@ namespace Whale::DirectX
 		void OnEnable() noexcept override;
 		
 		void OnDisable() noexcept override;
+	
+	public:
+		
+		[[nodiscard]] auto &GetPID3D12CommandList() const { return m_pID3D12CommandList; }
+		
+		[[nodiscard]] auto &GetPID3D12CommandQueue() const { return m_pID3D12CommandQueue; }
 	
 	private:
 		

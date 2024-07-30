@@ -4,6 +4,7 @@
 
 #include "WStaticMeshDirectX.hpp"
 #include "WRendererDirectX.hpp"
+#include "WCommandListDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -20,9 +21,13 @@ namespace Whale::DirectX
 				auto rp = pRenderingPipeline.Lock();
 				if (!rp || !rp->IsEnabled()) continue;
 				rp->Use();
-				m_pRenderer->GetPid3D12CommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				m_pRenderer->GetPid3D12CommandList()->IASetVertexBuffers(0, 1, &this->m_vertexBufferView);
-				m_pRenderer->GetPid3D12CommandList()->DrawInstanced(
+				m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->IASetPrimitiveTopology(
+					D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+				);
+				m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->IASetVertexBuffers(
+					0, 1, &this->m_vertexBufferView
+				);
+				m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->DrawInstanced(
 					GetVertexes().GetLength(), 1, 0, 0
 				);
 			}
