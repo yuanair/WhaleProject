@@ -49,7 +49,7 @@ namespace Whale::OpenGL
 	
 	}
 	
-	void WRendererOpenGL::OnGPUCreate() noexcept
+	void WRendererOpenGL::Init() noexcept
 	{
 		PIXELFORMATDESCRIPTOR pfd;
 		pfd.nSize           = 40;
@@ -102,11 +102,6 @@ namespace Whale::OpenGL
 		glFlush();
 	}
 	
-	void WRendererOpenGL::OnGPUDestroy() noexcept
-	{
-	
-	}
-	
 	Bool WRendererOpenGL::IsGPUResourceCreated() const noexcept
 	{
 		return true;
@@ -118,6 +113,11 @@ namespace Whale::OpenGL
 	}
 	
 	void WRendererOpenGL::OnDisable() noexcept
+	{
+	
+	}
+	
+	void WRendererOpenGL::OnResourceDestroy() noexcept
 	{
 	
 	}

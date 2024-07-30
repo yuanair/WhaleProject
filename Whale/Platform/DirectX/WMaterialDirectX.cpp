@@ -11,15 +11,11 @@ namespace Whale::DirectX
 		return true;
 	}
 	
-	void WMaterialDirectX::OnGPUCreate(const WMaterialArg &arg) noexcept
+	void WMaterialDirectX::Create(const WMaterialArg &arg) noexcept
 	{
 	
 	}
 	
-	void WMaterialDirectX::OnGPUDestroy() noexcept
-	{
-	
-	}
 	
 	void WMaterialDirectX::OnUse() const noexcept
 	{
@@ -27,6 +23,7 @@ namespace Whale::DirectX
 		{
 			auto pBitmap = pWeak.Lock();
 			if (!pBitmap || !pBitmap->IsEnabled()) continue;
+			pBitmap->Use();
 		}
 	}
 	
@@ -36,6 +33,11 @@ namespace Whale::DirectX
 	}
 	
 	void WMaterialDirectX::OnDisable() noexcept
+	{
+	
+	}
+	
+	void WMaterialDirectX::OnResourceDestroy() noexcept
 	{
 	
 	}

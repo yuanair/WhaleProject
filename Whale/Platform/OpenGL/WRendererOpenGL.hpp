@@ -15,9 +15,7 @@ namespace Whale::OpenGL
 	{
 	public:
 		
-		void OnGPUCreate() noexcept override;
-		
-		void OnGPUDestroy() noexcept override;
+		void Init() noexcept override;
 		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
@@ -28,8 +26,8 @@ namespace Whale::OpenGL
 		void OnEnable() noexcept override;
 		
 		void OnDisable() noexcept override;
-	
-	private:
+		
+		void OnResourceDestroy() noexcept override;
 		
 		TFUniquePtr<WWindowRenderTarget> OnMakeWindowRenderTarget() override;
 		

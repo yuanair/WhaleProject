@@ -21,12 +21,13 @@ namespace Whale::DirectX
 	
 	public:
 		
+		void Create(const WMaterialArg &arg) noexcept override;
+		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
-		void OnGPUCreate(const WMaterialArg &arg) noexcept override;
 		
-		void OnGPUDestroy() noexcept override;
+		void OnResourceDestroy() noexcept override;
 		
 		void OnUse() const noexcept override;
 		

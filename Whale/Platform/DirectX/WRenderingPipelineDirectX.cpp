@@ -9,15 +9,15 @@ namespace Whale
 {
 	Bool DirectX::WRenderingPipelineDirectX::IsGPUResourceCreated() const noexcept
 	{
-		return pID3D12PipelineState;
+		return m_pID3D12PipelineState;
 	}
 	
-	void DirectX::WRenderingPipelineDirectX::OnGPUCreate(const WRenderingPipelineArg &arg) noexcept
+	Bool DirectX::WRenderingPipelineDirectX::CreateFromShader(const WRenderingPipelineArg &arg) noexcept
 	{
 		if (m_pRenderer == nullptr || !m_pRenderer->IsGPUResourceCreated())
 		{
 			FDebug::LogError(TagA, "m_pRenderer isn't create");
-			return;
+			return false;
 		}
 		TFSharedPtr<WShaderDirectX> pVertexShader = DynamicPointerCast<WShaderDirectX>(arg.m_pVertexShader.Lock());
 		TFSharedPtr<WShaderDirectX> pPixelShader  = DynamicPointerCast<WShaderDirectX>(arg.m_pPixelShader.Lock());
@@ -29,7 +29,7 @@ namespace Whale
 		{
 			FDebug::LogError(TagA, "pPixelShader isn't cast to WShaderDirectX");
 		}
-		if (!(pVertexShader && pPixelShader)) return;
+		if (!(pVertexShader && pPixelShader)) return false;
 		
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 			                         {
@@ -54,7 +54,7 @@ namespace Whale
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		
 		psoDesc.InputLayout                     = {inputElementDescs, _countof(inputElementDescs)};
-		psoDesc.pRootSignature                  = m_pRenderer->pID3D12RootSignature.Get();
+		psoDesc.pRootSignature                  = m_pRenderer->GetPid3D12RootSignature().Get();
 		psoDesc.VS                              = CD3DX12_SHADER_BYTECODE(pVertexShader->GetPShader().Get());
 		psoDesc.PS                              = CD3DX12_SHADER_BYTECODE(pPixelShader->GetPShader().Get());
 		psoDesc.RasterizerState                 = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
@@ -68,19 +68,15 @@ namespace Whale
 		psoDesc.SampleDesc.Count = 1;
 		
 		THROW_IF_FAILED(
-			m_pRenderer->pID3D12Device->CreateGraphicsPipelineState(
-				&psoDesc, IID_PPV_ARGS(this->pID3D12PipelineState.ReleaseAndGetAddressOf()))
+			m_pRenderer->GetPid3D12Device()->CreateGraphicsPipelineState(
+				&psoDesc, IID_PPV_ARGS(this->m_pID3D12PipelineState.ReleaseAndGetAddressOf()))
 		);
-	}
-	
-	void DirectX::WRenderingPipelineDirectX::OnGPUDestroy() noexcept
-	{
-		pID3D12PipelineState.Reset();
+		return true;
 	}
 	
 	void DirectX::WRenderingPipelineDirectX::OnUse() noexcept
 	{
-		m_pRenderer->pID3D12CommandList->SetPipelineState(this->pID3D12PipelineState.Get());
+		m_pRenderer->GetPid3D12CommandList()->SetPipelineState(this->m_pID3D12PipelineState.Get());
 	}
 	
 	void DirectX::WRenderingPipelineDirectX::OnEnable() noexcept
@@ -91,5 +87,10 @@ namespace Whale
 	void DirectX::WRenderingPipelineDirectX::OnDisable() noexcept
 	{
 	
+	}
+	
+	void DirectX::WRenderingPipelineDirectX::OnResourceDestroy() noexcept
+	{
+		m_pID3D12PipelineState.Reset();
 	}
 } // Whale

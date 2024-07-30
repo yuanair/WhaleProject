@@ -21,15 +21,15 @@ namespace Whale::DirectX
 	
 	public:
 		
+		Bool Create(const StaticMeshArg &arg) noexcept override;
+		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
 		
+		void OnResourceDestroy() noexcept override;
+		
 		void OnRender() override;
-		
-		void OnGPUCreate() noexcept override;
-		
-		void OnGPUDestroy() noexcept override;
 		
 		void OnEnable() noexcept override;
 		
@@ -39,9 +39,9 @@ namespace Whale::DirectX
 		
 		WRendererDirectX *m_pRenderer;
 		
-		Microsoft::WRL::ComPtr<ID3D12Resource> pID3D12VertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_pID3D12VertexBuffer;
 		
-		D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+		D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView{};
 		
 	};
 	

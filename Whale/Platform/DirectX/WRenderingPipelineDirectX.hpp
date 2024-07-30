@@ -20,13 +20,13 @@ namespace Whale::DirectX
 	
 	public:
 		
+		Bool CreateFromShader(const WRenderingPipelineArg &arg) noexcept override;
+		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
 		
-		void OnGPUCreate(const WRenderingPipelineArg &arg) noexcept override;
-		
-		void OnGPUDestroy() noexcept override;
+		void OnResourceDestroy() noexcept override;
 		
 		void OnUse() noexcept override;
 		
@@ -38,7 +38,7 @@ namespace Whale::DirectX
 		
 		WRendererDirectX *m_pRenderer;
 		
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> pID3D12PipelineState;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pID3D12PipelineState;
 		
 	};
 	

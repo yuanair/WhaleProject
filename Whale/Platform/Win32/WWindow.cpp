@@ -53,7 +53,7 @@ namespace Whale::Win32
 		Destroy();
 	}
 
-//	void WWindow::Create(
+//	void WWindow::Init(
 //		const WWindowClass &windowClass, const StringA &windowName,
 //		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
 //	)

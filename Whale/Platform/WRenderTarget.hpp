@@ -14,7 +14,7 @@ namespace Whale
 {
 	///
 	/// 渲染目标
-	class WHALE_API WRenderTarget : public WObject, public IEnable
+	class WHALE_API WRenderTarget : public WObject, public TIGPUResource
 	{
 	public:
 		

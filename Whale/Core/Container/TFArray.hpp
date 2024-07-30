@@ -89,6 +89,11 @@ namespace Whale::Container
 		
 		///
 		/// 添加元素
+		template<class... Args>
+		ElemT &Emplace(Args &&... args) noexcept;
+		
+		///
+		/// 添加元素
 		/// \param elem
 		virtual ElemT &Append(ElemT elem) noexcept;
 		
@@ -309,6 +314,15 @@ namespace Whale::Container
 		}
 		PrivateReset(newPtr);
 		this->length = newLength;
+	}
+	
+	template<class ElemT>
+	template<class... Args>
+	ElemT &TFArray<ElemT>::Emplace(Args &&... args) noexcept
+	{
+		SizeT oldLength = GetLength();
+		Relength(oldLength + 1);
+		return At(oldLength) = ElemT(Whale::Forward<Args>(args)...);
 	}
 	
 	template<class ElemT>

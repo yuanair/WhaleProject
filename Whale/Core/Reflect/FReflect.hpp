@@ -43,11 +43,11 @@ namespace Whale::Reflect
 	
 	private:
 		
-		static std::vector<WClass> classes;
+		static Container::TFArray<WClass> classes;
 		
-		static std::vector<WEnum> enums;
+		static Container::TFArray<WEnum> enums;
 		
-		static std::vector<WUnion> unions;
+		static Container::TFArray<WUnion> unions;
 		
 	};
 	
@@ -56,15 +56,15 @@ namespace Whale::Reflect
 	{
 		if constexpr (std::is_class_v<T>)
 		{
-			return classes.emplace_back(typeid(T).name(), std::is_class_v<T>, std::is_final_v<T>);
+			return classes.Emplace(typeid(T).name(), std::is_class_v<T>, std::is_final_v<T>);
 		}
 		else if constexpr (std::is_enum_v<T>)
 		{
-			return enums.emplace_back(typeid(T).name());
+			return enums.Emplace(typeid(T).name());
 		}
 		else if constexpr (std::is_union_v<T>)
 		{
-			return unions.emplace_back(typeid(T).name());
+			return unions.Emplace(typeid(T).name());
 		}
 		else
 		{

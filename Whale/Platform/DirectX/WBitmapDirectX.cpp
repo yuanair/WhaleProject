@@ -23,94 +23,83 @@ namespace Whale::DirectX
 		return m_pResource;
 	}
 	
-	Bool WBitmapDirectX::OnGPUCreate(const WBitmapArg &arg) noexcept
+	Bool WBitmapDirectX::CreateFromFile(const Whale::WBitmapArg &arg) noexcept
 	{
-		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
-		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
-		// 使用WIC创建并加载一个2D纹理
+//		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
+//		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
+//		// 使用WIC创建并加载一个2D纹理
+//
+//
+//		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
+//
+//		THROW_IF_FAILED(
+//			m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateDecoderFromFilename(
+//				arg.m_fileName.CStr(),              // 文件名
+//				nullptr,                            // 不指定解码器，使用默认
+//				GENERIC_READ,                    // 访问权限
+//				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
+//				&pIWICDecoder                    // 解码器对象
+//			));
+//
+//		// 获取第一帧图片(因为GIF等格式文件可能会有多帧图片，其他的格式一般只有一帧图片)
+//		// 实际解析出来的往往是位图格式数据
+//		THROW_IF_FAILED(pIWICDecoder->GetFrame(0, &pIWICFrame));
+//
+//		WICPixelFormatGUID wpf = {};
+//		//获取WIC图片格式
+//		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
+//		GUID tgFormat = {};
+//
+//		//通过第一道转换之后获取DXGI的等价格式
+//		if (WWICForDirectX::GetTargetPixelFormat(&wpf, &tgFormat))
+//		{
+//			this->m_stTextureFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(&tgFormat);
+//		}
+//
+//		if (DXGI_FORMAT_UNKNOWN == this->m_stTextureFormat)
+//		{
+//			// 不支持的图片格式 目前退出了事
+//			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
+//			// 图片都需要提前转换好，所以不会出现不支持的现象
+//			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
+//			return false;
+//		}
+//
+//
+//		if (!InlineIsEqualGUID(wpf, tgFormat))
+//		{// 这个判断很重要，如果原WIC格式不是直接能转换为DXGI格式的图片时
+//			// 我们需要做的就是转换图片格式为能够直接对应DXGI格式的形式
+//			//创建图片格式转换器
+//			Microsoft::WRL::ComPtr<IWICFormatConverter> pIConverter;
+//			THROW_IF_FAILED(m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateFormatConverter(&pIConverter));
+//
+//			//初始化一个图片转换器，实际也就是将图片数据进行了格式转换
+//			THROW_IF_FAILED(
+//				pIConverter->Initialize(
+//					pIWICFrame.Get(),                // 输入原图片数据
+//					tgFormat,                         // 指定待转换的目标格式
+//					WICBitmapDitherTypeNone,         // 指定位图是否有调色板，现代都是真彩位图，不用调色板，所以为None
+//					nullptr,                            // 指定调色板指针
+//					0.f,                             // 指定Alpha阀值
+//					WICBitmapPaletteTypeCustom       // 调色板类型，实际没有使用，所以指定为Custom
+//				));
+//			// 调用QueryInterface方法获得对象的位图数据源接口
+//			THROW_IF_FAILED(pIConverter.As(&pIBMP));
+//		}
+//		else
+//		{
+//			//图片数据格式不需要转换，直接获取其位图数据源接口
+//			THROW_IF_FAILED(pIWICFrame.As(&pIBMP));
+//		}
 		
-		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
-		
-		THROW_IF_FAILED(
-			m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateDecoderFromFilename(
-				arg.m_fileName.CStr(),              // 文件名
-				nullptr,                            // 不指定解码器，使用默认
-				GENERIC_READ,                    // 访问权限
-				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
-				&pIWICDecoder                    // 解码器对象
-			));
-		
-		// 获取第一帧图片(因为GIF等格式文件可能会有多帧图片，其他的格式一般只有一帧图片)
-		// 实际解析出来的往往是位图格式数据
-		THROW_IF_FAILED(pIWICDecoder->GetFrame(0, &pIWICFrame));
-		
-		WICPixelFormatGUID wpf = {};
-		//获取WIC图片格式
-		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
-		GUID tgFormat = {};
-		
-		//通过第一道转换之后获取DXGI的等价格式
-		if (FWICForDirectX::GetTargetPixelFormat(&wpf, &tgFormat))
-		{
-			this->m_stTextureFormat = FWICForDirectX::GetDXGIFormatFromPixelFormat(&tgFormat);
-		}
-		
-		if (DXGI_FORMAT_UNKNOWN == this->m_stTextureFormat)
-		{
-			// 不支持的图片格式 目前退出了事
-			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
-			// 图片都需要提前转换好，所以不会出现不支持的现象
-			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
-			return false;
-		}
 		
 		// 定义一个位图格式的图片数据对象接口
-		Microsoft::WRL::ComPtr<IWICBitmapSource> pIBMP;
+		Microsoft::WRL::ComPtr<IWICBitmapSource>    pIBMP;
+		Microsoft::WRL::ComPtr<IWICPixelFormatInfo> pIWICPixelInfo;
+		m_pRenderer->GetPWICForDirectX()->LoadFromFile(arg.m_fileName, arg.m_format, pIBMP, pIWICPixelInfo);
 		
-		if (!InlineIsEqualGUID(wpf, tgFormat))
-		{// 这个判断很重要，如果原WIC格式不是直接能转换为DXGI格式的图片时
-			// 我们需要做的就是转换图片格式为能够直接对应DXGI格式的形式
-			//创建图片格式转换器
-			Microsoft::WRL::ComPtr<IWICFormatConverter> pIConverter;
-			THROW_IF_FAILED(m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateFormatConverter(&pIConverter));
-			
-			//初始化一个图片转换器，实际也就是将图片数据进行了格式转换
-			THROW_IF_FAILED(
-				pIConverter->Initialize(
-					pIWICFrame.Get(),                // 输入原图片数据
-					tgFormat,                         // 指定待转换的目标格式
-					WICBitmapDitherTypeNone,         // 指定位图是否有调色板，现代都是真彩位图，不用调色板，所以为None
-					nullptr,                            // 指定调色板指针
-					0.f,                             // 指定Alpha阀值
-					WICBitmapPaletteTypeCustom       // 调色板类型，实际没有使用，所以指定为Custom
-				));
-			// 调用QueryInterface方法获得对象的位图数据源接口
-			THROW_IF_FAILED(pIConverter.As(&pIBMP));
-		}
-		else
-		{
-			//图片数据格式不需要转换，直接获取其位图数据源接口
-			THROW_IF_FAILED(pIWICFrame.As(&pIBMP));
-		}
 		//获得图片大小（单位：像素）
 		THROW_IF_FAILED(pIBMP->GetSize(&this->m_width, &this->m_height));
-		
-		//获取图片像素的位大小的BPP（Bits Per Pixel）信息，用以计算图片行数据的真实大小（单位：字节）
-		Microsoft::WRL::ComPtr<IWICComponentInfo> pIWIComponentInfo;
-		THROW_IF_FAILED(m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateComponentInfo(
-			tgFormat, pIWIComponentInfo.GetAddressOf()));
-		
-		WICComponentType type;
-		THROW_IF_FAILED(pIWIComponentInfo->GetComponentType(&type));
-		
-		if (type != WICPixelFormat)
-		{
-			FDebug::LogError(TagA, FLoadException("Unknown Error"));
-			return false;
-		}
-		
-		Microsoft::WRL::ComPtr<IWICPixelFormatInfo> pIWICPixelInfo;
-		THROW_IF_FAILED(pIWIComponentInfo.As(&pIWICPixelInfo));
 		
 		// 到这里终于可以得到BPP了，这也是我看的比较吐血的地方，为了BPP居然饶了这么多环节
 		THROW_IF_FAILED(pIWICPixelInfo->GetBitsPerPixel(&this->m_BPP));
@@ -136,7 +125,7 @@ namespace Whale::DirectX
 		// 在传统的D3D11及以前的D3D接口中，这些过程都被封装了，我们只能指定创建时的类型为默认堆
 		auto properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 		THROW_IF_FAILED(
-			m_pRenderer->pID3D12Device->CreateCommittedResource(
+			m_pRenderer->GetPid3D12Device()->CreateCommittedResource(
 				&properties, D3D12_HEAP_FLAG_NONE,
 				&stTextureDesc                // 可以使用CD3DX12_RESOURCE_DESC::Tex2D来简化结构体的初始化
 				, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(m_pResource.ReleaseAndGetAddressOf())));
@@ -152,7 +141,7 @@ namespace Whale::DirectX
 		properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		auto buffer = CD3DX12_RESOURCE_DESC::Buffer(n64UploadBufferSize);
 		THROW_IF_FAILED(
-			m_pRenderer->pID3D12Device->CreateCommittedResource(
+			m_pRenderer->GetPid3D12Device()->CreateCommittedResource(
 				&properties,
 				D3D12_HEAP_FLAG_NONE,
 				&buffer,
@@ -181,7 +170,7 @@ namespace Whale::DirectX
 		
 		D3D12_RESOURCE_DESC stDestDesc = m_pResource->GetDesc();
 		
-		m_pRenderer->pID3D12Device->GetCopyableFootprints(
+		m_pRenderer->GetPid3D12Device()->GetCopyableFootprints(
 			&stDestDesc, 0, nNumSubresources, 0, &m_stTxtLayouts, &nTextureRowNum, &n64TextureRowSizes, &n64RequiredSize
 		);
 		
@@ -210,17 +199,27 @@ namespace Whale::DirectX
 		// 释放图片数据，做一个干净的程序员
 		::HeapFree(::GetProcessHeap(), 0, pbPicData);
 		
+		//10、创建SRV堆 (Shader Resource View Heap)
+		D3D12_DESCRIPTOR_HEAP_DESC stSRVHeapDesc = {};
+		stSRVHeapDesc.NumDescriptors = 1;
+		stSRVHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		stSRVHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		THROW_IF_FAILED(
+			m_pRenderer->GetPid3D12Device()->CreateDescriptorHeap(
+				&stSRVHeapDesc, IID_PPV_ARGS(m_pSRVHeap.ReleaseAndGetAddressOf())));
+		
+		//......
+		
+		// 最终创建SRV描述符
+		D3D12_SHADER_RESOURCE_VIEW_DESC stSRVDesc = {};
+		stSRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		stSRVDesc.Format                  = stTextureDesc.Format;
+		stSRVDesc.ViewDimension           = D3D12_SRV_DIMENSION_TEXTURE2D;
+		stSRVDesc.Texture2D.MipLevels     = 1;
+		m_pRenderer->GetPid3D12Device()->CreateShaderResourceView(
+			m_pResource.Get(), &stSRVDesc, m_pSRVHeap->GetCPUDescriptorHandleForHeapStart());
+		
 		return true;
-	}
-	
-	void WBitmapDirectX::OnGPUDestroy() noexcept
-	{
-		m_pResource.Reset();
-		m_pUpload.Reset();
-		m_stTextureFormat = {};
-		m_width           = 0;
-		m_height          = 0;
-		m_BPP             = 0;
 	}
 	
 	void WBitmapDirectX::OnUse() noexcept
@@ -228,7 +227,7 @@ namespace Whale::DirectX
 		//向命令队列发出从上传堆复制纹理数据到默认堆的命令
 		CD3DX12_TEXTURE_COPY_LOCATION Dst(m_pResource.Get(), 0);
 		CD3DX12_TEXTURE_COPY_LOCATION Src(m_pUpload.Get(), m_stTxtLayouts);
-		m_pRenderer->pID3D12CommandList->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
+		m_pRenderer->GetPid3D12CommandList()->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
 		
 		//设置一个资源屏障，同步并确认复制操作完成
 		//直接使用结构体然后调用的形式
@@ -240,6 +239,52 @@ namespace Whale::DirectX
 		stResBar.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 		stResBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		
-		m_pRenderer->pID3D12CommandList->ResourceBarrier(1, &stResBar);
+		m_pRenderer->GetPid3D12CommandList()->ResourceBarrier(1, &stResBar);
+		
+		// 执行命令列表并等待纹理资源上传完成，这一步是必须的
+//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandList()->Close());
+//		ID3D12CommandList *ppCommandLists[] = {m_pRenderer->GetPid3D12CommandList().Get()};
+//		m_pRenderer->GetPid3D12CommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+////---------------------------------------------------------------------------------------------
+//// 17、创建一个同步对象——围栏，用于等待渲染完成，因为现在Draw Call是异步的了
+//		GRS_THROW_IF_FAILED(
+//			m_pRenderer->GetPid3D12Device()->CreateFence(
+//				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_pRenderer->GetPid3D12Fence())));
+//		n64FenceValue = 1;
+//
+////---------------------------------------------------------------------------------------------
+//// 18、创建一个Event同步对象，用于等待围栏事件通知
+//		hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+//		if (hFenceEvent == nullptr)
+//		{
+//			GRS_THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()));
+//		}
+//
+////---------------------------------------------------------------------------------------------
+//// 19、等待纹理资源正式复制完成先
+//		const UINT64 fence = n64FenceValue;
+//		GRS_THROW_IF_FAILED(pICommandQueue->Signal(pIFence.Get(), fence));
+//		n64FenceValue++;
+//
+////---------------------------------------------------------------------------------------------
+//// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
+//		if (pIFence->GetCompletedValue() < fence)
+//		{
+//			GRS_THROW_IF_FAILED(pIFence->SetEventOnCompletion(fence, hFenceEvent));
+//			WaitForSingleObject(hFenceEvent, INFINITE);
+//		}
+		
+	}
+	
+	void WBitmapDirectX::OnResourceDestroy() noexcept
+	{
+		m_pResource       = nullptr;
+		m_pUpload         = nullptr;
+		m_stTextureFormat = {};
+		m_stTxtLayouts    = {};
+		m_width           = 0;
+		m_height          = 0;
+		m_BPP             = 0;
 	}
 } // Whale

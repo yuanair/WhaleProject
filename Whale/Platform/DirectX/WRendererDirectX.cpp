@@ -10,6 +10,7 @@
 #include "WBitmapDirectX.hpp"
 #include "WRenderingPipelineDirectX.hpp"
 #include "WMaterialDirectX.hpp"
+#include "WCommandListDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -47,8 +48,8 @@ namespace Whale::DirectX
 	void WRendererDirectX::EnableDebugLayer()
 	{
 #if defined(DEBUG) || defined(_DEBUG)
-		THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&this->pID3D12Debug)));
-		this->pID3D12Debug->EnableDebugLayer();
+		THROW_IF_FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&this->m_pID3D12Debug)));
+		this->m_pID3D12Debug->EnableDebugLayer();
 #endif
 	}
 	
@@ -60,7 +61,7 @@ namespace Whale::DirectX
 		}
 	}
 	
-	void WRendererDirectX::OnGPUCreate() noexcept
+	void WRendererDirectX::Init() noexcept
 	{
 		Microsoft::WRL::ComPtr<IDXGIAdapter1> pIAdapter;
 		uint32                                dxgiFactoryFlags = 0;
@@ -72,12 +73,12 @@ namespace Whale::DirectX
 		
 		// 创建dxgi工厂
 		THROW_IF_FAILED(
-			CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(this->pIDXGIFactory.ReleaseAndGetAddressOf()))
+			CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(this->m_pIDXGIFactory.ReleaseAndGetAddressOf()))
 		);
 		
 		// 遍历适配器
 		for (UINT adapterIndex = 0;
-		     DXGI_ERROR_NOT_FOUND != this->pIDXGIFactory->EnumAdapters1(adapterIndex, &pIAdapter); ++adapterIndex)
+		     DXGI_ERROR_NOT_FOUND != this->m_pIDXGIFactory->EnumAdapters1(adapterIndex, &pIAdapter); ++adapterIndex)
 		{
 			DXGI_ADAPTER_DESC1 desc{};
 			pIAdapter->GetDesc1(&desc);
@@ -94,25 +95,22 @@ namespace Whale::DirectX
 		// 创建D3D12.1的设备
 		THROW_IF_FAILED(
 			D3D12CreateDevice(
-				pIAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(this->pID3D12Device.ReleaseAndGetAddressOf()))
+				pIAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(this->m_pID3D12Device.ReleaseAndGetAddressOf()))
 		);
-		
-		// 创建命令队列接口
-		D3D12_COMMAND_QUEUE_DESC queueDesc
-			                         {
-				                         .Type = D3D12_COMMAND_LIST_TYPE_DIRECT
-			                         };
-		THROW_IF_FAILED(
-			this->pID3D12Device->CreateCommandQueue(
-				&queueDesc, IID_PPV_ARGS(this->pID3D12CommandQueue.ReleaseAndGetAddressOf()))
-		);
+
+//		m_pCommandList = MakeUnique<WCommandListDirectX>(this);
+//		if (!m_pCommandList->Init())
+//		{
+//			FDebug::LogError(TagA, "WCommandListDirectX::Init() error");
+//			return;
+//		}
 		
 		// 创建根描述符
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE stFeatureData = {};
 		// 检测是否支持V1.1版本的根签名
 		stFeatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
 		if (FAILED(
-			this->pID3D12Device->CheckFeatureSupport(
+			this->m_pID3D12Device->CheckFeatureSupport(
 				D3D12_FEATURE_ROOT_SIGNATURE, &stFeatureData, sizeof(stFeatureData))))
 		{
 			stFeatureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
@@ -153,48 +151,57 @@ namespace Whale::DirectX
 			&stRootSignatureDesc, stFeatureData.HighestVersion, pISignatureBlob.ReleaseAndGetAddressOf(),
 			pIErrorBlob.ReleaseAndGetAddressOf()
 		));
-		THROW_IF_FAILED(this->pID3D12Device->CreateRootSignature(
+		THROW_IF_FAILED(this->m_pID3D12Device->CreateRootSignature(
 			0, pISignatureBlob->GetBufferPointer(), pISignatureBlob->GetBufferSize(),
-			IID_PPV_ARGS(this->pID3D12RootSignature.ReleaseAndGetAddressOf())));
+			IID_PPV_ARGS(this->m_pID3D12RootSignature.ReleaseAndGetAddressOf())));
 		
 		// 得到每个描述符元素的大小
-		this->nRTVDescriptorSize = this->pID3D12Device->GetDescriptorHandleIncrementSize(
+		this->m_RTVDescriptorSize = this->m_pID3D12Device->GetDescriptorHandleIncrementSize(
 			D3D12_DESCRIPTOR_HEAP_TYPE_RTV
+		);
+		
+		// 创建命令队列接口
+		D3D12_COMMAND_QUEUE_DESC queueDesc
+			                         {
+				                         .Type = D3D12_COMMAND_LIST_TYPE_DIRECT
+			                         };
+		THROW_IF_FAILED(
+			this->m_pID3D12Device->CreateCommandQueue(
+				&queueDesc, IID_PPV_ARGS(this->m_pID3D12CommandQueue.ReleaseAndGetAddressOf()))
 		);
 		
 		// 创建命令列表分配器
 		THROW_IF_FAILED(
-			this->pID3D12Device->CreateCommandAllocator(
-				D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(this->pID3D12CommandAllocator.ReleaseAndGetAddressOf()))
+			this->m_pID3D12Device->CreateCommandAllocator(
+				D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(this->m_pID3D12CommandAllocator.ReleaseAndGetAddressOf()))
 		);
 		// 创建图形命令列表
 		THROW_IF_FAILED(
-			this->pID3D12Device->CreateCommandList(
-				0, D3D12_COMMAND_LIST_TYPE_DIRECT, this->pID3D12CommandAllocator.Get(), nullptr,
-				IID_PPV_ARGS(this->pID3D12CommandList.ReleaseAndGetAddressOf()))
+			this->m_pID3D12Device->CreateCommandList(
+				0, D3D12_COMMAND_LIST_TYPE_DIRECT, this->m_pID3D12CommandAllocator.Get(), nullptr,
+				IID_PPV_ARGS(this->m_pID3D12CommandList.ReleaseAndGetAddressOf()))
 		);
 		// 创建一个同步对象——围栏，用于等待渲染完成，因为现在Draw Call是异步的了
 		THROW_IF_FAILED(
-			this->pID3D12Device->CreateFence(
-				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(this->pID3D12Fence.ReleaseAndGetAddressOf())));
-		this->n64FenceValue = 1;
+			this->m_pID3D12Device->CreateFence(
+				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(this->m_pID3D12Fence.ReleaseAndGetAddressOf())));
+		this->m_n64FenceValue = 1;
 		// 创建一个Event同步对象，用于等待围栏事件通知
-		this->hFenceEvent   = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		if (this->hFenceEvent == nullptr)
+		this->m_hFenceEvent   = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (this->m_hFenceEvent == nullptr)
 		{
 			THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()));
 		}
-	}
-	
-	void WRendererDirectX::OnGPUDestroy() noexcept
-	{
-		this->pIDXGIFactory->Release();
-		this->pID3D12Device->Release();
+		
+		// 创建WIC
+		this->m_pWICForDirectX = MakeUnique<WWICForDirectX>();
+		this->m_pWICForDirectX->Create();
+		
 	}
 	
 	Bool WRendererDirectX::IsGPUResourceCreated() const noexcept
 	{
-		return this->pID3D12Device;
+		return this->m_pID3D12Device;
 	}
 	
 	void WRendererDirectX::OnEnable() noexcept
@@ -205,6 +212,26 @@ namespace Whale::DirectX
 	void WRendererDirectX::OnDisable() noexcept
 	{
 	
+	}
+	
+	void WRendererDirectX::OnResourceDestroy() noexcept
+	{
+		#if defined(DEBUG) || defined(_DEBUG)
+		m_pID3D12Debug = nullptr;
+		#endif
+		
+		m_pIDXGIFactory           = nullptr;
+		m_pID3D12Device           = nullptr;
+		m_pID3D12CommandQueue     = nullptr;
+		m_pID3D12CommandAllocator = nullptr;
+		m_pID3D12CommandList      = nullptr;
+		m_pID3D12RootSignature    = nullptr;
+		m_pID3D12Fence            = nullptr;
+		m_pWICForDirectX          = nullptr;
+		
+		m_n64FenceValue     = 0;
+		m_hFenceEvent       = nullptr;
+		m_RTVDescriptorSize = 0;
 	}
 	
 } // Whale

@@ -66,7 +66,7 @@ namespace Whale
 		
 		~WObject() override;
 	
-	protected:
+	public:
 		
 		WObject &operator=(const WObject &other) = default;
 		

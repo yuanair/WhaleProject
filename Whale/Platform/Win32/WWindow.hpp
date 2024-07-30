@@ -148,7 +148,7 @@ namespace Whale::Win32
 	public:
 		
 		// 创建窗口
-//		void Create(
+//		void Init(
 //			const WWindowClass &windowClass, const StringA &windowName,
 //			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
 //		);

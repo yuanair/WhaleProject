@@ -40,13 +40,13 @@ namespace Whale::DirectX
 	
 	public:
 		
+		Bool CreateFromFile(const FShaderArg &arg) noexcept override;
+		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
 		
-		Bool OnGPUCreate(const FShaderArg &arg) noexcept override;
-		
-		void OnGPUDestroy() noexcept override;
+		void OnResourceDestroy() noexcept override;
 		
 		void OnEnable() noexcept override;
 		

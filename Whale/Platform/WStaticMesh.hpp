@@ -25,6 +25,12 @@ namespace Whale
 		Eigen::Vector2f texcoord{};
 	};
 	
+	/// 静态网格体参数
+	struct WHALE_API StaticMeshArg
+	{
+	
+	};
+	
 	///
 	/// 静态网格体
 	class WHALE_API WStaticMesh : public WRenderObject
@@ -32,6 +38,11 @@ namespace Whale
 	public:
 		
 		using Vertex = FVertex;
+	
+	public:
+		
+		/// 创建资源
+		virtual Bool Create(const StaticMeshArg &arg) noexcept = 0;
 	
 	private:
 		
@@ -43,8 +54,6 @@ namespace Whale
 		/// \return 获取网格体数据字节大小
 		[[nodiscard]]
 		SizeT GetByteSize() const { return sizeof(Vertex) * this->m_vertexes.GetLength(); }
-	
-	public:
 		
 		[[nodiscard]]
 		const Container::TFArray<Vertex> &GetVertexes() const { return this->m_vertexes; }

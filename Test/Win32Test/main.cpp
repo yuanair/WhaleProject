@@ -137,6 +137,7 @@ private:
 	TFWeakPtr<WRenderingPipeline>             pRenderingPipeline;
 	TFWeakPtr<WMaterial>                      pMaterial;
 	TFWeakPtr<WStaticMesh>                    pMesh;
+	TFWeakPtr<WBitmap>                        pBitmap;
 
 public:
 	
@@ -199,7 +200,7 @@ void Program::InitData()
 	if (pWindow->GetHWindow().handle == nullptr)
 	{
 		throw FException((
-			                 "Create Window Failed!\r\nError: " +
+			                 "Init Window Failed!\r\nError: " +
 			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
 		);
 	}
@@ -211,7 +212,7 @@ void Program::InitData()
 	if (pWindow2->GetHWindow().handle == nullptr)
 	{
 		throw FException((
-			                 "Create Window Failed!\r\nError: " +
+			                 "Init Window Failed!\r\nError: " +
 			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
 		);
 	}
@@ -228,25 +229,37 @@ void Program::InitDirectX()
 	pRenderingPipeline = pRender->MakeRenderingPipeline();
 	pMaterial          = pRender->MakeMaterial();
 	pMesh              = pRender->MakeStaticMesh();
+	pBitmap            = pRender->MakeBitmap();
 	
-	pRender->GPUCreateAndEnable();
-	pVertexShader.Lock()->GPUCreateAndEnable(
+	pRender->Init();
+	pRender->Enable();
+	
+	pVertexShader.Lock()->CreateFromFile(
 		{
 			.m_fileName=FLocale::ToUTFString(data.shader, data.fromEncoding),
 			.m_type=EShaderTypeVertex,
 			.entryPoint="vertex"
 		}
 	);
-	pPixelShader.Lock()->GPUCreateAndEnable(
+	pPixelShader.Lock()->CreateFromFile(
 		{
 			.m_fileName=FLocale::ToUTFString(data.shader, data.fromEncoding),
 			.m_type=EShaderTypePixel,
 			.entryPoint="pixel"
 		}
 	);
-	pRenderingPipeline.Lock()->GPUCreateAndEnable({.m_pVertexShader=pVertexShader, .m_pPixelShader=pPixelShader});
-	pMaterial.Lock()->GPUCreateAndEnable({});
+	
+	pRenderingPipeline.Lock()->CreateFromShader({.m_pVertexShader=pVertexShader, .m_pPixelShader=pPixelShader});
+	pRenderingPipeline.Lock()->Enable();
+	
+	pBitmap.Lock()->CreateFromFile({.m_fileName=dataDirectoryW + L"/10.jpg", .m_format=DXGI_FORMAT_R32G32B32A32_FLOAT});
+	pBitmap.Lock()->Enable();
+	
+	pMaterial.Lock()->Create({});
+	pMaterial.Lock()->Enable();
 	pMaterial.Lock()->SetPRenderingPipelines({pRenderingPipeline});
+	pMaterial.Lock()->SetPBitmaps({pBitmap});
+	
 	pMesh.Lock()->SetVertexes
 		(
 			{
@@ -277,7 +290,8 @@ void Program::InitDirectX()
 			}
 		);
 	pMesh.Lock()->SetPMaterials({pMaterial});
-	pMesh.Lock()->GPUCreateAndEnable();
+	pMesh.Lock()->Create({});
+	pMesh.Lock()->Enable();
 	
 	pWindow->InitDirectX();
 	pWindow2->InitDirectX();

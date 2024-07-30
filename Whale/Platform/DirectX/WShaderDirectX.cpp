@@ -8,7 +8,7 @@
 namespace Whale::DirectX
 {
 	
-	Bool WShaderDirectX::OnGPUCreate(const Whale::FShaderArg &arg) noexcept
+	Bool WShaderDirectX::CreateFromFile(const Whale::FShaderArg &arg) noexcept
 	{
 		Microsoft::WRL::ComPtr<ID3DBlob> pErrorMsgs;
 #if defined(_DEBUG)
@@ -41,11 +41,6 @@ namespace Whale::DirectX
 		return true;
 	}
 	
-	void WShaderDirectX::OnGPUDestroy() noexcept
-	{
-		m_pShader.Reset();
-	}
-	
 	void WShaderDirectX::OnEnable() noexcept
 	{
 	
@@ -59,6 +54,11 @@ namespace Whale::DirectX
 	Bool WShaderDirectX::IsGPUResourceCreated() const noexcept
 	{
 		return m_pRenderer;
+	}
+	
+	void WShaderDirectX::OnResourceDestroy() noexcept
+	{
+		m_pShader.Reset();
 	}
 	
 	

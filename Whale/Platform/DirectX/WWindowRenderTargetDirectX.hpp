@@ -22,8 +22,12 @@ namespace Whale::DirectX
 	public:
 		
 		void Create(const FWRTCreateArg &arg) override;
+		
+		Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
+		
+		void OnResourceDestroy() noexcept override;
 		
 		void OnRender() override;
 		

@@ -27,24 +27,34 @@ struct Vertex
 
 struct Pixel
 {
-	float4 position         : SV_POSITION;
+	float4 positionCS         : SV_POSITION;
 	float4 color            : COLOR;
-	float3 normal           : NORMAL;
+	float3 normalOS           : NORMAL;
     float2 texcoord         : TEXCOORD0;
 };
 
-Texture2D    g_txDiffuse    : register( t0 );
-SamplerState g_samLinear    : register( s0 );
+Texture2D    g_MainTexture    : register( t0 );
+// SamplerState g_LinearSampler    : register( s0 );
+
+SamplerState g_LinearSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
 
 void vertex(in Vertex input, out Pixel output)
 {
-    output.position = input.positionOS;
+    output.positionCS = input.positionOS;
     output.color = input.color;
-    output.normal = input.normalOS;
+    output.normalOS = input.normalOS;
     output.texcoord = input.texcoord;
 }
 
 float4 pixel(in Pixel input) : SV_TARGET
 {
-    return float4(input.texcoord, 0.0f, 1.0f);
+    return g_MainTexture.Sample(g_LinearSampler, input.texcoord);
+    // return float4(input.texcoord, 0.0f, 1.0f);
+    //return float4((input.positionCS.xyz + float3(0.5f, 0.5f, 0.5f)) * 0.1f, 1.0f);
+    // return input.color;
 }

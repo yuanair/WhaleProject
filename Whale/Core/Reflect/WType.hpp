@@ -25,16 +25,18 @@ namespace Whale::Reflect
 	{
 	public:
 		
+		WClass() : name(""), isClass(false), isFinal(false) {}
+		
 		WClass(StringA name, const Bool isClass, const Bool isFinal)
 			: name(Move(name)), isClass(isClass), isFinal(isFinal) {}
 	
 	public:
 		
-		const StringA name;
+		StringA name;
 		
-		const Bool isClass; // true - class/false - struct
+		Bool isClass; // true - class/false - struct
 		
-		const Bool isFinal;
+		Bool isFinal;
 		
 	};
 	
@@ -44,12 +46,14 @@ namespace Whale::Reflect
 	{
 	public:
 		
+		WEnum() : name("") {}
+		
 		explicit WEnum(StringA name)
 			: name(Move(name)) {}
 	
 	public:
 		
-		const StringA name;
+		StringA name;
 		
 	};
 	
@@ -59,12 +63,14 @@ namespace Whale::Reflect
 	{
 	public:
 		
+		WUnion() : name("") {}
+		
 		explicit WUnion(StringA name)
 			: name(Move(name)) {}
 	
 	public:
 		
-		const StringA name;
+		StringA name;
 		
 	};
 	

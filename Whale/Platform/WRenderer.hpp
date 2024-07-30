@@ -104,6 +104,9 @@ namespace Whale
 		///
 		/// 渲染
 		void Render() { if (this->IsEnabled()) OnRender(); }
+		
+		/// 初始化
+		virtual void Init() noexcept = 0;
 	
 	private:
 		
@@ -120,6 +123,20 @@ namespace Whale
 		virtual TFUniquePtr<WStaticMesh> OnMakeStaticMesh() = 0;
 		
 		virtual TFUniquePtr<WBitmap> OnMakeBitmap() = 0;
+	
+	public:
+		
+		[[nodiscard]] auto &GetPRenderTargets() const noexcept { return m_pRenderTargets; }
+		
+		[[nodiscard]] auto &GetPShaders() const noexcept { return m_pShaders; }
+		
+		[[nodiscard]] auto &GetPRenderingPipelines() const noexcept { return m_pRenderingPipelines; }
+		
+		[[nodiscard]] auto &GetPMaterials() const noexcept { return m_pMaterials; }
+		
+		[[nodiscard]] auto &GetPStaticMeshes() const noexcept { return m_pStaticMeshes; }
+		
+		[[nodiscard]] auto &GetPImages() const noexcept { return m_pImages; }
 	
 	public:
 		
