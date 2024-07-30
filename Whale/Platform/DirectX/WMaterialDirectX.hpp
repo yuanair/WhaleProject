@@ -29,7 +29,7 @@ namespace Whale::DirectX
 		
 		void OnResourceDestroy() noexcept override;
 		
-		void OnUse() const noexcept override;
+		void OnUse() noexcept override;
 		
 		void OnEnable() noexcept override;
 		

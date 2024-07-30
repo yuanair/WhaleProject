@@ -160,6 +160,15 @@ namespace Whale::DirectX
 			D3D12_DESCRIPTOR_HEAP_TYPE_RTV
 		);
 		
+		// 创建SRV堆 (Shader Resource View Heap)
+		D3D12_DESCRIPTOR_HEAP_DESC stSRVHeapDesc = {};
+		stSRVHeapDesc.NumDescriptors = 1;
+		stSRVHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		stSRVHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		THROW_IF_FAILED(
+			GetPid3D12Device()->CreateDescriptorHeap(
+				&stSRVHeapDesc, IID_PPV_ARGS(m_pSRVHeap.ReleaseAndGetAddressOf())));
+		
 		// 创建WIC
 		this->m_pWICForDirectX = MakeUnique<WWICForDirectX>();
 		this->m_pWICForDirectX->Create();

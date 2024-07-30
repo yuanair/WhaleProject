@@ -3,6 +3,7 @@
 //
 
 #include "WMaterialDirectX.hpp"
+#include "WCommandListDirectX.hpp"
 
 namespace Whale::DirectX
 {
@@ -17,7 +18,7 @@ namespace Whale::DirectX
 	}
 	
 	
-	void WMaterialDirectX::OnUse() const noexcept
+	void WMaterialDirectX::OnUse() noexcept
 	{
 		for (auto &pWeak: GetPBitmaps())
 		{

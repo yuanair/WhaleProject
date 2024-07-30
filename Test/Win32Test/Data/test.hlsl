@@ -4,17 +4,17 @@ cbuffer cbPerFrame : register( b1 )
 {
     // pixel
     float3        g_lightDir                : packoffset( c0 );
-    float        g_ambient                : packoffset( c0.w );
+    float        g_ambient                  : packoffset( c0.w );
 };
 
 cbuffer cbPerObject : register( b0 )
 {
     // pixel
-    float4        g_objectColor            : packoffset( c0 );
+    float4        g_objectColor             : packoffset( c0 );
 
     // vertex
-    matrix        g_worldViewProjection    : packoffset( c0 );
-    matrix        g_world                : packoffset( c4 );
+    matrix        g_worldViewProjection     : packoffset( c0 );
+    matrix        g_world                   : packoffset( c4 );
 };
 
 struct Vertex
@@ -27,21 +27,14 @@ struct Vertex
 
 struct Pixel
 {
-	float4 positionCS         : SV_POSITION;
+	float4 positionCS       : SV_POSITION;
 	float4 color            : COLOR;
-	float3 normalOS           : NORMAL;
+	float3 normalOS         : NORMAL;
     float2 texcoord         : TEXCOORD0;
 };
 
-Texture2D    g_MainTexture    : register( t0 );
-// SamplerState g_LinearSampler    : register( s0 );
-
-SamplerState g_LinearSampler
-{
-    Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = Wrap;
-    AddressV = Wrap;
-};
+Texture2D    g_MainTexture      : register( t0 );
+SamplerState g_LinearSampler    : register( s0 );
 
 void vertex(in Vertex input, out Pixel output)
 {

@@ -29,11 +29,11 @@ namespace Whale
 		/// 创建
 		virtual void Create(const WMaterialArg &arg) noexcept = 0;
 		
-		void Use() const noexcept { if (this->IsEnabled()) OnUse(); }
+		void Use() noexcept { if (this->IsEnabled()) OnUse(); }
 	
 	private:
 		
-		virtual void OnUse() const noexcept = 0;
+		virtual void OnUse() noexcept = 0;
 	
 	public:
 		

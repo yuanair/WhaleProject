@@ -63,28 +63,16 @@ namespace Whale::DirectX
 		[[nodiscard]] auto &GetPidxgiFactory() const noexcept { return m_pIDXGIFactory; }
 		
 		[[nodiscard]] auto &GetPid3D12Device() const noexcept { return m_pID3D12Device; }
-
-//		[[nodiscard]] auto &GetPid3D12CommandQueue() const noexcept { return m_pID3D12CommandQueue; }
-//
-//		[[nodiscard]] auto &GetPid3D12CommandAllocator() const noexcept { return m_pID3D12CommandAllocator; }
-//
-//		[[nodiscard]] auto &GetPid3D12CommandList() const noexcept { return m_pID3D12CommandList; }
 		
 		[[nodiscard]] auto &GetPid3D12RootSignature() const noexcept { return m_pID3D12RootSignature; }
-
-//		[[nodiscard]] auto &GetPid3D12Fence() const noexcept { return m_pID3D12Fence; }
+		
+		[[nodiscard]] auto &GetPSRVHeap() const noexcept { return m_pSRVHeap; }
 		
 		[[nodiscard]] auto &GetPCommandList() const noexcept { return m_pCommandList; }
 		
 		[[nodiscard]] auto &GetPWICForDirectX() const noexcept { return m_pWICForDirectX; }
-
-//		[[nodiscard]] uint64 GetN64FenceValue() const noexcept { return m_n64FenceValue; }
-//
-//		[[nodiscard]] const HANDLE GetHFenceEvent() const noexcept { return m_hFenceEvent; }
 		
 		[[nodiscard]] uint32 GetRTVDescriptorSize() const noexcept { return m_RTVDescriptorSize; }
-
-//		void AddN64FenceValue() noexcept { ++m_n64FenceValue; }
 	
 	private:
 
@@ -97,24 +85,14 @@ namespace Whale::DirectX
 		Microsoft::WRL::ComPtr<IDXGIFactory7> m_pIDXGIFactory;
 		
 		Microsoft::WRL::ComPtr<ID3D12Device10> m_pID3D12Device;
-
-//		Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_pID3D12CommandQueue;
-//
-//		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_pID3D12CommandAllocator;
-//
-//		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_pID3D12CommandList;
 		
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_pID3D12RootSignature;
-
-//		Microsoft::WRL::ComPtr<ID3D12Fence1> m_pID3D12Fence;
+		
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pSRVHeap;
 		
 		TFUniquePtr<WCommandListDirectX> m_pCommandList;
 		
 		TFUniquePtr<WWICForDirectX> m_pWICForDirectX;
-		
-		//
-//		uint64 m_n64FenceValue = 0;
-//		HANDLE m_hFenceEvent   = nullptr;
 		
 		// 每个描述符元素的大小
 		uint32 m_RTVDescriptorSize = 0;

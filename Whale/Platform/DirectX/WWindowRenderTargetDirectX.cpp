@@ -97,10 +97,12 @@ namespace Whale::DirectX
 			FDebug::LogError(TagA, "m_pRenderer isn't create");
 			return;
 		}
-		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetGraphicsRootSignature
-			(
-				m_pRenderer->GetPid3D12RootSignature().Get()
-			);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetGraphicsRootSignature(
+			m_pRenderer->GetPid3D12RootSignature().Get());
+		ID3D12DescriptorHeap *ppHeaps[] = {m_pRenderer->GetPSRVHeap().Get()};
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetGraphicsRootDescriptorTable(
+			0, m_pRenderer->GetPSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->RSSetViewports(1, &this->m_stViewPort);
 		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->RSSetScissorRects(1, &this->m_stScissorRect);
 		
@@ -121,7 +123,9 @@ namespace Whale::DirectX
 		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 		// 继续记录命令，并真正开始新一帧的渲染
 		const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ClearRenderTargetView(
+			rtvHandle, clearColor, 0, nullptr
+		);
 		
 		// ...
 		for (auto &item: this->m_renderObjects)
@@ -192,9 +196,9 @@ namespace Whale::DirectX
 		m_pID3D12RenderTargets.Clear();
 		m_pIDXGISwapChain.Reset();
 		pID3D12RTVHeap.Reset();
-		m_stViewPort    = {};
+		m_stViewPort = {};
 		m_stScissorRect = {};
-		m_nFrameIndex   = 0;
+		m_nFrameIndex = 0;
 	}
 	
 } // Whale

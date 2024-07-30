@@ -9,7 +9,8 @@
 #include "TIGPUResource.hpp"
 #include "WImage.hpp"
 
-#include "dxgiformat.h"
+#include <dxgiformat.h>
+#include <Eigen/Core>
 
 namespace Whale
 {
@@ -21,9 +22,9 @@ namespace Whale
 	{
 		
 		/// 文件名
-		StringW     m_fileName;
-		/// 格式
-		DXGI_FORMAT m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		StringW m_fileName;
+		/// 垂直翻转（速度影响比较小，仅改变数据拷贝顺序）
+		Bool    m_flipVertical = true;
 		
 	};
 	
@@ -35,6 +36,12 @@ namespace Whale
 		
 		/// 从文件创建
 		virtual Bool CreateFromFile(const WBitmapArg &arg) noexcept = 0;
+		
+		/// 宽度
+		virtual uint64 GetWidth() noexcept = 0;
+		
+		/// 高度
+		virtual uint32 GetHeight() noexcept = 0;
 		
 		void Use() noexcept { if (this->IsEnabled()) OnUse(); }
 	

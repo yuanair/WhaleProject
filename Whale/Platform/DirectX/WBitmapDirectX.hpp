@@ -23,6 +23,10 @@ namespace Whale::DirectX
 		
 		Bool CreateFromFile(const WBitmapArg &arg) noexcept override;
 		
+		uint64 GetWidth() noexcept override;
+		
+		uint32 GetHeight() noexcept override;
+		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;
 	
 	private:
@@ -39,16 +43,11 @@ namespace Whale::DirectX
 		
 		WRendererDirectX *m_pRenderer;
 		
-		Microsoft::WRL::ComPtr<ID3D12Resource>       m_pResource;
-		Microsoft::WRL::ComPtr<ID3D12Resource>       m_pUpload;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_pSRVHeap;
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_pResource;
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_pUpload;
 		
 		DXGI_FORMAT                        m_stTextureFormat{};
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_stTxtLayouts{};
-		
-		uint32 m_width  = 0;
-		uint32 m_height = 0;
-		uint32 m_BPP    = 0;
 		
 	};
 	
