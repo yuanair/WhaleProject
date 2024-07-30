@@ -252,7 +252,7 @@ void Program::InitDirectX()
 	pRenderingPipeline.Lock()->CreateFromShader({.m_pVertexShader=pVertexShader, .m_pPixelShader=pPixelShader});
 	pRenderingPipeline.Lock()->Enable();
 	
-	pBitmap.Lock()->CreateFromFile({.m_fileName=dataDirectoryW + L"/10.jpg", .m_format=DXGI_FORMAT_R32G32B32A32_FLOAT});
+	pBitmap.Lock()->CreateFromFile({.m_fileName=dataDirectoryW + L"/10.jpg"});
 	pBitmap.Lock()->Enable();
 	
 	pMaterial.Lock()->Create({});

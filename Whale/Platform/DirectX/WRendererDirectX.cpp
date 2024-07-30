@@ -159,39 +159,6 @@ namespace Whale::DirectX
 		this->m_RTVDescriptorSize = this->m_pID3D12Device->GetDescriptorHandleIncrementSize(
 			D3D12_DESCRIPTOR_HEAP_TYPE_RTV
 		);
-
-//		// 创建命令队列接口
-//		D3D12_COMMAND_QUEUE_DESC queueDesc
-//			                         {
-//				                         .Type = D3D12_COMMAND_LIST_TYPE_DIRECT
-//			                         };
-//		THROW_IF_FAILED(
-//			this->m_pID3D12Device->CreateCommandQueue(
-//				&queueDesc, IID_PPV_ARGS(this->m_pID3D12CommandQueue.ReleaseAndGetAddressOf()))
-//		);
-//
-//		// 创建命令列表分配器
-//		THROW_IF_FAILED(
-//			this->m_pID3D12Device->CreateCommandAllocator(
-//				D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(this->m_pID3D12CommandAllocator.ReleaseAndGetAddressOf()))
-//		);
-//		// 创建图形命令列表
-//		THROW_IF_FAILED(
-//			this->m_pID3D12Device->CreateCommandList(
-//				0, D3D12_COMMAND_LIST_TYPE_DIRECT, this->m_pID3D12CommandAllocator.Get(), nullptr,
-//				IID_PPV_ARGS(this->m_pID3D12CommandList.ReleaseAndGetAddressOf()))
-//		);
-//		// 创建一个同步对象——围栏，用于等待渲染完成，因为现在Draw Call是异步的了
-//		THROW_IF_FAILED(
-//			this->m_pID3D12Device->CreateFence(
-//				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(this->m_pID3D12Fence.ReleaseAndGetAddressOf())));
-//		this->m_n64FenceValue = 1;
-//		// 创建一个Event同步对象，用于等待围栏事件通知
-//		this->m_hFenceEvent   = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-//		if (this->m_hFenceEvent == nullptr)
-//		{
-//			THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()));
-//		}
 		
 		// 创建WIC
 		this->m_pWICForDirectX = MakeUnique<WWICForDirectX>();
@@ -222,16 +189,10 @@ namespace Whale::DirectX
 		
 		m_pIDXGIFactory        = nullptr;
 		m_pID3D12Device        = nullptr;
-		//m_pID3D12CommandQueue     = nullptr;
-		//m_pID3D12CommandAllocator = nullptr;
-		//m_pID3D12CommandList      = nullptr;
 		m_pID3D12RootSignature = nullptr;
-		//m_pID3D12Fence            = nullptr;
 		m_pCommandList         = nullptr;
 		m_pWICForDirectX       = nullptr;
 		
-		//m_n64FenceValue     = 0;
-		//m_hFenceEvent       = nullptr;
 		m_RTVDescriptorSize = 0;
 	}
 	

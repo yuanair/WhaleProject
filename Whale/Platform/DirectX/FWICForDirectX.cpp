@@ -141,7 +141,8 @@ namespace Whale::DirectX
 	
 	Bool WWICForDirectX::LoadFromFile(const StringW &fileName,
 	                                  Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-	                                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo) noexcept
+	                                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+	                                  DXGI_FORMAT &targetFormat) noexcept
 	{
 		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
 		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
@@ -167,14 +168,14 @@ namespace Whale::DirectX
 		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
 		GUID tgFormat = {};
 		
-		DXGI_FORMAT textureFormat = DXGI_FORMAT_UNKNOWN;
+		targetFormat = DXGI_FORMAT_UNKNOWN;
 		//通过第一道转换之后获取DXGI的等价格式
 		if (WWICForDirectX::GetTargetPixelFormat(wpf, tgFormat))
 		{
-			textureFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(tgFormat);
+			targetFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(tgFormat);
 		}
 		
-		if (DXGI_FORMAT_UNKNOWN == textureFormat)
+		if (DXGI_FORMAT_UNKNOWN == targetFormat)
 		{
 			// 不支持的图片格式 目前退出了事
 			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
@@ -228,105 +229,6 @@ namespace Whale::DirectX
 		return true;
 	}
 	
-	Bool WWICForDirectX::LoadFromFile(const Whale::Container::StringW &fileName, DXGI_FORMAT targetFormat,
-	                                  Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-	                                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo) noexcept
-	{
-		
-		GUID targetTextureFormat = GetPixelFormatFromDXGIFormat(targetFormat);
-		
-		if (GUID_WICPixelFormatUndefined == targetTextureFormat)
-		{
-			// 不支持的图片格式 目前退出了事
-			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
-			// 图片都需要提前转换好，所以不会出现不支持的现象
-			FDebug::LogError(TagA, FLoadException("Unsupported target format"));
-			return false;
-		}
-		
-		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
-		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
-		// 使用WIC创建并加载一个2D纹理
-		
-		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
-		
-		THROW_IF_FAILED(
-			m_pIWICFactory->CreateDecoderFromFilename(
-				fileName.CStr(),              // 文件名
-				nullptr,                            // 不指定解码器，使用默认
-				GENERIC_READ,                    // 访问权限
-				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
-				pIWICDecoder.ReleaseAndGetAddressOf()                    // 解码器对象
-			));
-		
-		// 获取第一帧图片(因为GIF等格式文件可能会有多帧图片，其他的格式一般只有一帧图片)
-		// 实际解析出来的往往是位图格式数据
-		THROW_IF_FAILED(pIWICDecoder->GetFrame(0, pIWICFrame.ReleaseAndGetAddressOf()));
-		
-		
-		WICPixelFormatGUID wpf = {};
-		//获取WIC图片格式
-		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
-		
-		DXGI_FORMAT textureFormat = DXGI_FORMAT_UNKNOWN;
-		//通过第一道转换之后获取DXGI的等价格式
-		if (WWICForDirectX::GetTargetPixelFormat(wpf, targetTextureFormat))
-		{
-			textureFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(targetTextureFormat);
-		}
-		
-		if (DXGI_FORMAT_UNKNOWN == textureFormat)
-		{
-			// 不支持的图片格式 目前退出了事
-			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
-			// 图片都需要提前转换好，所以不会出现不支持的现象
-			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
-			return false;
-		}
-		
-		if (!InlineIsEqualGUID(wpf, targetTextureFormat))
-		{// 这个判断很重要，如果原WIC格式不是直接能转换为DXGI格式的图片时
-			// 我们需要做的就是转换图片格式为能够直接对应DXGI格式的形式
-			//创建图片格式转换器
-			Microsoft::WRL::ComPtr<IWICFormatConverter> pIConverter;
-			THROW_IF_FAILED(m_pIWICFactory->CreateFormatConverter(&pIConverter));
-			
-			//初始化一个图片转换器，实际也就是将图片数据进行了格式转换
-			THROW_IF_FAILED(
-				pIConverter->Initialize(
-					pIWICFrame.Get(),                // 输入原图片数据
-					targetTextureFormat,             // 指定待转换的目标格式
-					WICBitmapDitherTypeNone,         // 指定位图是否有调色板，现代都是真彩位图，不用调色板，所以为None
-					nullptr,                         // 指定调色板指针
-					0.f,                             // 指定Alpha阀值
-					WICBitmapPaletteTypeCustom       // 调色板类型，实际没有使用，所以指定为Custom
-				));
-			// 调用QueryInterface方法获得对象的位图数据源接口
-			THROW_IF_FAILED(pIConverter.As(&pIWICSource));
-		}
-		else
-		{
-			//图片数据格式不需要转换，直接获取其位图数据源接口
-			THROW_IF_FAILED(pIWICFrame.As(&pIWICSource));
-		}
-		
-		//获取图片像素的位大小的BPP（Bits Per Pixel）信息，用以计算图片行数据的真实大小（单位：字节）
-		Microsoft::WRL::ComPtr<IWICComponentInfo> pIWIComponentInfo;
-		THROW_IF_FAILED(m_pIWICFactory->CreateComponentInfo(
-			targetTextureFormat, pIWIComponentInfo.GetAddressOf()));
-		
-		WICComponentType type;
-		THROW_IF_FAILED(pIWIComponentInfo->GetComponentType(&type));
-		
-		if (type != WICPixelFormat)
-		{
-			FDebug::LogError(TagA, FLoadException("Unknown Error"));
-			return false;
-		}
-		
-		THROW_IF_FAILED(pIWIComponentInfo.As(&pIWICPixelInfo));
-		return true;
-	}
 	
 	Bool WWICForDirectX::IsGPUResourceCreated() const noexcept
 	{

@@ -26,78 +26,11 @@ namespace Whale::DirectX
 	
 	Bool WBitmapDirectX::CreateFromFile(const Whale::WBitmapArg &arg) noexcept
 	{
-//		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
-//		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
-//		// 使用WIC创建并加载一个2D纹理
-//
-//
-//		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
-//
-//		THROW_IF_FAILED(
-//			m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateDecoderFromFilename(
-//				arg.m_fileName.CStr(),              // 文件名
-//				nullptr,                            // 不指定解码器，使用默认
-//				GENERIC_READ,                    // 访问权限
-//				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
-//				&pIWICDecoder                    // 解码器对象
-//			));
-//
-//		// 获取第一帧图片(因为GIF等格式文件可能会有多帧图片，其他的格式一般只有一帧图片)
-//		// 实际解析出来的往往是位图格式数据
-//		THROW_IF_FAILED(pIWICDecoder->GetFrame(0, &pIWICFrame));
-//
-//		WICPixelFormatGUID wpf = {};
-//		//获取WIC图片格式
-//		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
-//		GUID tgFormat = {};
-//
-//		//通过第一道转换之后获取DXGI的等价格式
-//		if (WWICForDirectX::GetTargetPixelFormat(&wpf, &tgFormat))
-//		{
-//			this->m_stTextureFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(&tgFormat);
-//		}
-//
-//		if (DXGI_FORMAT_UNKNOWN == this->m_stTextureFormat)
-//		{
-//			// 不支持的图片格式 目前退出了事
-//			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
-//			// 图片都需要提前转换好，所以不会出现不支持的现象
-//			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
-//			return false;
-//		}
-//
-//
-//		if (!InlineIsEqualGUID(wpf, tgFormat))
-//		{// 这个判断很重要，如果原WIC格式不是直接能转换为DXGI格式的图片时
-//			// 我们需要做的就是转换图片格式为能够直接对应DXGI格式的形式
-//			//创建图片格式转换器
-//			Microsoft::WRL::ComPtr<IWICFormatConverter> pIConverter;
-//			THROW_IF_FAILED(m_pRenderer->wicForDirectX.GetPIWICFactory()->CreateFormatConverter(&pIConverter));
-//
-//			//初始化一个图片转换器，实际也就是将图片数据进行了格式转换
-//			THROW_IF_FAILED(
-//				pIConverter->Initialize(
-//					pIWICFrame.Get(),                // 输入原图片数据
-//					tgFormat,                         // 指定待转换的目标格式
-//					WICBitmapDitherTypeNone,         // 指定位图是否有调色板，现代都是真彩位图，不用调色板，所以为None
-//					nullptr,                            // 指定调色板指针
-//					0.f,                             // 指定Alpha阀值
-//					WICBitmapPaletteTypeCustom       // 调色板类型，实际没有使用，所以指定为Custom
-//				));
-//			// 调用QueryInterface方法获得对象的位图数据源接口
-//			THROW_IF_FAILED(pIConverter.As(&pIBMP));
-//		}
-//		else
-//		{
-//			//图片数据格式不需要转换，直接获取其位图数据源接口
-//			THROW_IF_FAILED(pIWICFrame.As(&pIBMP));
-//		}
-		
-		
 		// 定义一个位图格式的图片数据对象接口
 		Microsoft::WRL::ComPtr<IWICBitmapSource>    pIBMP;
 		Microsoft::WRL::ComPtr<IWICPixelFormatInfo> pIWICPixelInfo;
-		m_pRenderer->GetPWICForDirectX()->LoadFromFile(arg.m_fileName, arg.m_format, pIBMP, pIWICPixelInfo);
+		DXGI_FORMAT                                 targetFormat;
+		m_pRenderer->GetPWICForDirectX()->LoadFromFile(arg.m_fileName, pIBMP, pIWICPixelInfo, targetFormat);
 		
 		//获得图片大小（单位：像素）
 		THROW_IF_FAILED(pIBMP->GetSize(&this->m_width, &this->m_height));
@@ -112,7 +45,7 @@ namespace Whale::DirectX
 		D3D12_RESOURCE_DESC stTextureDesc = {};
 		stTextureDesc.Dimension          = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 		stTextureDesc.MipLevels          = 1;
-		stTextureDesc.Format             = arg.m_format; //DXGI_FORMAT_R8G8B8A8_UNORM;
+		stTextureDesc.Format             = targetFormat; //DXGI_FORMAT_R8G8B8A8_UNORM;
 		stTextureDesc.Width              = m_width;
 		stTextureDesc.Height             = m_height;
 		stTextureDesc.Flags              = D3D12_RESOURCE_FLAG_NONE;
@@ -157,10 +90,48 @@ namespace Whale::DirectX
 			if (Win32::FResult(HRESULT_FROM_WIN32(GetLastError())).IsFailed()) return false;
 		}
 		
+		#if false
+		
 		//从图片中读取出数据
 		THROW_IF_FAILED(pIBMP->CopyPixels(
 			nullptr, nPicRowPitch, static_cast<UINT>(nPicRowPitch * m_width)   //注意这里才是图片数据真实的大小，这个值通常小于缓冲的大小
-			, reinterpret_cast<BYTE *>(pbPicData)));
+			, reinterpret_cast<BYTE *>(pbPicData)));//{//下面这段代码来自DX12的示例，直接通过填充缓冲绘制了一个黑白方格的纹理
+		
+		#else
+		{
+			//还原这段代码，然后注释上面的CopyPixels调用可以看到黑白方格纹理的效果
+			const UINT rowPitch          = nPicRowPitch; //nTextureW * 4; //static_cast<UINT>(n64UploadBufferSize / nTextureH);
+			const UINT cellPitch         = rowPitch >> 3;        // The width of a cell in the checkboard texture.
+			const UINT cellHeight        = m_width >> 3;    // The height of a cell in the checkerboard texture.
+			const UINT textureSize       = static_cast<UINT>(n64UploadBufferSize);
+			UINT       nTexturePixelSize = static_cast<UINT>(n64UploadBufferSize / m_height / m_width);
+			
+			UINT8 *pData = reinterpret_cast<UINT8 *>(pbPicData);
+			
+			for (UINT n = 0; n < textureSize; n += nTexturePixelSize)
+			{
+				UINT x = n % rowPitch;
+				UINT y = n / rowPitch;
+				UINT i = x / cellPitch;
+				UINT j = y / cellHeight;
+				
+				if (i % 2 == j % 2)
+				{
+					pData[n]     = 0x00;        // R
+					pData[n + 1] = 0x00;    // G
+					pData[n + 2] = 0x00;    // B
+					pData[n + 3] = 0xff;    // A
+				}
+				else
+				{
+					pData[n]     = 0xff;        // R
+					pData[n + 1] = 0xff;    // G
+					pData[n + 2] = 0xff;    // B
+					pData[n + 3] = 0xff;    // A
+				}
+			}
+		}
+		#endif
 		
 		//获取向上传堆拷贝纹理数据的一些纹理转换尺寸信息
 		//对于复杂的DDS纹理这是非常必要的过程
@@ -220,11 +191,7 @@ namespace Whale::DirectX
 		m_pRenderer->GetPid3D12Device()->CreateShaderResourceView(
 			m_pResource.Get(), &stSRVDesc, m_pSRVHeap->GetCPUDescriptorHandleForHeapStart());
 		
-		return true;
-	}
-	
-	void WBitmapDirectX::OnUse() noexcept
-	{
+		
 		//向命令队列发出从上传堆复制纹理数据到默认堆的命令
 		CD3DX12_TEXTURE_COPY_LOCATION Dst(m_pResource.Get(), 0);
 		CD3DX12_TEXTURE_COPY_LOCATION Src(m_pUpload.Get(), m_stTxtLayouts);
@@ -242,39 +209,35 @@ namespace Whale::DirectX
 		
 		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(1, &stResBar);
 		
-		// 执行命令列表并等待纹理资源上传完成，这一步是必须的
-//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandList()->Close());
-//		ID3D12CommandList *ppCommandLists[] = {m_pRenderer->GetPid3D12CommandList().Get()};
-//		m_pRenderer->GetPid3D12CommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-////---------------------------------------------------------------------------------------------
-//// 17、创建一个同步对象——围栏，用于等待渲染完成，因为现在Draw Call是异步的了
-//		GRS_THROW_IF_FAILED(
-//			m_pRenderer->GetPid3D12Device()->CreateFence(
-//				0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_pRenderer->GetPid3D12Fence())));
-//		n64FenceValue = 1;
+		m_pRenderer->GetPCommandList()->Run();
+		m_pRenderer->GetPCommandList()->Wait();
+		m_pRenderer->GetPCommandList()->Reset();
+		
+		return true;
+	}
+	
+	void WBitmapDirectX::OnUse() noexcept
+	{
+//		//向命令队列发出从上传堆复制纹理数据到默认堆的命令
+//		CD3DX12_TEXTURE_COPY_LOCATION Dst(m_pResource.Get(), 0);
+//		CD3DX12_TEXTURE_COPY_LOCATION Src(m_pUpload.Get(), m_stTxtLayouts);
+//		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
 //
-////---------------------------------------------------------------------------------------------
-//// 18、创建一个Event同步对象，用于等待围栏事件通知
-//		hFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-//		if (hFenceEvent == nullptr)
-//		{
-//			GRS_THROW_IF_FAILED(HRESULT_FROM_WIN32(GetLastError()));
-//		}
+//		//设置一个资源屏障，同步并确认复制操作完成
+//		//直接使用结构体然后调用的形式
+//		D3D12_RESOURCE_BARRIER stResBar = {};
+//		stResBar.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+//		stResBar.Flags                  = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+//		stResBar.Transition.pResource   = m_pResource.Get();
+//		stResBar.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+//		stResBar.Transition.StateAfter  = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+//		stResBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 //
-////---------------------------------------------------------------------------------------------
-//// 19、等待纹理资源正式复制完成先
-//		const UINT64 fence = n64FenceValue;
-//		GRS_THROW_IF_FAILED(pICommandQueue->Signal(pIFence.Get(), fence));
-//		n64FenceValue++;
+//		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(1, &stResBar);
 //
-////---------------------------------------------------------------------------------------------
-//// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
-//		if (pIFence->GetCompletedValue() < fence)
-//		{
-//			GRS_THROW_IF_FAILED(pIFence->SetEventOnCompletion(fence, hFenceEvent));
-//			WaitForSingleObject(hFenceEvent, INFINITE);
-//		}
+//		m_pRenderer->GetPCommandList()->Run();
+//		m_pRenderer->GetPCommandList()->Wait();
+		// m_pRenderer->GetPCommandList()->Reset();
 		
 	}
 	

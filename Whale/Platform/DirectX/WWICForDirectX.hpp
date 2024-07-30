@@ -31,16 +31,11 @@ namespace Whale::DirectX
 		
 		/// 从文件加载图片
 		/// \param fileName 文件名
+		/// \param targetFormat 目标格式
 		Bool LoadFromFile(const StringW &fileName,
 		                  Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-		                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo) noexcept;
-		
-		/// 从文件加载图片
-		/// \param fileName 文件名
-		/// \param targetFormat 目标格式
-		Bool LoadFromFile(const StringW &fileName, DXGI_FORMAT targetFormat,
-		                  Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-		                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo) noexcept;
+		                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+		                  DXGI_FORMAT &targetFormat) noexcept;
 	
 	public:
 		
