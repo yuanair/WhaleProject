@@ -25,16 +25,43 @@ namespace Whale::Win32
 		
 	};
 	
-	///
-	/// HResult
 	class WHALE_API FResult
 	{
 	public:
 		
-		FResult(Win32::HResult hr) : hr(hr),
-		                             isThrowIfFailedAtDestructTime(true) {} // NOLINT(*-explicit-constructor)
+		FResult() noexcept
+			: m_hr(0), m_isThrowIfFailedAtDestructTime(false) {}
+		
+		FResult(Win32::HResult hr) noexcept// NOLINT(*-explicit-constructor)
+			: m_hr(hr), m_isThrowIfFailedAtDestructTime(true) {}
+		
+		FResult(const FResult &other) noexcept
+			: m_hr(other.m_hr), m_isThrowIfFailedAtDestructTime(other.m_isThrowIfFailedAtDestructTime) {}
+		
+		FResult(FResult &&other) noexcept
+			: FResult() { Swap(other); }
 		
 		~FResult();
+	
+	public:
+		
+		FResult &operator=(const FResult &other) noexcept
+		{
+			FResult(other).Swap(*this);
+			return *this;
+		}
+		
+		FResult &operator=(FResult &&other) noexcept
+		{
+			FResult(Whale::Move(other)).Swap(*this);
+			return *this;
+		}
+		
+		FResult &operator=(Win32::HResult hr) noexcept
+		{
+			this->m_hr = hr;
+			return *this;
+		}
 	
 	public:
 		
@@ -49,46 +76,53 @@ namespace Whale::Win32
 		
 		///
 		/// 输出到日志并抛异常
-		void Throw(const StringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
+		void Throw(const StringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
-		void Throw(const StringW &message, const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
+		void Throw(const StringW &message, const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		///
 		/// \return 是否是失败值
 		[[nodiscard]]
-		bool IsFailed() const;
+		Bool IsFailed() const;
 		
 		///
 		/// \return 是否是成功值
 		[[nodiscard]]
-		bool IsSucceeded() const;
+		Bool IsSucceeded() const;
 		
 		///
 		/// 如果失败则调用Throw()
 		void ThrowIfFailed(const StringA &message,
-		                   const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
+		                   const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
 		void ThrowIfFailed(const StringW &message,
-		                   const FSourceLocation &sourceLocation = FSourceLocation::Current()) const;
+		                   const FSourceLocation &sourceLocation = FSourceLocation::Current());
 	
 	public:
 		
-		[[nodiscard]]
-		Win32::HResult GetHr() const { return this->hr; }
-		
-		[[nodiscard]]
-		bool IsThrowIfFailedAtDestructTime() const { return this->isThrowIfFailedAtDestructTime; }
-		
-		void SetIsThrowIfFailedAtDestructTime(bool arg)
+		void Swap(FResult &other) noexcept
 		{
-			this->isThrowIfFailedAtDestructTime = arg;
+			Whale::Swap(m_hr, other.m_hr);
+			Whale::Swap(m_isThrowIfFailedAtDestructTime, other.m_isThrowIfFailedAtDestructTime);
+		}
+	
+	public:
+		
+		[[nodiscard]]Win32::HResult GetHr() const noexcept { return this->m_hr; }
+		
+		[[nodiscard]]Bool
+		IsThrowIfFailedAtDestructTime() const noexcept { return this->m_isThrowIfFailedAtDestructTime; }
+		
+		void SetIsThrowIfFailedAtDestructTime(Bool arg) noexcept
+		{
+			this->m_isThrowIfFailedAtDestructTime = arg;
 		}
 	
 	private:
 		
-		const Win32::HResult hr;
+		Win32::HResult m_hr;
 		
-		bool isThrowIfFailedAtDestructTime;
+		Bool m_isThrowIfFailedAtDestructTime;
 		
 	};
 	

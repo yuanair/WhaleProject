@@ -21,7 +21,7 @@ namespace Whale::DirectX
 	
 	public:
 		
-		Bool CreateFromFile(const WBitmapArg &arg) noexcept override;
+		Bool CreateFromFile(const WBitmapArg &arg) override;
 		
 		uint64 GetWidth() noexcept override;
 		

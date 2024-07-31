@@ -25,7 +25,7 @@ namespace Whale::DirectX
 		return m_pResource;
 	}
 	
-	Bool WBitmapDirectX::CreateFromFile(const Whale::WBitmapArg &arg) noexcept
+	Bool WBitmapDirectX::CreateFromFile(const Whale::WBitmapArg &arg)
 	{
 		// 定义一个位图格式的图片数据对象接口
 		Microsoft::WRL::ComPtr<IWICBitmapSource>    pIBMP;

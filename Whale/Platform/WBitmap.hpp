@@ -35,7 +35,7 @@ namespace Whale
 	public:
 		
 		/// 从文件创建
-		virtual Bool CreateFromFile(const WBitmapArg &arg) noexcept = 0;
+		virtual Bool CreateFromFile(const WBitmapArg &arg) = 0;
 		
 		/// 宽度
 		virtual uint64 GetWidth() noexcept = 0;

@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include "Whale/Core/TypeDef.hpp"
-#include "Whale/Core/Container/TFString.hpp"
-#include "Whale/Core/Stream.hpp"
+#include "TypeDef.hpp"
+#include "Container/TFString.hpp"
+#include "Stream.hpp"
+#include "TFFunction.hpp"
 
 #include <cstdio>
-#include <functional>
 
 namespace Whale::IO
 {
@@ -106,13 +106,13 @@ namespace Whale::IO
 		
 		FFileStream &Read(String &str) noexcept;
 		
-		FFileStream &ReadTo(const std::function<Bool(int32)> &stopFunction) noexcept;
+		FFileStream &ReadTo(const TFFunction<Bool, int32> &stopFunction) noexcept;
 		
-		FFileStream &ReadTo(const std::function<Bool(int32)> &stopFunction, String &str) noexcept;
+		FFileStream &ReadTo(const TFFunction<Bool, int32> &stopFunction, String &str) noexcept;
 		
-		FFileStream &ReadToBack(const std::function<Bool(int32)> &stopFunction) noexcept;
+		FFileStream &ReadToBack(const TFFunction<Bool, int32> &stopFunction) noexcept;
 		
-		FFileStream &ReadToBack(const std::function<Bool(int32)> &stopFunction, String &str) noexcept;
+		FFileStream &ReadToBack(const TFFunction<Bool, int32> &stopFunction, String &str) noexcept;
 		
 		FFileStream &ReadToNewLine() noexcept;
 		

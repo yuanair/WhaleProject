@@ -20,6 +20,10 @@ namespace Whale::DirectX
 	{
 	public:
 		
+		~WRendererDirectX() override = default;
+	
+	public:
+		
 		void Init() noexcept override;
 		
 		[[nodiscard]] Bool IsGPUResourceCreated() const noexcept override;

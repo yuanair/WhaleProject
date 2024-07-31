@@ -6,6 +6,7 @@
 
 #include "HWinDef.hpp"
 #include "Whale/Core/Container/TFString.hpp"
+#include "FResult.hpp"
 
 namespace Whale::Win32
 {
@@ -89,7 +90,7 @@ namespace Whale::Win32
 		
 		///
 		/// \return 获取最后的WIN32错误
-		static HResult GetLastError();
+		static FResult GetLastError();
 		
 		///
 		/// windows错误信息
@@ -98,6 +99,7 @@ namespace Whale::Win32
 		///
 		/// windows错误信息
 		static StringW MessageToStringW(HResult dwMessageId);
+		
 		
 	};
 	

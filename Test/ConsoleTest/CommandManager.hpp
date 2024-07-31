@@ -36,7 +36,7 @@ public:
 
 public:
 	
-	std::map<String, std::function<void(CommandManager &)>> commands;
+	std::map<String, TFFunction<void, CommandManager &>> commands;
 	
 	Container::TFArray<String> errors;
 	

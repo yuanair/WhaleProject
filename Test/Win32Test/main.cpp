@@ -91,6 +91,13 @@ class Program : public WProgram
 public:
 	
 	Program() : dataDirectoryA("./" CMAKE_PROJECT_NAME "Data"), dataDirectoryW(L"./" CMAKE_PROJECT_NAME "Data") {}
+	
+	~Program()
+	{
+		pRender  = nullptr;
+		pWindow2 = nullptr;
+		pWindow  = nullptr;
+	}
 
 public:
 	
@@ -201,22 +208,15 @@ void Program::InitData()
 	);
 	if (!pWindowClass->Register(Win32::FCore::GetIcon(IDI_APP_ICON), Win32::FCore::GetIcon(IDI_APP_ICON_SM)))
 	{
-		throw FException((
-			                 "Register Window Class Failed!\r\nError: " +
-			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
-		);
+		Win32::FCore::GetLastError();
 	}
 	
 	pWindow = MakeUnique<MyWindow>(*this);
 	pWindow->Create(*pWindowClass, FLocale::AToTString(this->data.windowData.name, this->data.toEncoding));
-	auto buffer = pWindow->GetNameA();
 	
 	if (pWindow->GetHWindow().handle == nullptr)
 	{
-		throw FException((
-			                 "Init Window Failed!\r\nError: " +
-			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
-		);
+		Win32::FCore::GetLastError();
 	}
 	pWindow->ShowAndUpdate();
 	
@@ -225,10 +225,7 @@ void Program::InitData()
 	pWindow2->Create(*pWindowClass, FLocale::AToTString(this->data.windowData.name, this->data.toEncoding));
 	if (pWindow2->GetHWindow().handle == nullptr)
 	{
-		throw FException((
-			                 "Init Window Failed!\r\nError: " +
-			                 Win32::FCore::MessageToStringA(Win32::FCore::GetLastError())).CStr()
-		);
+		Win32::FCore::GetLastError();
 	}
 	pWindow2->ShowAndUpdate();
 	
@@ -328,7 +325,17 @@ Win32::LResult MyWindow::OnDropFiles(Win32::HDrop hDropInfo)
 	{
 		reader.Get<CharW>(fileName, index);
 	}
-	if (auto    pBitmap = program.GetPBitmap().Lock()) pBitmap->CreateFromFile({.m_fileName=fileName});
+	if (auto    pBitmap = program.GetPBitmap().Lock())
+	{
+		try
+		{
+			pBitmap->CreateFromFile({.m_fileName=fileName});
+		}
+		catch (Win32::FResultException &e)
+		{
+			Win32::FMessageBox::Show(e.What(), program.GetData().windowData.name);
+		}
+	}
 	return false;
 }
 

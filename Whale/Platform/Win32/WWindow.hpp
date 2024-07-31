@@ -190,7 +190,7 @@ namespace Whale::Win32
 		
 		///
 		/// 销毁窗口
-		void Destroy() const;
+		void Destroy();
 		
 		///
 		/// \param deltaTime

@@ -23,13 +23,38 @@ namespace Whale
 	
 	public:
 		
-		TFFunction() : m_function(nullptr) {}
+		TFFunction() noexcept: m_function(nullptr) {}
 		
-		TFFunction(NullPtrT) : m_function(nullptr) {} // NOLINT(*-explicit-constructor)
+		TFFunction(NullPtrT) noexcept: m_function(nullptr) {} // NOLINT(*-explicit-constructor)
 		
-		TFFunction(FunctionType function) : m_function(function) {} // NOLINT(*-explicit-constructor)
+		TFFunction(const TFFunction &other) noexcept: m_function(other.m_function) {}
+		
+		template<class T, typename = std::enable_if_t<std::negation_v<std::is_same<std::_Remove_cvref_t<T>, TFFunction>>, int>>
+		TFFunction(T &&function) noexcept // NOLINT(*-explicit-constructor)
+			: m_function(Whale::Forward<T>(function)) {}
+		
+		TFFunction(TFFunction &&other) noexcept: m_function(other.m_function) {}
 	
 	public:
+		
+		TFFunction &operator=(const TFFunction &other) noexcept
+		{
+			m_function = other.m_function;
+			return *this;
+		}
+		
+		template<class T, typename = std::enable_if_t<std::negation_v<std::is_same<std::_Remove_cvref_t<T>, TFFunction>>, int>>
+		TFFunction &operator=(T &&function) noexcept
+		{
+			TFFunction(Whale::Forward<T>(function)).Swap(*this);
+			return *this;
+		}
+		
+		TFFunction &operator=(TFFunction &&other) noexcept
+		{
+			TFFunction(Whale::Move(other)).Swap(*this);
+			return *this;
+		}
 		
 		inline explicit operator Bool() const noexcept { return m_function != nullptr; }
 		
@@ -44,12 +69,17 @@ namespace Whale
 		{
 			return m_function(Whale::Forward<Args>(args)...);
 		}
+		
+		inline void Swap(TFFunction &other) noexcept
+		{
+			Whale::Swap(m_function, other.m_function);
+		}
 	
 	public:
 		
 		auto GetFunction() const noexcept { return m_function; }
 		
-		void SetFunction(FunctionType function) noexcept { m_function = function; }
+		void SetFunction(FunctionType &&function) noexcept { m_function = function; }
 	
 	private:
 		

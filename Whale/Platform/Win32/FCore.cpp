@@ -183,9 +183,10 @@ namespace Whale::Win32
 		return buffer;
 	}
 	
-	HResult FCore::GetLastError()
+	FResult FCore::GetLastError()
 	{
 		return HRESULT_FROM_WIN32(::GetLastError());
 	}
+	
 	
 } // Whale

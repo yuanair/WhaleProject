@@ -5,7 +5,7 @@
 #pragma once
 
 #include "TypeDef.hpp"
-#include "Whale/IO/IO.hpp"
+#include "IO.hpp"
 
 namespace Whale
 {

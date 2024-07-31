@@ -106,6 +106,7 @@ int WhaleMain()
 	IO::FileStreamT out{WHALE_TEXT("./test.txt"), WHALE_TEXT("w")};
 	
 	MyCommandManager commandManager{in, out};
+	
 	commandManager.commands.insert(
 		{
 			{WHALE_TEXT("exit"),       [](MyCommandManager &commandManager) -> void { commandManager.isExit = true; }},

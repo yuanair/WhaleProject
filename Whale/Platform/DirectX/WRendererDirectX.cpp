@@ -172,7 +172,6 @@ namespace Whale::DirectX
 		// 创建WIC
 		this->m_pWICForDirectX = MakeUnique<WWICForDirectX>();
 		this->m_pWICForDirectX->Create();
-		
 	}
 	
 	Bool WRendererDirectX::IsGPUResourceCreated() const noexcept
@@ -204,5 +203,6 @@ namespace Whale::DirectX
 		
 		m_RTVDescriptorSize = 0;
 	}
+	
 	
 } // Whale

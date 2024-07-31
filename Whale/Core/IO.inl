@@ -7,13 +7,13 @@ namespace Whale::IO
 	#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC
 	
 	template<>
-	inline void WHALE_API FileOpen(FILE **file, const CharA* fileName, const CharA* mode) noexcept
+	inline void WHALE_API FileOpen(FILE **file, const CharA *fileName, const CharA *mode) noexcept
 	{
 		::fopen_s(file, fileName, mode);
 	}
 	
 	template<>
-	inline void WHALE_API FileOpen(FILE **file, const CharW* fileName, const CharW* mode) noexcept
+	inline void WHALE_API FileOpen(FILE **file, const CharW *fileName, const CharW *mode) noexcept
 	{
 		::_wfopen_s(file, fileName, mode);
 	}
@@ -65,31 +65,32 @@ namespace Whale::IO
 	}
 	
 	template<class ElemT>
-	FFileStream<ElemT>& FFileStream<ElemT>::Open(const String& fileName, const String& mode, Bool isCloseF, Bool isFlushNewline) noexcept
+	FFileStream<ElemT> &
+	FFileStream<ElemT>::Open(const String &fileName, const String &mode, Bool isCloseF, Bool isFlushNewline) noexcept
 	{
 		Close();
 		FileOpen(&this->m_file, fileName.CStr(), mode.CStr());
-		this->m_peek = 0;
-		this->m_now = 0;
-		this->m_isCloseF = isCloseF;
+		this->m_peek           = 0;
+		this->m_now            = 0;
+		this->m_isCloseF       = isCloseF;
 		this->m_isFlushNewline = isFlushNewline;
 		return *this;
 	}
 	
 	template<class ElemT>
-	FFileStream<ElemT>& FFileStream<ElemT>::Reset(FILE *file, Bool isCloseF, Bool isFlushNewline) noexcept
+	FFileStream<ElemT> &FFileStream<ElemT>::Reset(FILE *file, Bool isCloseF, Bool isFlushNewline) noexcept
 	{
 		Close();
-		this->m_file = file;
-		this->m_now = 0;
-		this->m_peek = 0;
-		this->m_isCloseF = isCloseF;
+		this->m_file           = file;
+		this->m_now            = 0;
+		this->m_peek           = 0;
+		this->m_isCloseF       = isCloseF;
 		this->m_isFlushNewline = isFlushNewline;
 		return *this;
 	}
 	
 	template<class ElemT>
-	FFileStream<ElemT>& FFileStream<ElemT>::Close() noexcept
+	FFileStream<ElemT> &FFileStream<ElemT>::Close() noexcept
 	{
 		if (m_file && m_isCloseF) { ::fclose(this->m_file); }
 		this->m_file = nullptr;
@@ -99,7 +100,7 @@ namespace Whale::IO
 	template<class ElemT>
 	int32 FFileStream<ElemT>::Read() noexcept
 	{
-		this->m_now = this->m_peek;
+		this->m_now  = this->m_peek;
 		this->m_peek = FileGet<ElemT>(this->m_file);
 		return this->m_now;
 	}
@@ -182,7 +183,7 @@ namespace Whale::IO
 	}
 	
 	template<class ElemT>
-	FFileStream<ElemT> &FFileStream<ElemT>::ReadTo(const std::function<Bool(int32)> &stopFunction) noexcept
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadTo(const TFFunction<Bool, int32> &stopFunction) noexcept
 	{
 		while (true)
 		{
@@ -201,7 +202,7 @@ namespace Whale::IO
 	
 	template<class ElemT>
 	FFileStream<ElemT> &
-	FFileStream<ElemT>::ReadTo(const std::function<Bool(int32)> &stopFunction, String &str) noexcept
+	FFileStream<ElemT>::ReadTo(const TFFunction<Bool, int32> &stopFunction, String &str) noexcept
 	{
 		while (true)
 		{
@@ -220,7 +221,7 @@ namespace Whale::IO
 	}
 	
 	template<class ElemT>
-	FFileStream<ElemT> &FFileStream<ElemT>::ReadToBack(const std::function<Bool(int32)> &stopFunction) noexcept
+	FFileStream<ElemT> &FFileStream<ElemT>::ReadToBack(const TFFunction<Bool, int32> &stopFunction) noexcept
 	{
 		while (true)
 		{
@@ -240,7 +241,7 @@ namespace Whale::IO
 	
 	template<class ElemT>
 	FFileStream<ElemT> &
-	FFileStream<ElemT>::ReadToBack(const std::function<Bool(int32)> &stopFunction, String &str) noexcept
+	FFileStream<ElemT>::ReadToBack(const TFFunction<Bool, int32> &stopFunction, String &str) noexcept
 	{
 		while (true)
 		{

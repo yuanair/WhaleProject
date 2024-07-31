@@ -3,6 +3,7 @@
 //
 
 #include "WWICForDirectX.hpp"
+#include "Whale/Platform/Win32/FCore.hpp"
 
 namespace Whale::DirectX
 {
@@ -139,10 +140,128 @@ namespace Whale::DirectX
 		
 	}
 	
-	Bool WWICForDirectX::LoadFromFile(const StringW &fileName,
-	                                  Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-	                                  Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
-	                                  DXGI_FORMAT &targetFormat) noexcept
+	
+	Win32::FResult WWICForDirectX::LoadFromFile(const StringA &fileName,
+	                                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+	                                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+	                                            DXGI_FORMAT &targetFormat)
+	{
+		
+		HANDLE file = ::CreateFileA(
+			fileName.CStr(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+			nullptr
+		);
+		if (INVALID_HANDLE_VALUE == file)
+		{
+			return Win32::FCore::GetLastError();
+		}
+		return LoadFromFile(file, pIWICSource, pIWICPixelInfo, targetFormat);
+	}
+	
+	Win32::FResult WWICForDirectX::LoadFromFile(const StringW &fileName,
+	                                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+	                                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+	                                            DXGI_FORMAT &targetFormat)
+	{
+		
+		HANDLE file = ::CreateFileW(
+			fileName.CStr(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+			nullptr
+		);
+		if (INVALID_HANDLE_VALUE == file)
+		{
+			return Win32::FCore::GetLastError();
+		}
+		return LoadFromFile(file, pIWICSource, pIWICPixelInfo, targetFormat);
+
+//		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
+//		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
+//		// 使用WIC创建并加载一个2D纹理
+//
+//		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
+//
+//		THROW_IF_FAILED(
+//			m_pIWICFactory->CreateDecoderFromFilename(
+//				fileName.CStr(),              // 文件名
+//				nullptr,                            // 不指定解码器，使用默认
+//				GENERIC_READ,                    // 访问权限
+//				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
+//				pIWICDecoder.ReleaseAndGetAddressOf()                    // 解码器对象
+//			));
+//
+//		// 获取第一帧图片(因为GIF等格式文件可能会有多帧图片，其他的格式一般只有一帧图片)
+//		// 实际解析出来的往往是位图格式数据
+//		THROW_IF_FAILED(pIWICDecoder->GetFrame(0, pIWICFrame.ReleaseAndGetAddressOf()));
+//
+//		WICPixelFormatGUID wpf = {};
+//		//获取WIC图片格式
+//		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
+//		GUID tgFormat = {};
+//
+//		//通过第一道转换之后获取DXGI的等价格式
+//		WWICForDirectX::GetTargetPixelFormat(wpf, tgFormat);
+//		targetFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(tgFormat);
+//
+//
+//		if (DXGI_FORMAT_UNKNOWN == targetFormat)
+//		{
+//			// 不支持的图片格式 目前退出了事
+//			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
+//			// 图片都需要提前转换好，所以不会出现不支持的现象
+//			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
+//			return E_UNEXPECTED;
+//		}
+//
+//		if (!InlineIsEqualGUID(wpf, tgFormat))
+//		{// 这个判断很重要，如果原WIC格式不是直接能转换为DXGI格式的图片时
+//			// 我们需要做的就是转换图片格式为能够直接对应DXGI格式的形式
+//			//创建图片格式转换器
+//			Microsoft::WRL::ComPtr<IWICFormatConverter> pIConverter;
+//			THROW_IF_FAILED(m_pIWICFactory->CreateFormatConverter(&pIConverter));
+//
+//			//初始化一个图片转换器，实际也就是将图片数据进行了格式转换
+//			THROW_IF_FAILED(
+//				pIConverter->Initialize(
+//					pIWICFrame.Get(),                // 输入原图片数据
+//					tgFormat,                         // 指定待转换的目标格式
+//					WICBitmapDitherTypeNone,         // 指定位图是否有调色板，现代都是真彩位图，不用调色板，所以为None
+//					nullptr,                            // 指定调色板指针
+//					0.f,                             // 指定Alpha阀值
+//					WICBitmapPaletteTypeCustom       // 调色板类型，实际没有使用，所以指定为Custom
+//				));
+//			// 调用QueryInterface方法获得对象的位图数据源接口
+//			THROW_IF_FAILED(pIConverter.As(&pIWICSource));
+//		}
+//		else
+//		{
+//			//图片数据格式不需要转换，直接获取其位图数据源接口
+//			THROW_IF_FAILED(pIWICFrame.As(&pIWICSource));
+//		}
+//
+//		//获取图片像素的位大小的BPP（Bits Per Pixel）信息，用以计算图片行数据的真实大小（单位：字节）
+//		Microsoft::WRL::ComPtr<IWICComponentInfo> pIWIComponentInfo;
+//		THROW_IF_FAILED(m_pIWICFactory->CreateComponentInfo(
+//			tgFormat, pIWIComponentInfo.GetAddressOf()));
+//
+//		WICComponentType type;
+//		THROW_IF_FAILED(pIWIComponentInfo->GetComponentType(&type));
+//
+//		if (type != WICPixelFormat)
+//		{
+//			FDebug::LogError(TagA, FLoadException("Unknown Error"));
+//			return E_UNEXPECTED;
+//		}
+//
+//		THROW_IF_FAILED(pIWIComponentInfo.As(&pIWICPixelInfo));
+//
+//		return S_OK;
+	}
+	
+	
+	Win32::FResult
+	WWICForDirectX::LoadFromFile(HANDLE fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+	                             Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+	                             DXGI_FORMAT &targetFormat)
 	{
 		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
 		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
@@ -151,10 +270,9 @@ namespace Whale::DirectX
 		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
 		
 		THROW_IF_FAILED(
-			m_pIWICFactory->CreateDecoderFromFilename(
-				fileName.CStr(),              // 文件名
+			m_pIWICFactory->CreateDecoderFromFileHandle(
+				reinterpret_cast<ULONG_PTR>(fileHandle),
 				nullptr,                            // 不指定解码器，使用默认
-				GENERIC_READ,                    // 访问权限
 				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
 				pIWICDecoder.ReleaseAndGetAddressOf()                    // 解码器对象
 			));
@@ -179,7 +297,7 @@ namespace Whale::DirectX
 			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
 			// 图片都需要提前转换好，所以不会出现不支持的现象
 			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
-			return false;
+			return E_UNEXPECTED;
 		}
 		
 		if (!InlineIsEqualGUID(wpf, tgFormat))
@@ -219,14 +337,13 @@ namespace Whale::DirectX
 		if (type != WICPixelFormat)
 		{
 			FDebug::LogError(TagA, FLoadException("Unknown Error"));
-			return false;
+			return E_UNEXPECTED;
 		}
 		
 		THROW_IF_FAILED(pIWIComponentInfo.As(&pIWICPixelInfo));
 		
-		return true;
+		return S_OK;
 	}
-	
 	
 	Bool WWICForDirectX::IsGPUResourceCreated() const noexcept
 	{

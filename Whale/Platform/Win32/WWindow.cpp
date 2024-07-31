@@ -102,9 +102,10 @@ namespace Whale::Win32
 		this->hWindow = pHwnd;
 	}
 	
-	void WWindow::Destroy() const
+	void WWindow::Destroy()
 	{
 		::DestroyWindow((HWND) this->hWindow.handle);
+		// this->hWindow.handle = nullptr; // 在ON_DESTROY事件中重置
 	}
 	
 	void WWindow::Show(int32 nCmdShow) const
@@ -282,8 +283,11 @@ namespace Whale::Win32
 			case WM_ENDSESSION:
 				return OnEndSession();
 			case WM_DESTROY:
-				this->hWindow = {};
-				return OnDestroy();
+			{
+				auto result = OnDestroy();
+				this->hWindow.handle = nullptr;
+				return result;
+			}
 			default:
 				return DefaultWindowProc(this->hWindow, msg, wParam, lParam);
 		}
