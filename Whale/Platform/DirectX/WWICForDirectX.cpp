@@ -134,7 +134,7 @@ namespace Whale::DirectX
 		THROW_IF_FAILED(
 			::CoCreateInstance(
 				CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER,
-				IID_PPV_ARGS(&m_pIWICFactory))
+				IID_PPV_ARGS(m_pIWICFactory.ReleaseAndGetAddressOf()))
 		);
 		
 	}
@@ -168,12 +168,10 @@ namespace Whale::DirectX
 		THROW_IF_FAILED(pIWICFrame->GetPixelFormat(&wpf));
 		GUID tgFormat = {};
 		
-		targetFormat = DXGI_FORMAT_UNKNOWN;
 		//通过第一道转换之后获取DXGI的等价格式
-		if (WWICForDirectX::GetTargetPixelFormat(wpf, tgFormat))
-		{
-			targetFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(tgFormat);
-		}
+		WWICForDirectX::GetTargetPixelFormat(wpf, tgFormat);
+		targetFormat = WWICForDirectX::GetDXGIFormatFromPixelFormat(tgFormat);
+		
 		
 		if (DXGI_FORMAT_UNKNOWN == targetFormat)
 		{

@@ -339,5 +339,22 @@ namespace Whale::Win32
 		::MoveWindow((HWND) hWindow.handle, rect.x(), rect.y(), rect.z(), rect.w(), true);
 	}
 	
+	Bool WWindow::GetFileDragAndDropPermission() const noexcept
+	{
+		if (!ChangeWindowMessageFilterEx(
+			(HWND) this->hWindow.handle, WM_DROPFILES, MSGFLT_ADD, nullptr
+		))
+			return false;
+		if (!ChangeWindowMessageFilterEx(
+			(HWND) this->hWindow.handle, WM_COPYDATA, MSGFLT_ADD, nullptr
+		))
+			return false;
+		if (!ChangeWindowMessageFilterEx(
+			(HWND) this->hWindow.handle, 0x49 /* WM_COPYGLOBALDATA */, MSGFLT_ADD, nullptr
+		))
+			return false;
+		return true;
+	}
+	
 	
 } // Whale

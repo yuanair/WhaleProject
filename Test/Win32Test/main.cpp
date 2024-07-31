@@ -1,6 +1,7 @@
 ﻿#include "Whale/Core/FDebug.hpp"
 #include "Whale/Platform/WProgram.hpp"
 #include "Whale/Platform/Win32/WWindow.hpp"
+#include "Whale/Platform/Win32/WDragQueryFileReader.hpp"
 #include "Whale/Platform/WRenderer.hpp"
 #include "Whale/Platform/WShader.hpp"
 #include "Whale/Platform/WStaticMesh.hpp"
@@ -8,6 +9,7 @@
 #include "Whale/Language/Json/TFValue.hpp"
 
 #include "Test/Win32Test/Resources/Resources.h"
+#include "Whale/Platform/Win32/FMessageBox.hpp"
 
 #include <boost/json.hpp>
 
@@ -30,10 +32,18 @@ public:
 
 protected:
 	
+	Win32::LResult OnCreate() override
+	{
+		GetFileDragAndDropPermission();
+		return false;
+	}
+	
+	Win32::LResult OnDropFiles(Win32::HDrop hDropInfo) override;
+	
 	Win32::LResult OnDestroy() override
 	{
 		Win32::FCore::Exit();
-		return WWindow::OnDestroy();
+		return false;
 	}
 
 public:
@@ -151,6 +161,10 @@ public:
 	
 	[[nodiscard]]auto &GetPMesh() const { return pMesh; }
 	
+	[[nodiscard]]auto &GetPBitmap() const { return pBitmap; }
+	
+	[[nodiscard]]auto &GetPBitmap() { return pBitmap; }
+	
 };
 
 void Program::InitData()
@@ -252,7 +266,7 @@ void Program::InitDirectX()
 	pRenderingPipeline.Lock()->CreateFromShader({.m_pVertexShader=pVertexShader, .m_pPixelShader=pPixelShader});
 	pRenderingPipeline.Lock()->Enable();
 	
-	pBitmap.Lock()->CreateFromFile({.m_fileName=dataDirectoryW + L"/10.jpg"});
+	pBitmap.Lock()->CreateFromFile({.m_fileName=dataDirectoryW + L"/1.png"});
 	pBitmap.Lock()->Enable();
 	
 	pMaterial.Lock()->Create({});
@@ -303,6 +317,19 @@ void MyWindow::InitDirectX()
 	pRenderTarget = program.GetPRender()->MakeWindowRenderTarget();
 	pRenderTarget.Lock()->Create({.m_window=*this, .m_frameBackBufferCount=3});
 	pRenderTarget.Lock()->Enable();
+}
+
+Win32::LResult MyWindow::OnDropFiles(Win32::HDrop hDropInfo)
+{
+	Win32::WDragQueryFileReader reader;
+	StringW                     fileName;
+	reader.Init<CharW>(hDropInfo);
+	for (uint32 index   = 0; index < reader.GetFileCount(); index++)
+	{
+		reader.Get<CharW>(fileName, index);
+	}
+	if (auto    pBitmap = program.GetPBitmap().Lock()) pBitmap->CreateFromFile({.m_fileName=fileName});
+	return false;
 }
 
 void MyWindow2::InitDirectX()

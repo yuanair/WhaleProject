@@ -9,6 +9,8 @@
 #include "Whale/Platform/TIGPUResource.hpp"
 #include <wincodec.h>
 
+#pragma comment(lib, "WindowsCodecs.lib")
+
 namespace Whale::DirectX
 {
 	

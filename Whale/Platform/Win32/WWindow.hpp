@@ -147,6 +147,9 @@ namespace Whale::Win32
 	
 	public:
 		
+		/// 获取文件拖放权限
+		Bool GetFileDragAndDropPermission() const noexcept;
+		
 		// 创建窗口
 //		void Init(
 //			const WWindowClass &windowClass, const StringA &windowName,

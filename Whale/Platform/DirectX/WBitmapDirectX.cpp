@@ -95,12 +95,9 @@ namespace Whale::DirectX
 			if (Win32::FResult(HRESULT_FROM_WIN32(GetLastError())).IsFailed()) return false;
 		}
 		
-		
 		//从图片中读取出数据
 		THROW_IF_FAILED(pIBMP->CopyPixels(
-			nullptr, nPicRowPitch, static_cast<UINT>(nPicRowPitch * width)   //注意这里才是图片数据真实的大小，这个值通常小于缓冲的大小
-			, reinterpret_cast<BYTE *>(pbPicData)));//{//下面这段代码来自DX12的示例，直接通过填充缓冲绘制了一个黑白方格的纹理
-		
+			nullptr, nPicRowPitch, static_cast<UINT>(n64UploadBufferSize), reinterpret_cast<BYTE *>(pbPicData)));
 		
 		//获取向上传堆拷贝纹理数据的一些纹理转换尺寸信息
 		//对于复杂的DDS纹理这是非常必要的过程
@@ -171,10 +168,6 @@ namespace Whale::DirectX
 		stResBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		
 		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->ResourceBarrier(1, &stResBar);
-		
-		
-		
-		//......
 		
 		// 最终创建SRV描述符
 		D3D12_SHADER_RESOURCE_VIEW_DESC stSRVDesc = {};
