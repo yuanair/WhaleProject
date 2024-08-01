@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "Whale/Core/FDebug.hpp"
-#include "Whale/Core/TFConsole.hpp"
+#include "Whale/Core/Whale/FDebug.hpp"
+#include "Whale/Core/Whale/TFConsole.hpp"
 #include "Whale/Language/Json/TFValue.hpp"
-#include "Whale/Language/Lexer.hpp"
+#include "Whale/Language/Whale/Lexer.hpp"
 #include "Whale/Core/Container/StringStream.hpp"
 
 #include <map>

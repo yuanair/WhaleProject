@@ -173,4 +173,4 @@ int WhaleMain()
 	return HelloMain();
 }
 
-#include "Whale/Platform/WhaleMain.hpp"
+#include "Whale/Platform/Whale/WhaleMain.hpp"

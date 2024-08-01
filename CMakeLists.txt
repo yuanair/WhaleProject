@@ -29,9 +29,6 @@ add_definitions(-DUNICODE -D_UNICODE)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-# include
-include_directories(".")
-
 # sub
 add_subdirectory(GLAD)
 add_subdirectory(Test)

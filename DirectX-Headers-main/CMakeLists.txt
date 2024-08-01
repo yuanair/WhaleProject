@@ -38,7 +38,7 @@ target_include_directories(DirectX-Headers SYSTEM PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
-target_include_directories(DirectX-Headers PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/directx)
+target_include_directories(DirectX-Headers PRIVATE include/directx)
 
 add_library(Microsoft::DirectX-Headers ALIAS DirectX-Headers)
 
@@ -72,7 +72,7 @@ if (DXHEADERS_INSTALL)
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/directx-headers/cmake)
 
     # Install the actual includes
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+    install(DIRECTORY "include"
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
     # Init the CMake config files
@@ -81,7 +81,7 @@ if (DXHEADERS_INSTALL)
             VERSION ${PROJECT_VERSION}
             COMPATIBILITY SameMajorVersion)
     configure_package_config_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/directx-headers-config.cmake.in"
+            "cmake/directx-headers-config.cmake.in"
             "${CMAKE_CURRENT_BINARY_DIR}/directx-headers-config.cmake"
             INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/directx-headers/cmake)
 
@@ -96,7 +96,7 @@ if (DXHEADERS_INSTALL)
     join_paths(DIRECTX_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
     join_paths(DIRECTX_LIBDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_LIBDIR}")
     configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/DirectX-Headers.pc.in"
+            "cmake/DirectX-Headers.pc.in"
             "${CMAKE_CURRENT_BINARY_DIR}/DirectX-Headers.pc" @ONLY)
 
     # Install the pkg-config file

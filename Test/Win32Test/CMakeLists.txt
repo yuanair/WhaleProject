@@ -11,6 +11,7 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC WhaleCore
         PUBLIC WhaleLanguage
         PUBLIC WhalePlatform
+        PUBLIC WhaleRender
         PUBLIC WhaleTool
 )
 

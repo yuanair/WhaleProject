@@ -1,8 +1,10 @@
 
-file(GLOB WhaleCoreHeader "./*.hpp" "./*/*.hpp")
-file(GLOB WhaleCoreSource "./*.cpp" "./*/*.cpp")
+file(GLOB WhaleCoreHeader "./*/*.hpp" "./*/*/*.hpp")
+file(GLOB WhaleCoreSource "./*/*.cpp" "./*/*/*.cpp")
 
 add_library(WhaleCore SHARED ${WhaleCoreSource})
+
+target_include_directories(WhaleCore PUBLIC ".")
 
 set(BOOST_ROOT "$ENV{BOOST_ROOT}")
 
