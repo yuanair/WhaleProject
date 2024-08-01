@@ -10,6 +10,9 @@
 
 #include "Test/Win32Test/Resources/Resources.h"
 #include "Whale/Platform/Win32/FMessageBox.hpp"
+#include "Whale/Platform/FApplication.hpp"
+#include "Whale/Platform/Win32/FPE.hpp"
+#include "Whale/Platform/Win32/FFile.hpp"
 
 #include <boost/json.hpp>
 
@@ -42,7 +45,7 @@ protected:
 	
 	Win32::LResult OnDestroy() override
 	{
-		Win32::FCore::Exit();
+		FApplication::Exit();
 		return false;
 	}
 
@@ -57,6 +60,7 @@ private:
 	
 	TFWeakPtr<WWindowRenderTarget> pRenderTarget;
 	
+	void ShowPE(const StringW &fileName) const;
 };
 
 class MyWindow2 : public Win32::WWindow
@@ -183,7 +187,7 @@ void Program::InitData()
 		FDebug::LogFatal(
 			WHALE_TEXT("OpenDataJson"),
 			FFileNotFoundException(("cannot to open \"" + dataDirectoryA + "/data.json\"").CStr()));
-		Win32::FCore::Exit();
+		FApplication::Exit();
 		return;
 	}
 	boost::json::object dataObject;
@@ -204,9 +208,10 @@ void Program::InitData()
 	this->data.shader          = dataDirectoryA + dataObject["shader"].as_string().c_str();
 	
 	pWindowClass = MakeUnique<Win32::WWindow::WWindowClass>(
-		Win32::FCore::GetInstance(), WHALE_TEXT("WhaleTestWindowClass")
+		Win32::FCore::GetInstance<CharT>(), WHALE_TEXT("WhaleTestWindowClass")
 	);
-	if (!pWindowClass->Register(Win32::FCore::GetIcon(IDI_APP_ICON), Win32::FCore::GetIcon(IDI_APP_ICON_SM)))
+	if (!pWindowClass->Register(
+		Win32::FCore::GetIcon<CharT>(IDI_APP_ICON), Win32::FCore::GetIcon<CharT>(IDI_APP_ICON_SM)))
 	{
 		Win32::FCore::GetLastError();
 	}
@@ -218,7 +223,7 @@ void Program::InitData()
 	{
 		Win32::FCore::GetLastError();
 	}
-	pWindow->ShowAndUpdate();
+	pWindow->ShowAndUpdate<CharT>();
 	
 	
 	pWindow2 = MakeUnique<MyWindow2>(*this);
@@ -227,7 +232,7 @@ void Program::InitData()
 	{
 		Win32::FCore::GetLastError();
 	}
-	pWindow2->ShowAndUpdate();
+	pWindow2->ShowAndUpdate<CharT>();
 	
 	
 }
@@ -319,7 +324,7 @@ void MyWindow::InitDirectX()
 Win32::LResult MyWindow::OnDropFiles(Win32::HDrop hDropInfo)
 {
 	Win32::WDragQueryFileReader reader;
-	StringW                     fileName;
+	StringW                     fileName = L"";
 	reader.Init<CharW>(hDropInfo);
 	for (uint32 index   = 0; index < reader.GetFileCount(); index++)
 	{
@@ -327,6 +332,7 @@ Win32::LResult MyWindow::OnDropFiles(Win32::HDrop hDropInfo)
 	}
 	if (auto    pBitmap = program.GetPBitmap().Lock())
 	{
+		ShowPE(fileName);
 		try
 		{
 			pBitmap->CreateFromFile({.m_fileName=fileName});
@@ -339,6 +345,7 @@ Win32::LResult MyWindow::OnDropFiles(Win32::HDrop hDropInfo)
 	return false;
 }
 
+
 void MyWindow2::InitDirectX()
 {
 	pRenderTarget = program.GetPRender()->MakeWindowRenderTarget();
@@ -350,7 +357,7 @@ void MyWindow2::InitDirectX()
 int WhaleMain()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
-	Bool isRunAsAdministrator = Win32::FCore::IsRunAsAdministrator();
+	Bool isRunAsAdministrator = FApplication::IsRunAsAdministrator();
 	FDebug::Log(
 		WHALE_TEXT("IsRunAsAdministrator"),
 		isRunAsAdministrator ? WHALE_TEXT("true") : WHALE_TEXT("false"),
@@ -360,5 +367,30 @@ int WhaleMain()
 }
 
 #include "Whale/Platform/WhaleMain.hpp"
+
+#include <ImageHlp.h>
+
+void MyWindow::ShowPE(const StringW &fileName) const
+{
+	Win32::FPE pe;
+	pe.LoadFromFile<CharT>(Win32::FFile::OpenReadOnly(fileName));
+	PIMAGE_DOS_HEADER      pDH  = nullptr;//指向IMAGE_DOS结构的指针
+	PIMAGE_NT_HEADERS      pNtH = nullptr;//指向IMAGE_NT结构的指针
+	PIMAGE_FILE_HEADER     pFH  = nullptr;//指向IMAGE_FILE结构的指针
+	PIMAGE_OPTIONAL_HEADER pOH  = nullptr;//指向IMAGE_OPTIONALE结构的指针
+	pDH = (PIMAGE_DOS_HEADER) pe.GetImageBase().handle;
+	if (pDH->e_magic != IMAGE_DOS_SIGNATURE) //判断是否为MZ
+	{
+		FDebug::LogError(program.GetData().windowData.name, "Not a valid PE file!");
+		return;
+	}
+	pNtH = (PIMAGE_NT_HEADERS) ((ULONG_PTR) pDH + pDH->e_lfanew); //判断是否为PE格式
+	if (pNtH->Signature != IMAGE_NT_SIGNATURE)
+	{
+		FDebug::LogError(program.GetData().windowData.name, "Not a valid PE file!");
+		return;
+	}
+}
+
 //*/
 

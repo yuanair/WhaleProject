@@ -4,6 +4,7 @@
 
 #include "WWICForDirectX.hpp"
 #include "Whale/Platform/Win32/FCore.hpp"
+#include "Whale/Platform/Win32/FFile.hpp"
 
 namespace Whale::DirectX
 {
@@ -146,12 +147,8 @@ namespace Whale::DirectX
 	                                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
 	                                            DXGI_FORMAT &targetFormat)
 	{
-		
-		HANDLE file = ::CreateFileA(
-			fileName.CStr(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
-			nullptr
-		);
-		if (INVALID_HANDLE_VALUE == file)
+		Win32::HHandle file = Win32::FFile::OpenReadOnly(fileName);
+		if (INVALID_HANDLE_VALUE == file.handle)
 		{
 			return Win32::FCore::GetLastError();
 		}
@@ -163,12 +160,8 @@ namespace Whale::DirectX
 	                                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
 	                                            DXGI_FORMAT &targetFormat)
 	{
-		
-		HANDLE file = ::CreateFileW(
-			fileName.CStr(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
-			nullptr
-		);
-		if (INVALID_HANDLE_VALUE == file)
+		Win32::HHandle file = Win32::FFile::OpenReadOnly(fileName);
+		if (INVALID_HANDLE_VALUE == file.handle)
 		{
 			return Win32::FCore::GetLastError();
 		}
@@ -259,7 +252,7 @@ namespace Whale::DirectX
 	
 	
 	Win32::FResult
-	WWICForDirectX::LoadFromFile(HANDLE fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+	WWICForDirectX::LoadFromFile(Win32::HHandle fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
 	                             Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
 	                             DXGI_FORMAT &targetFormat)
 	{
@@ -271,7 +264,7 @@ namespace Whale::DirectX
 		
 		THROW_IF_FAILED(
 			m_pIWICFactory->CreateDecoderFromFileHandle(
-				reinterpret_cast<ULONG_PTR>(fileHandle),
+				reinterpret_cast<ULONG_PTR>(fileHandle.handle),
 				nullptr,                            // 不指定解码器，使用默认
 				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
 				pIWICDecoder.ReleaseAndGetAddressOf()                    // 解码器对象

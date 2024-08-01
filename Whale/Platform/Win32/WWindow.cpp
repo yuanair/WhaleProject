@@ -190,9 +190,7 @@ namespace Whale::Win32
 				return OnResize(EventOnResizeArgs{.width=LOWORD(lParam), .height=HIWORD(lParam)});
 			}
 			case WM_DROPFILES:
-				OnDropFiles(HDrop{(HDROP) wParam});
-				::DragFinish((HDROP) wParam);
-				return 0;
+				return OnDropFiles(HDrop{(HDROP) wParam});
 			case WM_CHAR:
 				if (!bEnableOnChar) return DefaultWindowProc(this->hWindow, msg, wParam, lParam);
 				return OnChar((TCHAR) wParam);

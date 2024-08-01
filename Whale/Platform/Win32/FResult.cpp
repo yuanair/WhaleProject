@@ -31,13 +31,15 @@ namespace Whale::Win32
 	StringA FResult::ToString(const StringA &message) const
 	{
 		return std::format(
-			"{}: (0x{:08X}): {}", message.CStr(), (uint32) m_hr, Win32::FCore::MessageToStringA(m_hr).CStr()).c_str();
+			"{}: (0x{:08X}): {}", message.CStr(), (uint32) m_hr,
+			Win32::FCore::MessageToString<CharA>(m_hr).CStr()).c_str();
 	}
 	
 	StringW FResult::ToString(const StringW &message) const
 	{
 		return std::format(
-			L"{}: (0x{:08X}): {}", message.CStr(), (uint32) m_hr, Win32::FCore::MessageToStringW(m_hr).CStr()).c_str();
+			L"{}: (0x{:08X}): {}", message.CStr(), (uint32) m_hr,
+			Win32::FCore::MessageToString<CharW>(m_hr).CStr()).c_str();
 	}
 	
 	void FResult::Throw(const StringA &message, const FSourceLocation &sourceLocation)

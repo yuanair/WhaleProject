@@ -171,9 +171,10 @@ namespace Whale::Win32
 		/// 第一次显示窗口时调用
 		///
 		/// \param nCmdShow 可传入WinMain的参数nShowCmd。否则，传入SW_SHOW
+		template<class ElemT>
 		inline void ShowAndUpdate() const noexcept
 		{
-			Show(Win32::FCore::GetCommandShow());
+			Show(Win32::FCore::GetCommandShow<ElemT>());
 			Update();
 		}
 		

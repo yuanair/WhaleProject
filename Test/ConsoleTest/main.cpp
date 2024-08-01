@@ -1,4 +1,5 @@
 ﻿
+
 #include "CommandManager.hpp"
 
 #include <iostream>
@@ -97,7 +98,7 @@ void ListColors(MyCommandManager &commandManager)
 	commandManager.out.WriteLine();
 }
 
-int WhaleMain()
+int WhaleMain0()
 {
 	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
 	
@@ -142,6 +143,34 @@ int WhaleMain()
 	return 0;
 }
 
-#include "Whale/Platform/WhaleMain.hpp"
-//*/
+#include "Hello.h"
 
+/*
+extrn MessageBoxA: proc
+
+.data
+text db 'Hello World', 0
+caption db 'Selph First x64 Application', 0
+
+.code
+HelloMain proc
+sub rsp,28h ; 函数调用前需要预留影子空间，对齐rsp
+xor r9d,r9d
+lea r8, caption
+lea rdx, text
+xor rcx,rcx
+call MessageBoxA ; 函数调用使用fastcall
+add rsp,28h
+ret
+HelloMain ENDP
+END
+ */
+
+int WhaleMain()
+{
+	
+	
+	return HelloMain();
+}
+
+#include "Whale/Platform/WhaleMain.hpp"

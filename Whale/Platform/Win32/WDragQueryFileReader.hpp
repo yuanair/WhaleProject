@@ -16,7 +16,9 @@ namespace Whale::Win32
 	{
 	public:
 		
-		WDragQueryFileReader() : m_fileCount(0) {}
+		constexpr WDragQueryFileReader() noexcept: m_fileCount(0) {}
+		
+		inline ~WDragQueryFileReader() noexcept { Destroy(); }
 	
 	public:
 		
@@ -25,10 +27,7 @@ namespace Whale::Win32
 		/// \param hDrop
 		/// \return 是否成功
 		template<class ElemT>
-		void Init(HDrop hDrop) noexcept
-		{
-			static_assert("unimplemented");
-		}
+		void Init(HDrop hDrop) noexcept;
 		
 		/// 销毁HDrop
 		void Destroy() noexcept;
@@ -38,10 +37,7 @@ namespace Whale::Win32
 		/// \param index 索引
 		/// \return 是否成功
 		template<class ElemT>
-		Bool Get(Container::TFString<ElemT> &fileName, uint32 index) noexcept
-		{
-			static_assert("unimplemented");
-		}
+		Bool Get(Container::TFString<ElemT> &fileName, uint32 index) noexcept;
 	
 	public:
 		
@@ -58,17 +54,5 @@ namespace Whale::Win32
 		uint32 m_fileCount;
 		
 	};
-	
-	template<>
-	void WHALE_API WDragQueryFileReader::Init<CharA>(HDrop hDrop) noexcept;
-	
-	template<>
-	void WHALE_API WDragQueryFileReader::Init<CharW>(HDrop hDrop) noexcept;
-	
-	template<>
-	Bool WHALE_API WDragQueryFileReader::Get(StringA &fileName, uint32 index) noexcept;
-	
-	template<>
-	Bool WHALE_API WDragQueryFileReader::Get(StringW &fileName, uint32 index) noexcept;
 	
 } // Whale

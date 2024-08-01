@@ -10,24 +10,25 @@
 namespace Whale::Win32
 {
 	
-	HInstance FCore::ShellExecuteT(HWindow hWnd, const StringA &operation, const StringA &file,
-	                               const StringA &parameters,
-	                               const StringA &directory, int32 showCmd)
+	template<>
+	WHALE_API HInstance FCore::ShellExecuteT<CharA>(HWindow hWindow, const StringA &operation, const StringA &file,
+	                                                const StringA &parameters,
+	                                                const StringA &directory, int32 showCmd)
 	{
 		return {
-			::ShellExecuteA((HWND) hWnd.handle, operation.CStr(), file.CStr(), parameters.CStr(), directory.CStr(),
+			::ShellExecuteA((HWND) hWindow.handle, operation.CStr(), file.CStr(), parameters.CStr(), directory.CStr(),
 			                showCmd
 			)
 		};
 	}
 	
-	
-	HInstance FCore::ShellExecuteT(HWindow hWnd, const StringW &operation, const StringW &file,
-	                               const StringW &parameters,
-	                               const StringW &directory, int32 showCmd)
+	template<>
+	WHALE_API HInstance FCore::ShellExecuteT<CharW>(HWindow hWindow, const StringW &operation, const StringW &file,
+	                                                const StringW &parameters,
+	                                                const StringW &directory, int32 showCmd)
 	{
 		return {
-			::ShellExecuteW((HWND) hWnd.handle, operation.CStr(), file.CStr(), parameters.CStr(), directory.CStr(),
+			::ShellExecuteW((HWND) hWindow.handle, operation.CStr(), file.CStr(), parameters.CStr(), directory.CStr(),
 			                showCmd
 			)
 		};
@@ -38,7 +39,8 @@ namespace Whale::Win32
 		::PostQuitMessage(result);
 	}
 	
-	int32 FCore::GetCommandShow()
+	template<>
+	WHALE_API int32 FCore::GetCommandShow<CharA>()
 	{
 		STARTUPINFOA startup_info{};
 		GetStartupInfoA(&startup_info);
@@ -48,34 +50,56 @@ namespace Whale::Win32
 		       : SW_SHOWDEFAULT;
 	}
 	
-	HInstance FCore::GetInstance()
+	template<>
+	WHALE_API int32 FCore::GetCommandShow<CharW>()
 	{
-		return {::GetModuleHandle(nullptr)};
+		STARTUPINFOW startup_info{};
+		GetStartupInfoW(&startup_info);
+		
+		return startup_info.dwFlags & STARTF_USESHOWWINDOW
+		       ? startup_info.wShowWindow
+		       : SW_SHOWDEFAULT;
 	}
 	
-	HIcon FCore::GetIcon(int32 id)
+	template<>
+	WHALE_API HInstance FCore::GetInstance<CharA>()
 	{
-		return {::LoadImage((HINSTANCE) GetInstance().handle, MAKEINTRESOURCE(id), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR)};
+		return {::GetModuleHandleA(nullptr)};
 	}
 	
-	HIcon FCore::GetIcon(int32 id, HInstance hInstance)
+	template<>
+	WHALE_API HInstance FCore::GetInstance<CharW>()
 	{
-		return {::LoadImage((HINSTANCE) hInstance.handle, MAKEINTRESOURCE(id), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR)};
+		return {::GetModuleHandleW(nullptr)};
 	}
 	
-	HCursor FCore::GetCursor(int32 id)
+	template<>
+	WHALE_API HIcon FCore::GetIcon<CharA>(int32 id, HInstance hInstance)
 	{
-		return {
-			::LoadImage((HINSTANCE) GetInstance().handle, MAKEINTRESOURCE(id), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR)
-		};
+		return {::LoadImageA((HINSTANCE) hInstance.handle, MAKEINTRESOURCEA(id), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR)};
 	}
 	
-	HCursor FCore::GetCursor(int32 id, HInstance hInstance)
+	template<>
+	WHALE_API HIcon FCore::GetIcon<CharW>(int32 id, HInstance hInstance)
 	{
-		return {::LoadImage((HINSTANCE) hInstance.handle, MAKEINTRESOURCE(id), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR)};
+		return {::LoadImageW((HINSTANCE) hInstance.handle, MAKEINTRESOURCEW(id), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR)};
 	}
 	
-	void FCore::GainAdminPrivileges(const StringA &strApp)
+	template<>
+	WHALE_API HCursor FCore::GetCursor<CharA>(int32 id, HInstance hInstance)
+	{
+		return {::LoadImageA((HINSTANCE) hInstance.handle, MAKEINTRESOURCEA(id), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR)};
+	}
+	
+	template<>
+	WHALE_API HCursor FCore::GetCursor<CharW>(int32 id, HInstance hInstance)
+	{
+		return {::LoadImageW((HINSTANCE) hInstance.handle, MAKEINTRESOURCEW(id), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR)};
+	}
+	
+	
+	template<>
+	WHALE_API Bool FCore::GainAdminPrivileges(const StringA &strApp)
 	{
 		SHELLEXECUTEINFOA execInfo;
 		execInfo.cbSize = sizeof(execInfo);
@@ -85,10 +109,12 @@ namespace Whale::Win32
 		execInfo.fMask  = SEE_MASK_NO_CONSOLE;
 		execInfo.nShow  = SW_SHOWDEFAULT;
 		
-		::ShellExecuteExA(&execInfo);
+		return ::ShellExecuteExA(&execInfo);
 	}
 	
-	void FCore::GainAdminPrivileges(const StringW &strApp)
+	
+	template<>
+	WHALE_API Bool FCore::GainAdminPrivileges(const StringW &strApp)
 	{
 		SHELLEXECUTEINFOW execInfo;
 		execInfo.cbSize = sizeof(execInfo);
@@ -98,10 +124,10 @@ namespace Whale::Win32
 		execInfo.fMask  = SEE_MASK_NO_CONSOLE;
 		execInfo.nShow  = SW_SHOWDEFAULT;
 		
-		::ShellExecuteExW(&execInfo);
+		return ::ShellExecuteExW(&execInfo);
 	}
 	
-	bool FCore::IsRunAsAdministrator()
+	Bool FCore::IsRunAsAdministrator()
 	{
 		return IsUserAnAdmin();
 //		::BOOL fIsRunAsAdmin = FALSE;
@@ -144,18 +170,20 @@ namespace Whale::Win32
 //		return fIsRunAsAdmin;
 	}
 	
-	
-	StringA FCore::GetCommandLineA()
+	template<>
+	WHALE_API StringA FCore::GetCommandLineT()
 	{
 		return ::GetCommandLineA();
 	}
 	
-	StringW FCore::GetCommandLineW()
+	template<>
+	WHALE_API StringW FCore::GetCommandLineT()
 	{
 		return ::GetCommandLineW();
 	}
 	
-	StringA FCore::MessageToStringA(HResult dwMessageId)
+	template<>
+	WHALE_API StringA FCore::MessageToString(HResult dwMessageId)
 	{
 		auto strBufferError = WHALE_NEW_CLIENT CharA[256];
 		::FormatMessageA
@@ -169,7 +197,8 @@ namespace Whale::Win32
 		return buffer;
 	}
 	
-	StringW FCore::MessageToStringW(HResult dwMessageId)
+	template<>
+	WHALE_API StringW FCore::MessageToString(HResult dwMessageId)
 	{
 		auto strBufferError = WHALE_NEW_CLIENT CharW[256];
 		::FormatMessageW

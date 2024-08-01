@@ -9,7 +9,7 @@ namespace Whale::Win32
 {
 	
 	template<>
-	void WDragQueryFileReader::Init<CharA>(HDrop hDrop) noexcept
+	WHALE_API void WDragQueryFileReader::Init<CharA>(HDrop hDrop) noexcept
 	{
 		Destroy();
 		m_hDrop     = hDrop;
@@ -17,7 +17,7 @@ namespace Whale::Win32
 	}
 	
 	template<>
-	void WDragQueryFileReader::Init<CharW>(HDrop hDrop) noexcept
+	WHALE_API void WDragQueryFileReader::Init<CharW>(HDrop hDrop) noexcept
 	{
 		Destroy();
 		m_hDrop     = hDrop;
@@ -31,7 +31,7 @@ namespace Whale::Win32
 	}
 	
 	template<>
-	Bool WDragQueryFileReader::Get(StringA &fileName, uint32 index) noexcept
+	WHALE_API Bool WDragQueryFileReader::Get(StringA &fileName, uint32 index) noexcept
 	{
 		if (index >= m_fileCount) return false;
 		UINT length = ::DragQueryFileA((HDROP) m_hDrop.handle, (UINT) index, nullptr, 0) + 1;
@@ -47,7 +47,7 @@ namespace Whale::Win32
 	}
 	
 	template<>
-	Bool WDragQueryFileReader::Get(StringW &fileName, uint32 index) noexcept
+	WHALE_API Bool WDragQueryFileReader::Get(StringW &fileName, uint32 index) noexcept
 	{
 		if (index >= m_fileCount) return false;
 		UINT length = ::DragQueryFileW((HDROP) m_hDrop.handle, (UINT) index, nullptr, 0) + 1;
