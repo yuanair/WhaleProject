@@ -28,7 +28,7 @@ namespace Whale
 	
 	public:
 		
-		inline void Call(Args... args) const noexcept
+		inline void Call(Args... args) noexcept
 		{
 			for (auto &function: m_functions)
 			{

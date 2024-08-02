@@ -93,7 +93,7 @@ namespace Whale::OpenGL
 		
 		if (!gladLoadGL())
 		{
-			FDebug::LogError(TagA, FLoadException("Failed to initialize GLAD"));
+			FDebug::Log<CharA>(Error, TagA, "Failed to initialize GLAD");
 			return;
 		}
 		glViewport(0, 0, 800, 800);

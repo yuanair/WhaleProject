@@ -8,7 +8,7 @@
 #include <Whale/Container/TFString.hpp>
 #include "HWinDef.hpp"
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	/// 拖放文件读取

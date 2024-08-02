@@ -16,7 +16,7 @@ namespace Whale::DirectX
 		
 		if (m_pRenderer == nullptr || !m_pRenderer->IsGPUResourceCreated())
 		{
-			FDebug::LogError(TagA, "m_pRenderer isn't create");
+			FDebug::Log<CharA>(Error, TagA, "m_pRenderer isn't create");
 			return;
 		}
 		
@@ -48,11 +48,11 @@ namespace Whale::DirectX
 		THROW_IF_FAILED(
 			m_pRenderer->GetPidxgiFactory()->CreateSwapChainForHwnd(
 				m_pRenderer->GetPCommandList()->GetPID3D12CommandQueue().Get(),
-				(HWND) arg.m_window.GetHWindow().handle,
+				static_cast<HWND>(arg.m_window.GetHWindow().handle),
 				&swapChainDesc,
 				nullptr,
 				nullptr,
-				&pIDXGISwapChain
+				pIDXGISwapChain.ReleaseAndGetAddressOf()
 			)
 		);
 		THROW_IF_FAILED(
@@ -94,7 +94,7 @@ namespace Whale::DirectX
 	{
 		if (m_pRenderer == nullptr || !m_pRenderer->IsGPUResourceCreated())
 		{
-			FDebug::LogError(TagA, "m_pRenderer isn't create");
+			FDebug::Log<CharA>(Error, TagA, "m_pRenderer isn't create");
 			return;
 		}
 		m_pRenderer->GetPCommandList()->GetPID3D12CommandList()->SetGraphicsRootSignature(
@@ -196,9 +196,9 @@ namespace Whale::DirectX
 		m_pID3D12RenderTargets.Clear();
 		m_pIDXGISwapChain.Reset();
 		pID3D12RTVHeap.Reset();
-		m_stViewPort = {};
+		m_stViewPort    = {};
 		m_stScissorRect = {};
-		m_nFrameIndex = 0;
+		m_nFrameIndex   = 0;
 	}
 	
 } // Whale

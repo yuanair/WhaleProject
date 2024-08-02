@@ -5,6 +5,7 @@
 #pragma once
 
 #include "HDirectXHeader.hpp"
+#include "Whale/Windows/WWindowsFile.hpp"
 #include <Whale/WObject.hpp>
 #include <Whale/TIGPUResource.hpp>
 #include <wincodec.h>
@@ -30,30 +31,30 @@ namespace Whale::DirectX
 		///
 		/// 创建WIC
 		void Create();
-		
-		/// 从文件加载图片
-		/// \param fileName 文件名
-		/// \param targetFormat 目标格式
-		Win32::FResult LoadFromFile(const StringA &fileName,
-		                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-		                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
-		                            DXGI_FORMAT &targetFormat);
-		
-		/// 从文件加载图片
-		/// \param fileName 文件名
-		/// \param targetFormat 目标格式
-		Win32::FResult LoadFromFile(const StringW &fileName,
-		                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-		                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
-		                            DXGI_FORMAT &targetFormat);
+
+//		/// 从文件加载图片
+//		/// \param fileName 文件名
+//		/// \param targetFormat 目标格式
+//		FResult LoadFromFile(const StringA &fileName,
+//		                     Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+//		                     Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+//		                     DXGI_FORMAT &targetFormat);
+//
+//		/// 从文件加载图片
+//		/// \param fileName 文件名
+//		/// \param targetFormat 目标格式
+//		FResult LoadFromFile(const StringW &fileName,
+//		                     Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+//		                     Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+//		                     DXGI_FORMAT &targetFormat);
 		
 		/// 从文件句柄加载图片
 		/// \param fileHandle 文件
 		/// \param targetFormat 目标格式
-		Win32::FResult LoadFromFile(Win32::HHandle fileHandle,
-		                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-		                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
-		                            DXGI_FORMAT &targetFormat);
+		FResult LoadFromFile(WFile *fileHandle,
+		                     Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+		                     Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+		                     DXGI_FORMAT &targetFormat);
 	
 	public:
 		

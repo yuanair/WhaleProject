@@ -6,6 +6,7 @@
 
 #include <Whale/WObject.hpp>
 #include <Whale/TFTimer.hpp>
+#include <Whale/Container/TFString.hpp>
 
 namespace Whale
 {
@@ -20,12 +21,7 @@ namespace Whale
 		///
 		/// 运行
 		/// \return 程序返回值
-		int32 Run(const StringA &);
-		
-		///
-		/// 运行
-		/// \return 程序返回值
-		int32 Run(const StringW &);
+		int32 Run();
 	
 	protected:
 		

@@ -7,7 +7,7 @@
 #include "HWinDef.hpp"
 #include <Whale/Container/TFString.hpp>
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	/// 文件

@@ -6,68 +6,49 @@
 
 // compiler
 
-#define WHALE_COMPILER_TYPE_UNKNOWN 0
-#define WHALE_COMPILER_TYPE_MSVC 1
-#define WHALE_COMPILER_TYPE_GCC 2
-#define WHALE_COMPILER_TYPE_CLANG 3
-
-#define WHALE_COMPILER_BIT_UNKNOWN 0
-#define WHALE_COMPILER_BIT_32 32
-#define WHALE_COMPILER_BIT_64 64
-
-#define WHALE_TARGET_UNKNOWN 0
-#define WHALE_TARGET_WINDOWS 1
-#define WHALE_TARGET_LINUX 2
-#define WHALE_TARGET_MACOS 3
-#define WHALE_TARGET_IOS 4
-#define WHALE_TARGET_ANDROID 5
-
 #if defined(_MSC_VER)
-	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_MSVC
+	#define WHALE_COMPILER_TYPE_MSVC
 #elif defined(__GNUC__)
-#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_GCC
+#define WHALE_COMPILER_TYPE_GCC
 #else
-	#define WHALE_COMPILER_TYPE WHALE_COMPILER_TYPE_UNKNOWN
+	#error "Unknown compiler"
 #endif
 
 #if defined(_WIN32)
-	#define WHALE_TARGET WHALE_TARGET_WINDOWS
+	#define WHALE_TARGET_WINDOWS
+	#define WHALE_COMPILER_BIT_32
 #if defined(_WIN64)
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
-#else
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_32
+	#define WHALE_COMPILER_BIT_64
 #endif
 #elif defined(__APPLE__)
 #include "TargetConditionals.h"
 	#if defined(TARGET_OS_IPHONE)
-		#define WHALE_TARGET WHALE_TARGET_IOS
+		#define WHALE_TARGET_IOS
 	#elif defined(TARGET_OS_MAC)
-		#define WHALE_TARGET WHALE_TARGET_MACOS
+		#define WHALE_TARGET_MACOS
 	#else
-		#define WHALE_TARGET WHALE_TARGET_UNKNOWN
 		#error "Unknown Apple platform"
 	#endif
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
+	#define WHALE_COMPILER_BIT_32
+	#define WHALE_COMPILER_BIT_64
 #elif __ANDROID__
-	#define WHALE_TARGET WHALE_TARGET_ANDROID
+	#define WHALE_TARGET_ANDROID
 #if defined(__x86_64__)
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
+	#define WHALE_COMPILER_BIT_32
+	#define WHALE_COMPILER_BIT_64
 #elif defined(__i386__)
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_32
-#else
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_UNKNOWN
+	#define WHALE_COMPILER_BIT_32
 #endif
 #elif __linux__
-	#define WHALE_TARGET WHALE_TARGET_LINUX
+	#define WHALE_TARGET_LINUX
 #if defined(__x86_64__)
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_64
+	#define WHALE_COMPILER_BIT_32
+	#define WHALE_COMPILER_BIT_64
 #elif defined(__i386__)
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_32
-#else
-	#define WHALE_COMPILER_BIT WHALE_COMPILER_BIT_UNKNOWN
+	#define WHALE_COMPILER_BIT_32
 #endif
 #else
-	#define WHALE_TARGET WHALE_TARGET_UNKNOWN
+	#define WHALE_TARGET_UNKNOWN
 #error "Unknown platform"
 #endif
 
@@ -75,6 +56,8 @@
 
 #define WHALE_WIDE_(s) L ## s
 #define WHALE_WIDE(s) WHALE_WIDE_(s)
+
+#define WTEXT(s) WHALE_WIDE_(s)
 
 // Poor readability
 // #define WHALE_TEXT_FROM_TYPE(type, s) ((type*)(::Whale::IsSameValue<type, ::Whale::CharW>) ? (::Whale::CharA*)(WHALE_WIDE_(s)) : (::Whale::CharA*)(s))
@@ -121,9 +104,9 @@
 
 // newline
 
-#if WHALE_TARGET == WHALE_TARGET_WINDOWS
+#ifdef WHALE_TARGET_WINDOWS
 #define WHALE_NEWLINE '\r', '\n'
-#elif WHALE_TARGET == WHALE_TARGET_MACOS
+#elif defined(WHALE_TARGET_MACOS)
 #define WHALE_NEWLINE '\r'
 #else
 #define WHALE_NEWLINE '\n'
@@ -165,7 +148,7 @@ namespace Whale
 	
 	using NullPtrT = decltype(nullptr);
 	
-	#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC || WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_CLANG
+	#if defined(WHALE_COMPILER_TYPE_MSVC) || defined(WHALE_COMPILER_TYPE_CLANG)
 	
 	using int8 = __int8;
 	
@@ -183,7 +166,7 @@ namespace Whale
 	
 	using uint64 = unsigned __int64;
 	
-	#elif WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_GCC
+	#elif defined(WHALE_COMPILER_TYPE_GCC)
 	using int8 = Byte;
 	
 	using int16 = Short;
@@ -202,7 +185,7 @@ namespace Whale
 	
 	#endif
 	
-	#if WHALE_COMPILER_BIT == WHALE_COMPILER_BIT_64
+	#if defined(WHALE_COMPILER_BIT_64)
 	
 	using IntPointer = int64;
 	
@@ -212,7 +195,7 @@ namespace Whale
 	
 	using ULongPointer = uint64;
 	
-	#elif WHALE_COMPILER_BIT == WHALE_COMPILER_BIT_32
+	#elif defined(WHALE_COMPILER_BIT_32)
 	
 	using IntPointer = Int;
 	
@@ -225,8 +208,10 @@ namespace Whale
 	#endif
 	
 	using SizeT = uint64;
+	
+	using Char = CharW;
 
-#if defined(UNICODE) || defined(_UNICODE)
+#ifdef WHALE_UNICODE
 	using CharT = CharW;
 #else
 	using CharT = CharA;
@@ -234,6 +219,7 @@ namespace Whale
 	
 	constexpr const CharA WhaleTagA[] = "Whale";
 	constexpr const CharW WhaleTagW[] = L"Whale";
+	constexpr const Char  WhaleTag[]  = WTEXT("Whale");
 	
 	
 	

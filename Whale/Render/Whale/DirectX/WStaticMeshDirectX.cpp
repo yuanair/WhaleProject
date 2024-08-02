@@ -38,7 +38,7 @@ namespace Whale::DirectX
 	{
 		if (m_pRenderer == nullptr || !m_pRenderer->IsGPUResourceCreated())
 		{
-			FDebug::LogError(TagA, "m_pRenderer isn't create");
+			FDebug::Log<CharA>(Error, TagA, "m_pRenderer isn't create");
 			return false;
 		}
 		

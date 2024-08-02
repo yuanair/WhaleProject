@@ -4,7 +4,6 @@
 
 #include "HOpenGLHeader.hpp"
 
-#pragma comment(lib, "Opengl32.lib")
 
 namespace Whale::OpenGL
 {

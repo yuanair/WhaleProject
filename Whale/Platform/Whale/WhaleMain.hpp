@@ -8,7 +8,7 @@
 
 int WhaleMain();
 
-#if WHALE_TARGET == WHALE_TARGET_WINDOWS
+#ifdef WHALE_TARGET_WINDOWS
 
 #include <Windows.h>
 #include <tchar.h>

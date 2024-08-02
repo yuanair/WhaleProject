@@ -9,7 +9,7 @@
 
 #include <format>
 
-namespace Whale::Win32
+namespace Whale
 {
 	
 	FResult::~FResult()
@@ -31,21 +31,21 @@ namespace Whale::Win32
 	{
 		return std::format(
 			"{}: (0x{:08X}): {}", message.CStr(), (uint32) m_hr,
-			Win32::FCore::MessageToString<CharA>(m_hr).CStr()).c_str();
+			Windows::FCore::MessageToString<CharA>(m_hr).CStr()).c_str();
 	}
 	
 	StringW FResult::ToString(const StringW &message) const
 	{
 		return std::format(
 			L"{}: (0x{:08X}): {}", message.CStr(), (uint32) m_hr,
-			Win32::FCore::MessageToString<CharW>(m_hr).CStr()).c_str();
+			Windows::FCore::MessageToString<CharW>(m_hr).CStr()).c_str();
 	}
 	
 	void FResult::Throw(const StringA &message, const FSourceLocation &sourceLocation)
 	{
 		m_isThrowIfFailedAtDestructTime = false;
 		StringA buffer = ToString(message);
-		FDebug::LogFatal(TagA, buffer, sourceLocation);
+		FDebug::Log<CharA>(Fatal, TagA, buffer, sourceLocation);
 		throw FResultException(buffer.CStr());
 	}
 	
@@ -53,7 +53,7 @@ namespace Whale::Win32
 	{
 		m_isThrowIfFailedAtDestructTime = false;
 		StringW buffer = ToString(message);
-		FDebug::LogFatal(TagW, buffer, sourceLocation);
+		FDebug::Log<CharW>(Fatal, TagW, buffer, sourceLocation);
 		throw FResultException(FLocale::UTFToString(buffer, "UTF-8").CStr());
 	}
 	

@@ -1,10 +1,10 @@
-#include "FDebug.hpp"
+
 #include "FLocale.hpp"
 
 namespace Whale::IO
 {
 	
-	#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC
+	#ifdef WHALE_COMPILER_TYPE_MSVC
 	
 	template<>
 	inline void WHALE_API FileOpen(FILE **file, const CharA *fileName, const CharA *mode) noexcept
@@ -37,25 +37,25 @@ namespace Whale::IO
 	template<>
 	inline int32 WHALE_API FileGet<CharA>(FILE *file) noexcept
 	{
-		return ::fgetc(file);
+		return file ? ::fgetc(file) : EOF;
 	}
 	
 	template<>
 	inline int32 WHALE_API FileGet<CharW>(FILE *file) noexcept
 	{
-		return ::fgetwc(file);
+		return file ? ::fgetwc(file) : WEOF;
 	}
 	
 	template<>
 	inline int32 WHALE_API FilePut(FILE *file, CharA elem) noexcept
 	{
-		return ::fputc(elem, file);
+		return file ? ::fputc(elem, file) : EOF;
 	}
 	
 	template<>
 	inline int32 WHALE_API FilePut(FILE *file, CharW elem) noexcept
 	{
-		return ::fputwc(elem, file);
+		return file ? ::fputwc(elem, file) : WEOF;
 	}
 	
 	template<class ElemT>
@@ -66,7 +66,20 @@ namespace Whale::IO
 	
 	template<class ElemT>
 	FFileStream<ElemT> &
-	FFileStream<ElemT>::Open(const String &fileName, const String &mode, Bool isCloseF, Bool isFlushNewline) noexcept
+	FFileStream<ElemT>::Open(const StringA &fileName, const StringA &mode, Bool isCloseF, Bool isFlushNewline) noexcept
+	{
+		Close();
+		FileOpen(&this->m_file, fileName.CStr(), mode.CStr());
+		this->m_peek           = 0;
+		this->m_now            = 0;
+		this->m_isCloseF       = isCloseF;
+		this->m_isFlushNewline = isFlushNewline;
+		return *this;
+	}
+	
+	template<class ElemT>
+	FFileStream<ElemT> &
+	FFileStream<ElemT>::Open(const StringW &fileName, const StringW &mode, Bool isCloseF, Bool isFlushNewline) noexcept
 	{
 		Close();
 		FileOpen(&this->m_file, fileName.CStr(), mode.CStr());

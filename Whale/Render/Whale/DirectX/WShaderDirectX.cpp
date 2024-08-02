@@ -19,10 +19,10 @@ namespace Whale::DirectX
 		StringA target;
 		if (!GetTarget(target, arg.m_type))
 		{
-			FDebug::LogError(TagA, "unknown shader type [" + target + "]");
+			FDebug::Log<CharA>(Error, TagA, "unknown shader type [" + target + "]");
 			return false;
 		}
-		Win32::FResult hr = D3DCompileFromFile(
+		FResult hr = D3DCompileFromFile(
 			arg.m_fileName.CStr(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, arg.entryPoint.CStr(), target.CStr(),
 			compileFlags, 0,
 			m_pShader.ReleaseAndGetAddressOf(), pErrorMsgs.ReleaseAndGetAddressOf()
@@ -32,7 +32,8 @@ namespace Whale::DirectX
 		{
 			if (!pErrorMsgs) THROW_IF_FAILED(hr);
 			auto buffer = reinterpret_cast<const char *>(pErrorMsgs->GetBufferPointer());
-			FDebug::LogError(
+			FDebug::Log<CharA>(
+				Error,
 				TagA, "\n" + target + " shader error: \n" + buffer
 			);
 			return false;

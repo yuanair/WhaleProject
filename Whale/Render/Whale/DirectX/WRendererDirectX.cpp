@@ -71,6 +71,10 @@ namespace Whale::DirectX
 		dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
 		
+		// 创建WIC
+		this->m_pWICForDirectX = MakeUnique<WWICForDirectX>();
+		this->m_pWICForDirectX->Create();
+		
 		// 创建dxgi工厂
 		THROW_IF_FAILED(
 			CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(this->m_pIDXGIFactory.ReleaseAndGetAddressOf()))
@@ -101,7 +105,7 @@ namespace Whale::DirectX
 		m_pCommandList = MakeUnique<WCommandListDirectX>(this);
 		if (!m_pCommandList->Init())
 		{
-			FDebug::LogError(TagA, "WCommandListDirectX::Init() error");
+			FDebug::Log<CharA>(Error, TagA, "WCommandListDirectX::Init() error");
 			return;
 		}
 		
@@ -169,9 +173,6 @@ namespace Whale::DirectX
 			GetPid3D12Device()->CreateDescriptorHeap(
 				&stSRVHeapDesc, IID_PPV_ARGS(m_pSRVHeap.ReleaseAndGetAddressOf())));
 		
-		// 创建WIC
-		this->m_pWICForDirectX = MakeUnique<WWICForDirectX>();
-		this->m_pWICForDirectX->Create();
 	}
 	
 	Bool WRendererDirectX::IsGPUResourceCreated() const noexcept

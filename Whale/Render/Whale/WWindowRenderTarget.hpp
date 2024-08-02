@@ -5,7 +5,7 @@
 #pragma once
 
 #include "WRenderTarget.hpp"
-#include <Whale/WWindow.hpp>
+#include <Whale/WGenericWindow.hpp>
 
 namespace Whale
 {
@@ -16,7 +16,7 @@ namespace Whale
 	{
 		
 		/// 渲染窗口
-		const WWindow &m_window;
+		const WGenericWindow &m_window;
 		
 		/// 缓冲区数量
 		uint32 m_frameBackBufferCount = 2;

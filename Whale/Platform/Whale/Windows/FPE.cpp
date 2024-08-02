@@ -8,7 +8,7 @@
 #include "Whale/FDebug.hpp"
 #include <windows.h>
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	FPE::FPE() = default;
 	
@@ -31,7 +31,7 @@ namespace Whale::Win32
 		if (!m_imageBase.handle)
 		{
 			Destroy();
-			FDebug::LogError(TagA, "文件映射错误");
+			FDebug::Log<CharA>(Error, TagA, "文件映射错误");
 			return FCore::GetLastError();
 		}
 		return S_OK;
@@ -52,7 +52,7 @@ namespace Whale::Win32
 		if (!m_imageBase.handle)
 		{
 			Destroy();
-			FDebug::LogError(TagW, L"文件映射错误");
+			FDebug::Log<CharW>(Error, TagW, L"文件映射错误");
 			return FCore::GetLastError();
 		}
 		return S_OK;

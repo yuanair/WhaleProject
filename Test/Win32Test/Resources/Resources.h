@@ -5,7 +5,6 @@
 #ifndef RESOURCES_HEADER
 #define RESOURCES_HEADER
 
-#define IDI_APP_ICON    100
-#define IDI_APP_ICON_SM 101
+#include <Whale/Windows/Resources.h>
 
 #endif

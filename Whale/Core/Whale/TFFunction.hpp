@@ -33,13 +33,13 @@ namespace Whale
 		TFFunction(T &&function) noexcept // NOLINT(*-explicit-constructor)
 			: m_function(Whale::Forward<T>(function)) {}
 		
-		TFFunction(TFFunction &&other) noexcept: m_function(other.m_function) {}
+		TFFunction(TFFunction &&other) noexcept: TFFunction() { this->Swap(other); }
 	
 	public:
 		
 		TFFunction &operator=(const TFFunction &other) noexcept
 		{
-			m_function = other.m_function;
+			TFFunction(other).Swap(*this);
 			return *this;
 		}
 		
@@ -86,5 +86,6 @@ namespace Whale
 		FunctionType m_function;
 		
 	};
+	
 	
 } // Whale

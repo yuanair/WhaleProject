@@ -13,9 +13,9 @@
 #include <wrl/client.h>
 
 #include <Whale/TypeDef.hpp>
-#include <Whale/Win32/FResult.hpp>
+#include <Whale/Windows/FResult.hpp>
 
-#define THROW_IF_FAILED(hr) (Whale::Win32::FResult{hr}.ThrowIfFailed(""))
+#define THROW_IF_FAILED(hr) (Whale::FResult{hr}.ThrowIfFailed(""))
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")

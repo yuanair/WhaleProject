@@ -17,18 +17,18 @@ namespace Whale
 	{
 		if (m_pRenderer == nullptr || !m_pRenderer->IsGPUResourceCreated())
 		{
-			FDebug::LogError(TagA, "m_pRenderer isn't create");
+			FDebug::Log<CharA>(Error, TagA, "m_pRenderer isn't create");
 			return false;
 		}
 		TFSharedPtr<WShaderDirectX> pVertexShader = DynamicPointerCast<WShaderDirectX>(arg.m_pVertexShader.Lock());
 		TFSharedPtr<WShaderDirectX> pPixelShader  = DynamicPointerCast<WShaderDirectX>(arg.m_pPixelShader.Lock());
 		if (!pVertexShader)
 		{
-			FDebug::LogError(TagA, "pVertexShader isn't cast to WShaderDirectX");
+			FDebug::Log<CharA>(Error, TagA, "pVertexShader isn't cast to WShaderDirectX");
 		}
 		if (!pPixelShader)
 		{
-			FDebug::LogError(TagA, "pPixelShader isn't cast to WShaderDirectX");
+			FDebug::Log<CharA>(Error, TagA, "pPixelShader isn't cast to WShaderDirectX");
 		}
 		if (!(pVertexShader && pPixelShader)) return false;
 		

@@ -8,7 +8,7 @@
 #include "HWinDef.hpp"
 #include "FResult.hpp"
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	/// PE文件格式

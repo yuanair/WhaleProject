@@ -6,10 +6,10 @@
 
 #include <Whale/TypeDef.hpp>
 
-namespace Whale::Win32
+namespace Whale
 {
-	constexpr const CharA TagA[] = "Whale::Win32";
-	constexpr const CharW TagW[] = L"Whale::Win32";
+	constexpr const CharA TagA[] = "Whale::Windows";
+	constexpr const CharW TagW[] = L"Whale::Windows";
 	
 	// 句柄
 	struct HHandle
@@ -25,6 +25,9 @@ namespace Whale::Win32
 	
 	/// 应用实例
 	struct HInstance : public HHandle {};
+	
+	/// 模块
+	using HModule = HInstance;
 	
 	/// 图标资源
 	struct HIcon : public HHandle {};

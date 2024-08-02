@@ -9,6 +9,8 @@
 #include <Windows.h>
 #include <glad/glad.h>
 
+#pragma comment(lib, "Opengl32.lib")
+
 namespace Whale::OpenGL
 {
 	

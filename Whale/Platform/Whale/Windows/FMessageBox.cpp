@@ -7,7 +7,7 @@
 
 #include "FMessageBox.hpp"
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	FMessageBoxResult FMessageBox::Show(const StringA &message, const StringA &caption, uint32 type)

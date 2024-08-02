@@ -4,7 +4,7 @@
 
 #include "HWinDef.hpp"
 
-namespace Whale::Win32
+namespace Whale
 {
 
 } // Whale

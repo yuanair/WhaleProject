@@ -8,50 +8,20 @@
 #include "FCore.hpp"
 #include "Whale/WObject.hpp"
 #include <Whale/Container/TFString.hpp>
-#include <Whale/WWindow.hpp>
+#include <Whale/WGenericWindow.hpp>
 
 #include <Eigen/Core>
 
-namespace Whale::Win32
+namespace Whale
 {
 	// 窗口
-	class WHALE_API WWindow : public Whale::WWindow
+	class WHALE_API WWindowsWindow : public Whale::WGenericWindow
 	{
 	public:
 		
-		// 窗口类
-		class WHALE_API WWindowClass : public WObject
-		{
-		public:
-			
-			explicit WWindowClass(const HInstance &hInstance, StringT name)
-				: hInstance(hInstance), name(Move(name)) {}
-			
-			~WWindowClass() override { Unregister(); }
-		
-		public:
-			
-			// 注册窗口类
-			Bool Register(HIcon hIcon = {}, HIcon hIconSm = {});
-			
-			// 取消注册
-			Bool Unregister();
-			
-			// 获取窗口类名
-			[[nodiscard]]
-			const StringT &GetName() const { return this->name; }
-			
-			// 获取应用实例
-			[[nodiscard]]
-			const HInstance &GetHInstance() const { return this->hInstance; }
-		
-		private:
-			
-			const HInstance hInstance;
-			
-			const StringT name;
-			
-		};
+		friend class WWindowsWindowClass;
+	
+	public:
 		
 		
 		///
@@ -130,9 +100,9 @@ namespace Whale::Win32
 	
 	public:
 		
-		WWindow();
+		WWindowsWindow();
 		
-		~WWindow() override;
+		~WWindowsWindow() override;
 	
 	public:
 		
@@ -149,18 +119,14 @@ namespace Whale::Win32
 	public:
 		
 		/// 获取文件拖放权限
-		Bool GetFileDragAndDropPermission() const noexcept;
+		[[nodiscard]] Bool GetFileDragAndDropPermission() const noexcept;
 		
 		Bool EnableFileDrag() override
 		{
 			return GetFileDragAndDropPermission();
 		}
 		
-		// 创建窗口
-		void Create(
-			const WWindowClass &windowClass, const StringT &windowName,
-			int32 x = INT_MIN, int32 y = INT_MIN, int32 w = INT_MIN, int32 h = INT_MIN, HWindow hWndParent = {}
-		);
+		void Create(const FWindowCreateArg &arg) override;
 		
 		///
 		/// 绑定句柄
@@ -173,7 +139,7 @@ namespace Whale::Win32
 		/// \param nCmdShow 可传入WinMain的参数nShowCmd。否则，传入SW_SHOW
 		inline void ShowAndUpdate() noexcept override
 		{
-			Show(Win32::FCore::GetCommandShow<CharT>());
+			Show(Windows::FCore::GetCommandShow<CharT>());
 			Update();
 		}
 		
@@ -330,13 +296,13 @@ namespace Whale::Win32
 		void SetRect(const Eigen::Vector4i &rect) override;
 		
 		[[nodiscard]]
-		inline const HWindow &GetHWindow() const noexcept override { return this->hWindow; }
+		inline HWindow GetHWindow() const noexcept override { return this->hWindow; }
+		
+		LResult OnMessage(UInt msg, WParam wParam, LParam lParam) override;
 	
 	private:
 		
 		static LResult WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam);
-		
-		LResult OnMessage(UInt msg, WParam wParam, LParam lParam);
 	
 	protected:
 		
@@ -346,22 +312,24 @@ namespace Whale::Win32
 		Bool bEnableOnString = false;
 		
 		/// 输入位置，用于输入法定位
-		Eigen::Vector2i inputPoint;
+		Eigen::Vector2i inputPoint = {0, 0};
 		
 		/// 鼠标光标
-		HCursor         hCursor;
+		HCursor         hCursor       = {};
 		/// 鼠标位置
-		Eigen::Vector2i mousePosition;
+		Eigen::Vector2i mousePosition = {0, 0};
 		
 		/// 窗口最小大小
-		Eigen::Vector2i minSize;
+		Eigen::Vector2i minSize = {0, 0};
 		/// 窗口最大大小
-		Eigen::Vector2i maxSize;
+		Eigen::Vector2i maxSize = {0, 0};
 	
 	private:
 		
 		HWindow hWindow;
 		
 	};
+	
+	typedef WWindowsWindow WWindow;
 	
 } // Whale

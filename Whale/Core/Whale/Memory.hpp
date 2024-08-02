@@ -5,9 +5,9 @@
 #pragma once
 
 #include "TypeDef.hpp"
+#include "Utility.hpp"
 #include "FIntrinsics.hpp"
 #include "Exception.hpp"
-#include "FDebug.hpp"
 #include "IGoodAndBad.hpp"
 
 namespace Whale
@@ -411,8 +411,7 @@ namespace Whale
 		{
 			if (!this->ConstructFromWeak(Whale::Move(other)))
 			{
-				FDebug::LogError(WhaleTagA, FBadWeakPtrException());
-				return;
+				throw FBadWeakPtrException();
 			}
 		}
 		

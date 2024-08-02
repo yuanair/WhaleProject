@@ -2,7 +2,7 @@
 // Created by admin on 2024/7/30.
 //
 
-#include "WWindow.hpp"
+#include "WGenericWindow.hpp"
 
 namespace Whale
 {

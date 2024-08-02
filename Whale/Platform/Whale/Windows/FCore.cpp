@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <ShlObj.h>
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	template<>

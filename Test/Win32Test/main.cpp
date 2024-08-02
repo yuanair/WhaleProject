@@ -6,15 +6,14 @@
 #include <Whale/WWindowRenderTarget.hpp>
 #include <Whale/IO.hpp>
 #include <Whale/Json/TFValue.hpp>
-#include <Whale/FApplication.hpp>
 
-#include <Whale/Win32/WWindow.hpp>
-#include <Whale/Win32/WDragQueryFileReader.hpp>
-#include <Whale/Win32/FMessageBox.hpp>
-#include <Whale/Win32/FPE.hpp>
-#include <Whale/Win32/FFile.hpp>
+#include <Whale/FPlatformManager.hpp>
+#include <Whale/AutoPlatform.hpp>
 
-#include <boost/json.hpp>
+#include <Whale/Windows/WDragQueryFileReader.hpp>
+#include <Whale/Windows/FMessageBox.hpp>
+#include <Whale/Windows/FPE.hpp>
+#include <Whale/Windows/FFile.hpp>
 
 #include "./Resources/Resources.h"
 
@@ -28,22 +27,23 @@ public:
 	{
 		//this->bEnableOnChar = true;
 		//this->bEnableOnString = true;
-		pWindow = MakeUnique<Win32::WWindow>();
+		pWindow = MakeUnique<WWindow>();
+		pWindow->m_inputSystem.onDrop += OnDropFiles;
+	}
+	
+	static void OnDestroy(const ActionEventArg &arg)
+	{
+		FPlatformManager::Get().GetPlatform()->Exit(0);
 	}
 
 protected:
 	
-	void OnCreate()
+	void OnCreate(const ActionEventArg &arg)
 	{
 		pWindow->EnableFileDrag();
 	}
 	
-	void OnDropFiles(Win32::HDrop hDropInfo);
-	
-	static void OnDestroy()
-	{
-		FApplication::Exit();
-	}
+	static void OnDropFiles(HDrop hDrop);
 
 public:
 	
@@ -54,7 +54,7 @@ public:
 	
 	TFWeakPtr<WWindowRenderTarget> pRenderTarget;
 	
-	TFUniquePtr<WWindow> pWindow;
+	TFUniquePtr<WGenericWindow> pWindow;
 	
 	void ShowPE(const StringW &fileName) const;
 };
@@ -67,15 +67,15 @@ public:
 	{
 	}
 	
-	~Program()
+	~Program() override
 	{
 	
 	}
 
 public:
 	
-	const StringA                             dataDirectoryA;
-	const StringW                             dataDirectoryW;
+	const StringA                 dataDirectoryA;
+	const StringW                 dataDirectoryW;
 
 public:
 	
@@ -103,6 +103,7 @@ protected:
 	void OnEndPlay() override
 	{
 		WProgram::OnEndPlay();
+		pRender->ResourceDestroy();
 	}
 
 
@@ -117,17 +118,17 @@ private:
 			StringA name;
 		}       windowData;
 		StringA shader;
-	}                                         data;
-	MyWindow                                  window;
-	MyWindow                                  window2;
-	TFUniquePtr<Win32::WWindow::WWindowClass> pWindowClass;
-	TFUniquePtr<WRenderer>                    pRender;
-	TFWeakPtr<WShader>                        pVertexShader;
-	TFWeakPtr<WShader>                        pPixelShader;
-	TFWeakPtr<WRenderingPipeline>             pRenderingPipeline;
-	TFWeakPtr<WMaterial>                      pMaterial;
-	TFWeakPtr<WStaticMesh>                    pMesh;
-	TFWeakPtr<WBitmap>                        pBitmap;
+	}                             data;
+	MyWindow                      window;
+	MyWindow                      window2;
+	TFUniquePtr<WWindowClass>     pWindowClass;
+	TFUniquePtr<WRenderer>        pRender;
+	TFWeakPtr<WShader>            pVertexShader;
+	TFWeakPtr<WShader>            pPixelShader;
+	TFWeakPtr<WRenderingPipeline> pRenderingPipeline;
+	TFWeakPtr<WMaterial>          pMaterial;
+	TFWeakPtr<WStaticMesh>        pMesh;
+	TFWeakPtr<WBitmap>            pBitmap;
 
 public:
 	
@@ -147,6 +148,12 @@ public:
 	
 };
 
+static Program &GetProgram()
+{
+	static Program program;
+	return program;
+}
+
 void Program::InitData()
 {
 	
@@ -158,36 +165,37 @@ void Program::InitData()
 	);
 	this->data.shader          = dataDirectoryA + "/test.hlsl";
 	
-	pWindowClass = MakeUnique<Win32::WWindow::WWindowClass>(
-		Win32::FCore::GetInstance<CharT>(), WHALE_TEXT("WhaleTestWindowClass")
-	);
-	if (!pWindowClass->Register(
-		Win32::FCore::GetIcon<CharT>(IDI_APP_ICON), Win32::FCore::GetIcon<CharT>(IDI_APP_ICON_SM)))
+	pWindowClass = MakeUnique<WWindowClass>();
+	if (!pWindowClass->Create({.m_name = WTEXT("WhaleTestWindowClass")}))
 	{
-		Win32::FCore::GetLastError();
+		Windows::FCore::GetLastError();
 	}
 	
-	window.pWindow = MakeUnique<Win32::WWindow>();
-	((Win32::WWindow *) window.pWindow.GetPtr())->Create(
-		*pWindowClass, FLocale::AToTString(
-			this->data.windowData.name, this->data.toEncoding
-		));
+	window.pWindow->Create(
+		{
+			.m_name = FLocale::AToTString(
+				this->data.windowData.name, this->data.toEncoding
+			), .m_class = pWindowClass.GetPtr()
+		}
+	);
 	
 	if (window.pWindow->GetHWindow().handle == nullptr)
 	{
-		Win32::FCore::GetLastError();
+		Windows::FCore::GetLastError();
 	}
 	window.pWindow->ShowAndUpdate();
 	
 	
-	window2.pWindow = MakeUnique<Win32::WWindow>();
-	((Win32::WWindow *) window.pWindow.GetPtr())->Create(
-		*pWindowClass, FLocale::AToTString(
-			this->data.windowData.name, this->data.toEncoding
-		));
+	window2.pWindow->Create(
+		{
+			.m_name = FLocale::AToTString(
+				this->data.windowData.name, this->data.toEncoding
+			), .m_class = pWindowClass.GetPtr()
+		}
+	);
 	if (window2.pWindow->GetHWindow().handle == nullptr)
 	{
-		Win32::FCore::GetLastError();
+		Windows::FCore::GetLastError();
 	}
 	window2.pWindow->ShowAndUpdate();
 	
@@ -266,60 +274,62 @@ void Program::InitDirectX()
 	pMesh.Lock()->Create({});
 	pMesh.Lock()->Enable();
 	
-	window.pRenderTarget = pRender->MakeWindowRenderTarget();
+	window.pRenderTarget  = pRender->MakeWindowRenderTarget();
 	window.pRenderTarget.Lock()->Create({.m_window=*window.pWindow, .m_frameBackBufferCount=3});
 	window.pRenderTarget.Lock()->Enable();
+	window.pWindow->m_inputSystem.onDestroy.started += MyWindow::OnDestroy;
 	window2.pRenderTarget = pRender->MakeWindowRenderTarget();
-	window2.pRenderTarget.Lock()->Create({.m_window=*window.pWindow, .m_frameBackBufferCount=3});
+	window2.pRenderTarget.Lock()->Create({.m_window=*window2.pWindow, .m_frameBackBufferCount=3});
 	window2.pRenderTarget.Lock()->Enable();
 	window.GetPRenderTarget().Lock()->m_renderObjects.Append(pMesh);
 }
 
-//Win32::LResult MyWindow::OnDropFiles(Win32::HDrop hDropInfo)
-//{
-//	Win32::WDragQueryFileReader reader;
-//	StringW                     fileName = L"";
-//	reader.Init<CharW>(hDropInfo);
-//	for (uint32 index   = 0; index < reader.GetFileCount(); index++)
-//	{
-//		reader.Get<CharW>(fileName, index);
-//	}
-//	if (auto    pBitmap = program.GetPBitmap().Lock())
-//	{
-//		// ShowPE(fileName);
-//		try
-//		{
-//			pBitmap->CreateFromFile({.m_fileName=fileName});
-//		}
-//		catch (Win32::FResultException &e)
-//		{
-//			Win32::FMessageBox::Show(e.What(), program.GetData().windowData.name);
-//		}
-//	}
-//	return false;
-//}
+void MyWindow::OnDropFiles(HDrop hDrop)
+{
+	Windows::WDragQueryFileReader reader;
+	StringW                       fileName = L"";
+	reader.Init<CharW>(hDrop);
+	for (uint32 index   = 0; index < reader.GetFileCount(); index++)
+	{
+		reader.Get<CharW>(fileName, index);
+	}
+	if (auto    pBitmap = GetProgram().GetPBitmap().Lock())
+	{
+		// ShowPE(fileName);
+		try
+		{
+			pBitmap->CreateFromFile({.m_fileName=fileName});
+		}
+		catch (FResultException &e)
+		{
+			Windows::FMessageBox::Show(e.What(), GetProgram().GetData().windowData.name);
+		}
+	}
+}
 
 
 int WhaleMain()
 {
-	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
-	Bool isRunAsAdministrator = FApplication::IsRunAsAdministrator();
-	FDebug::Log(
-		WHALE_TEXT("IsRunAsAdministrator"),
-		isRunAsAdministrator ? WHALE_TEXT("true") : WHALE_TEXT("false"),
-		isRunAsAdministrator ? Info : Fatal
+	GetProgram();
+	auto h = FPlatformManager::Get().GetPlatform()->GetModuleHandle();
+	WGenericFileManager::Get().CreateDirectory(WTEXT("./Logs"));
+	FDebug::LogToFile("./Logs", "%Y%m%d.log");
+	Bool isRunAsAdministrator = FPlatformManager::Get().GetPlatform()->IsRunAsAdministrator();
+	FDebug::Log<CharT>(
+		isRunAsAdministrator ? Info : Fatal,
+		WTEXT("IsRunAsAdministrator"),
+		isRunAsAdministrator ? WTEXT("true") : WTEXT("false")
 	);
-	return Program().Run(WHALE_TEXT(""));
+	FDebug::Log<Char>(Info, WTEXT(""), std::format(WTEXT("{}"), h.handle).c_str());
+	return GetProgram().Run();
 }
 
 #include <Whale/WhaleMain.hpp>
 
-#include <ImageHlp.h>
-
 void MyWindow::ShowPE(const StringW &fileName) const
 {
-	Win32::FPE pe;
-	pe.LoadFromFile<CharT>(Win32::FFile::OpenReadOnly(fileName));
+	Windows::FPE pe;
+	pe.LoadFromFile<CharT>(Windows::FFile::OpenReadOnly(fileName));
 	PIMAGE_DOS_HEADER      pDH  = nullptr;//指向IMAGE_DOS结构的指针
 	PIMAGE_NT_HEADERS      pNtH = nullptr;//指向IMAGE_NT结构的指针
 	PIMAGE_FILE_HEADER     pFH  = nullptr;//指向IMAGE_FILE结构的指针
@@ -327,13 +337,13 @@ void MyWindow::ShowPE(const StringW &fileName) const
 	pDH = (PIMAGE_DOS_HEADER) pe.GetImageBase().handle;
 	if (pDH->e_magic != IMAGE_DOS_SIGNATURE) //判断是否为MZ
 	{
-		FDebug::LogError("", "Not a valid PE file!");
+		FDebug::Log<CharA>(Error, "", "Not a valid PE file!");
 		return;
 	}
 	pNtH = (PIMAGE_NT_HEADERS) ((ULONG_PTR) pDH + pDH->e_lfanew); //判断是否为PE格式
 	if (pNtH->Signature != IMAGE_NT_SIGNATURE)
 	{
-		FDebug::LogError("", "Not a valid PE file!");
+		FDebug::Log<CharA>(Error, "", "Not a valid PE file!");
 		return;
 	}
 }

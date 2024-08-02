@@ -6,6 +6,7 @@
 
 #include <Whale/TypeDef.hpp>
 #include <Whale/Stream.hpp>
+#include <Whale/FLocale.hpp>
 #include "TILexer.hpp"
 
 namespace Whale

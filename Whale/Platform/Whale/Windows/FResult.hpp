@@ -10,7 +10,7 @@
 #include <Whale/Exception.hpp>
 #include "HWinDef.hpp"
 
-namespace Whale::Win32
+namespace Whale
 {
 	
 	class FResultException : public FException
@@ -32,7 +32,7 @@ namespace Whale::Win32
 		FResult() noexcept
 			: m_hr(0), m_isThrowIfFailedAtDestructTime(false) {}
 		
-		FResult(Win32::HResult hr) noexcept// NOLINT(*-explicit-constructor)
+		FResult(HResult hr) noexcept// NOLINT(*-explicit-constructor)
 			: m_hr(hr), m_isThrowIfFailedAtDestructTime(true) {}
 		
 		FResult(const FResult &other) noexcept
@@ -57,7 +57,7 @@ namespace Whale::Win32
 			return *this;
 		}
 		
-		FResult &operator=(Win32::HResult hr) noexcept
+		FResult &operator=(HResult hr) noexcept
 		{
 			this->m_hr = hr;
 			return *this;
@@ -108,7 +108,7 @@ namespace Whale::Win32
 	
 	public:
 		
-		[[nodiscard]]Win32::HResult GetHr() const noexcept { return this->m_hr; }
+		[[nodiscard]]HResult GetHr() const noexcept { return this->m_hr; }
 		
 		[[nodiscard]]Bool
 		IsThrowIfFailedAtDestructTime() const noexcept { return this->m_isThrowIfFailedAtDestructTime; }
@@ -120,7 +120,7 @@ namespace Whale::Win32
 	
 	private:
 		
-		Win32::HResult m_hr;
+		HResult m_hr;
 		
 		Bool m_isThrowIfFailedAtDestructTime;
 		

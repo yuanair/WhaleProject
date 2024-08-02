@@ -5,7 +5,6 @@
 #include "WBitmapDirectX.hpp"
 #include "WRendererDirectX.hpp"
 #include "WCommandListDirectX.hpp"
-#include "Eigen/Core"
 
 namespace Whale::DirectX
 {
@@ -30,11 +29,14 @@ namespace Whale::DirectX
 		// 定义一个位图格式的图片数据对象接口
 		Microsoft::WRL::ComPtr<IWICBitmapSource>    pIBMP;
 		Microsoft::WRL::ComPtr<IWICPixelFormatInfo> pIWICPixelInfo;
+		TFUniquePtr<WFile>                          file   = MakeUnique<WFile>();
 		DXGI_FORMAT                                 targetFormat;
 		uint32                                      width  = 0;
 		uint32                                      height = 0;
 		uint32                                      BPP    = 0;
-		m_pRenderer->GetPWICForDirectX()->LoadFromFile(arg.m_fileName, pIBMP, pIWICPixelInfo, targetFormat);
+		
+		file->Open(arg.m_fileName, EFileOpenMode(EFileOpenModeRead | EFileSharedRead | EFileCreateNone));
+		m_pRenderer->GetPWICForDirectX()->LoadFromFile(file.GetPtr(), pIBMP, pIWICPixelInfo, targetFormat);
 		
 		//获得图片大小（单位：像素）
 		THROW_IF_FAILED(pIBMP->GetSize(&width, &height));
@@ -92,7 +94,7 @@ namespace Whale::DirectX
 		void *pbPicData = ::HeapAlloc(::GetProcessHeap(), HEAP_ZERO_MEMORY, n64UploadBufferSize);
 		if (nullptr == pbPicData)
 		{
-			if (Win32::FResult(HRESULT_FROM_WIN32(GetLastError())).IsFailed()) return false;
+			if (FResult(HRESULT_FROM_WIN32(GetLastError())).IsFailed()) return false;
 		}
 		
 		//从图片中读取出数据

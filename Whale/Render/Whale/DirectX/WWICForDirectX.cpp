@@ -3,8 +3,9 @@
 //
 
 #include "WWICForDirectX.hpp"
-#include <Whale/Win32/FCore.hpp>
-#include <Whale/Win32/FFile.hpp>
+#include "Whale/FDebug.hpp"
+#include <Whale/Windows/FCore.hpp>
+#include <Whale/Windows/FFile.hpp>
 
 namespace Whale::DirectX
 {
@@ -140,32 +141,14 @@ namespace Whale::DirectX
 		);
 		
 	}
-	
-	
-	Win32::FResult WWICForDirectX::LoadFromFile(const StringA &fileName,
-	                                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-	                                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
-	                                            DXGI_FORMAT &targetFormat)
-	{
-		Win32::HHandle file = Win32::FFile::OpenReadOnly(fileName);
-		if (INVALID_HANDLE_VALUE == file.handle)
-		{
-			return Win32::FCore::GetLastError();
-		}
-		return LoadFromFile(file, pIWICSource, pIWICPixelInfo, targetFormat);
-	}
-	
-	Win32::FResult WWICForDirectX::LoadFromFile(const StringW &fileName,
-	                                            Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
-	                                            Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
-	                                            DXGI_FORMAT &targetFormat)
-	{
-		Win32::HHandle file = Win32::FFile::OpenReadOnly(fileName);
-		if (INVALID_HANDLE_VALUE == file.handle)
-		{
-			return Win32::FCore::GetLastError();
-		}
-		return LoadFromFile(file, pIWICSource, pIWICPixelInfo, targetFormat);
+
+
+
+//	FResult WWICForDirectX::LoadFromFile(const StringW &fileName,
+//	                                     Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+//	                                     Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
+//	                                     DXGI_FORMAT &targetFormat)
+//	{
 
 //		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
 //		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
@@ -248,11 +231,11 @@ namespace Whale::DirectX
 //		THROW_IF_FAILED(pIWIComponentInfo.As(&pIWICPixelInfo));
 //
 //		return S_OK;
-	}
+	//}
 	
 	
-	Win32::FResult
-	WWICForDirectX::LoadFromFile(Win32::HHandle fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+	FResult
+	WWICForDirectX::LoadFromFile(WFile *fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
 	                             Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
 	                             DXGI_FORMAT &targetFormat)
 	{
@@ -264,7 +247,7 @@ namespace Whale::DirectX
 		
 		THROW_IF_FAILED(
 			m_pIWICFactory->CreateDecoderFromFileHandle(
-				reinterpret_cast<ULONG_PTR>(fileHandle.handle),
+				reinterpret_cast<ULONG_PTR>(fileHandle->GetHandle().handle),
 				nullptr,                            // 不指定解码器，使用默认
 				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
 				pIWICDecoder.ReleaseAndGetAddressOf()                    // 解码器对象
@@ -289,7 +272,7 @@ namespace Whale::DirectX
 			// 不支持的图片格式 目前退出了事
 			// 一般 在实际的引擎当中都会提供纹理格式转换工具，
 			// 图片都需要提前转换好，所以不会出现不支持的现象
-			FDebug::LogError(TagA, FLoadException("Unsupported image format"));
+			FDebug::Log<CharA>(Error, TagA, "Unsupported image format");
 			return E_UNEXPECTED;
 		}
 		
@@ -329,7 +312,7 @@ namespace Whale::DirectX
 		
 		if (type != WICPixelFormat)
 		{
-			FDebug::LogError(TagA, FLoadException("Unknown Error"));
+			FDebug::Log<CharA>(Error, TagA, "Unknown Error");
 			return E_UNEXPECTED;
 		}
 		

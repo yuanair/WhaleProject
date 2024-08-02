@@ -7,7 +7,7 @@
 #include <Whale/TypeDef.hpp>
 #include <Whale/WObject.hpp>
 #include <Whale/WAction.hpp>
-#include "Whale/Win32/HWinDef.hpp"
+#include "Whale/Windows/HWinDef.hpp"
 
 namespace Whale
 {
@@ -27,7 +27,7 @@ namespace Whale
 		
 		WAction onDestroy;
 		
-		TFEvent<Win32::HDrop> onDrop;
+		TFEvent<HDrop> onDrop;
 		
 	};
 	

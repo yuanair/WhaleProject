@@ -13,13 +13,19 @@ namespace Whale
 	{
 	public:
 		
+		static const Char *GetAppName();
+		
 		static const CharA *GetAppNameA();
 		
 		static const CharW *GetAppNameW();
 		
+		static const Char *GetVersion();
+		
 		static const CharA *GetVersionA();
 		
 		static const CharW *GetVersionW();
+		
+		static const Char *GetBuildData();
 		
 		static const CharA *GetBuildDataA();
 		

@@ -5,7 +5,7 @@
 #include "WDragQueryFileReader.hpp"
 #include <windows.h>
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	template<>

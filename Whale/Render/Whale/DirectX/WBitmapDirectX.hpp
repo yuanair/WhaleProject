@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Whale/WBitmap.hpp>
+
 #include "HDirectXHeader.hpp"
 #include "WRendererDirectX.hpp"
 

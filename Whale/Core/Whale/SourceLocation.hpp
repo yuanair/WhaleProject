@@ -12,7 +12,7 @@ namespace Whale
 	
 	struct FSourceLocation
 	{
-#if WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_MSVC || WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_CLANG
+#if defined(WHALE_COMPILER_TYPE_MSVC) || defined(WHALE_COMPILER_TYPE_CLANG)
 		
 		static consteval FSourceLocation Current
 			(
@@ -22,7 +22,7 @@ namespace Whale
 				const CharA *function = __builtin_FUNCSIG()
 			) noexcept;
 
-#elif WHALE_COMPILER_TYPE == WHALE_COMPILER_TYPE_GCC
+#elif defined(WHALE_COMPILER_TYPE_GCC)
 		
 		static consteval FSourceLocation Current
 			(
@@ -73,9 +73,9 @@ namespace Whale
 	
 	private:
 		
-		uint32 line{};
-		uint32 column{};
-		const CharA *file = "";
+		uint32      line{};
+		uint32      column{};
+		const CharA *file     = "";
 		const CharA *function = "";
 		
 	};
@@ -84,9 +84,9 @@ namespace Whale
 	FSourceLocation::Current(uint32 line, uint32 column, const CharA *file, const CharA *function) noexcept
 	{
 		FSourceLocation result{};
-		result.line = line;
-		result.column = column;
-		result.file = file;
+		result.line     = line;
+		result.column   = column;
+		result.file     = file;
 		result.function = function;
 		return result;
 	}

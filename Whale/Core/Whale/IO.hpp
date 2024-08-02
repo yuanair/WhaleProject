@@ -53,13 +53,27 @@ namespace Whale::IO
 		/// \param mode 打开模式
 		/// \param isCloseF 是否需要关闭
 		/// \param isFlushNewline 换行是否需要刷新
-		FFileStream(const String& fileName, const String& mode, Bool isCloseF = true, Bool isFlushNewline = true) noexcept { Open(fileName, mode, isCloseF, isFlushNewline);}
+		FFileStream(const StringA &fileName, const StringA &mode, Bool isCloseF = true,
+		            Bool isFlushNewline = true) noexcept { Open(fileName, mode, isCloseF, isFlushNewline); }
+		
+		///
+		/// \param fileName 文件名
+		/// \param mode 打开模式
+		/// \param isCloseF 是否需要关闭
+		/// \param isFlushNewline 换行是否需要刷新
+		FFileStream(const StringW &fileName, const StringW &mode, Bool isCloseF = true,
+		            Bool isFlushNewline = true) noexcept { Open(fileName, mode, isCloseF, isFlushNewline); }
 		
 		///
 		/// \param file 文件流
 		/// \param isCloseF 是否需要关闭
 		/// \param isFlushNewline 换行是否需要刷新
-		FFileStream(FILE *file, Bool isCloseF, Bool isFlushNewline = true) noexcept { Reset(file, isCloseF, isFlushNewline); }
+		FFileStream(FILE *file, Bool isCloseF, Bool isFlushNewline = true) noexcept
+		{
+			Reset(
+				file, isCloseF, isFlushNewline
+			);
+		}
 		
 		FFileStream(const FFileStream &) = delete;
 		
@@ -76,24 +90,33 @@ namespace Whale::IO
 		/// \param mode 打开模式
 		/// \param isCloseF 是否需要关闭
 		/// \param isFlushNewline 换行是否需要刷新
-		FFileStream& Open(const String& fileName, const String& mode, Bool isCloseF = true, Bool isFlushNewline = true) noexcept;
+		FFileStream &
+		Open(const StringA &fileName, const StringA &mode, Bool isCloseF = true, Bool isFlushNewline = true) noexcept;
+		
+		/// 打开文件
+		/// \param fileName 文件名
+		/// \param mode 打开模式
+		/// \param isCloseF 是否需要关闭
+		/// \param isFlushNewline 换行是否需要刷新
+		FFileStream &
+		Open(const StringW &fileName, const StringW &mode, Bool isCloseF = true, Bool isFlushNewline = true) noexcept;
 		
 		///
 		/// \param file 文件流
 		/// \param isCloseF 是否需要关闭
 		/// \param isFlushNewline 换行是否需要刷新
-		FFileStream& Reset(FILE *file, Bool isCloseF, Bool isFlushNewline = true) noexcept;
+		FFileStream &Reset(FILE *file, Bool isCloseF, Bool isFlushNewline = true) noexcept;
 		
 		///
 		/// 关闭文件
 		/// \return 是否成功
-		FFileStream& Close() noexcept;
+		FFileStream &Close() noexcept;
 		
 		[[nodiscard]] Bool IsOpen() const noexcept { return this->m_file != 0; }
 		
-		[[nodiscard]] Bool IsError() const noexcept { return ::ferror(this->m_file) != 0; }
+		[[nodiscard]] Bool IsError() const noexcept { return this->m_file ? ::ferror(this->m_file) != 0 : true; }
 		
-		[[nodiscard]] Bool IsEOF() const noexcept { return ::feof(this->m_file) != 0; }
+		[[nodiscard]] Bool IsEOF() const noexcept { return this->m_file ? ::feof(this->m_file) != 0 : true; }
 		
 		template<class... Args>
 		FFileStream &Writes(Args... args) noexcept;
@@ -125,7 +148,7 @@ namespace Whale::IO
 		///
 		/// 清空错误
 		const FFileStream &ClearError() const noexcept;
-		
+	
 	public:
 		
 		[[nodiscard]] Bool Good() const noexcept override { return !(IsError() || IsEOF()); }
@@ -164,18 +187,18 @@ namespace Whale::IO
 		
 		///
 		/// \return 如果换行需要刷新，则为true。
-		[[nodiscard]] const Bool &GetIsFlushNewline() const{return m_isFlushNewline;}
+		[[nodiscard]] const Bool &GetIsFlushNewline() const { return m_isFlushNewline; }
 		
 		/// \param isFlushNewline 如果换行需要刷新，则为true。
-		void SetIsFlushNewline(const Bool &isFlushNewline){m_isFlushNewline = isFlushNewline;}
+		void SetIsFlushNewline(const Bool &isFlushNewline) { m_isFlushNewline = isFlushNewline; }
 	
 	private:
 		
-		FILE *m_file{};
+		FILE  *m_file{};
 		int32 m_now{};
 		int32 m_peek{};
-		Bool m_isCloseF{};
-		Bool m_isFlushNewline{};
+		Bool  m_isCloseF{};
+		Bool  m_isFlushNewline{};
 		
 	};
 	

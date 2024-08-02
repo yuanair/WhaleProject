@@ -2,63 +2,38 @@
 // Created by admin on 2024/7/1.
 //
 
-#include "WWindow.hpp"
+#include "WWindowsWindow.hpp"
 
 #include "FCore.hpp"
+#include "Whale/FDebug.hpp"
 
 #include <windows.h>
 #include <windowsx.h>
 
 #pragma comment(lib, "Imm32.lib")
 
-namespace Whale::Win32
+namespace Whale
 {
 	
-	bool WWindow::WWindowClass::Register(HIcon hIcon, HIcon hIconSm)
-	{
-		if (hIcon.handle == nullptr) hIcon.handle     = ::LoadIcon(nullptr, IDI_APPLICATION);
-		if (hIconSm.handle == nullptr) hIconSm.handle = ::LoadIcon(nullptr, IDI_APPLICATION);
-		WNDCLASSEX wnd
-			           {
-				           .cbSize = sizeof(wnd),
-				           .style = CS_VREDRAW | CS_HREDRAW,
-				           .lpfnWndProc = (WNDPROC) (&WWindow::WindowProc),
-				           .cbClsExtra = 0,
-				           .cbWndExtra = sizeof(WWindow *),
-				           .hInstance = (HINSTANCE) hInstance.handle,
-				           .hIcon = (HICON) hIcon.handle,
-				           .hCursor = nullptr,
-				           .hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH),
-				           .lpszMenuName = nullptr,
-				           .lpszClassName = name.CStr(),
-				           .hIconSm = (HICON) hIconSm.handle,
-			           };
-		return (bool) ::RegisterClassEx(&wnd);
-	}
 	
-	Bool WWindow::WWindowClass::Unregister()
-	{
-		return ::UnregisterClass(this->name.CStr(), (HINSTANCE) this->hInstance.handle);
-	}
-	
-	WWindow::WWindow()
-		: inputPoint{}, hCursor{::LoadCursor(nullptr, IDC_ARROW)},
-		  minSize{}, maxSize{DesktopWindowSize()}, mousePosition{}
+	WWindowsWindow::WWindowsWindow()
+		: inputPoint{}, hCursor{::LoadCursorW(nullptr, IDC_ARROW)},
+		  minSize{0, 0}, maxSize{DesktopWindowSize()}, mousePosition{}
 	{
 	
 	}
 	
-	WWindow::~WWindow()
+	WWindowsWindow::~WWindowsWindow()
 	{
 		Destroy();
 	}
 
-//	void WWindow::Init(
+//	void WWindowsWindow::Init(
 //		const WWindowClass &windowClass, const StringA &windowName,
 //		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
 //	)
 //	{
-//		WWindow desktop;
+//		WWindowsWindow desktop;
 //		desktop.Bind(DesktopWindow());
 //		this->maxSize = desktop.GetRect().GetSize();
 //		this->hWindow.handle = ::CreateWindowExA(
@@ -76,68 +51,65 @@ namespace Whale::Win32
 //		);
 //	}
 	
-	void WWindow::Create(
-		const WWindowClass &windowClass, const StringT &windowName,
-		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
-	)
+	void WWindowsWindow::Create(const FWindowCreateArg &arg)
 	{
-		this->hWindow.handle = ::CreateWindowEx(
+		this->hWindow.handle = ::CreateWindowExW(
 			WS_EX_ACCEPTFILES,
-			windowClass.GetName().CStr(), windowName.CStr(),
+			arg.m_class->GetName().CStr(), arg.m_name.CStr(),
 			WS_OVERLAPPEDWINDOW,
-			x,
-			y,
-			w,
-			h,
-			(HWND) hWndParent.handle,
+			arg.m_x,
+			arg.m_y,
+			arg.m_width,
+			arg.m_height,
 			nullptr,
-			(HINSTANCE) windowClass.GetHInstance().handle,
+			nullptr,
+			::GetModuleHandleW(nullptr),
 			this
 		);
 	}
 	
-	void WWindow::Bind(HWindow pHwnd) noexcept
+	void WWindowsWindow::Bind(HWindow pHwnd) noexcept
 	{
 		Destroy();
 		this->hWindow = pHwnd;
 	}
 	
-	void WWindow::Destroy()
+	void WWindowsWindow::Destroy()
 	{
 		::DestroyWindow((HWND) this->hWindow.handle);
 		// this->hWindow.handle = nullptr; // 在ON_DESTROY事件中重置
 	}
 	
-	void WWindow::Show(int32 nCmdShow) const
+	void WWindowsWindow::Show(int32 nCmdShow) const
 	{
 		::ShowWindow((HWND) this->hWindow.handle, nCmdShow);
 	}
 	
-	void WWindow::Update() const
+	void WWindowsWindow::Update() const
 	{
 		::UpdateWindow((HWND) this->hWindow.handle);
 	}
 	
 	
-	LResult WWindow::DefaultWindowProc(HWindow hWnd, UInt msg, WParam wParam, LParam lParam)
+	LResult WWindowsWindow::DefaultWindowProc(HWindow hWnd, UInt msg, WParam wParam, LParam lParam)
 	{
-		return ::DefWindowProc((HWND) hWnd.handle, msg, wParam, lParam);
+		return ::DefWindowProcW((HWND) hWnd.handle, msg, wParam, lParam);
 	}
 	
-	LResult WWindow::WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam)
+	LResult WWindowsWindow::WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam)
 	{
-		WWindow *pThis;
+		WWindowsWindow *pThis;
 		
 		if (msg == WM_NCCREATE)
 		{
 			auto *pCreate = reinterpret_cast<CREATESTRUCT *>(lParam);
-			pThis = reinterpret_cast<WWindow *>(pCreate->lpCreateParams);
-			::SetWindowLongPtr((HWND) hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
+			pThis = reinterpret_cast<WWindowsWindow *>(pCreate->lpCreateParams);
+			::SetWindowLongPtrW((HWND) hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
 			pThis->hWindow.handle = hWnd;
 		}
 		else
 		{
-			pThis = reinterpret_cast<WWindow *>(::GetWindowLongPtr((HWND) hWnd, GWLP_USERDATA));
+			pThis = reinterpret_cast<WWindowsWindow *>(::GetWindowLongPtrW((HWND) hWnd, GWLP_USERDATA));
 		}
 		
 		if (pThis) return pThis->OnMessage(msg, wParam, lParam);
@@ -145,7 +117,7 @@ namespace Whale::Win32
 		return DefaultWindowProc({hWnd}, msg, wParam, lParam);
 	}
 	
-	LResult WWindow::OnMessage(UInt msg, WParam wParam, LParam lParam)
+	LResult WWindowsWindow::OnMessage(UInt msg, WParam wParam, LParam lParam)
 	{
 		switch (msg)
 		{
@@ -223,7 +195,7 @@ namespace Whale::Win32
 					candidateForm.ptCurrentPos.y = inputPoint.y();
 					ImmSetCandidateWindow(hIMC, &candidateForm);
 				}
-				else FDebug::LogError(TagW, L"ImmGetContext Failed");
+				else FDebug::Log<CharW>(Error, TagW, L"ImmGetContext Failed");
 				
 				ImmReleaseContext((HWND) hWindow.handle, hIMC);
 				return 0;
@@ -240,7 +212,7 @@ namespace Whale::Win32
 					hIMC = ImmGetContext((HWND) hWindow.handle);
 					
 					if (hIMC);
-					else FDebug::LogError(TagW, L"ImmGetContext Failed");
+					else FDebug::Log<CharW>(Error, TagW, L"ImmGetContext Failed");
 					
 					// Read the size of the result string.
 					dwSize = ImmGetCompositionString(hIMC, GCS_RESULTSTR, nullptr, 0);
@@ -250,10 +222,10 @@ namespace Whale::Win32
 					dwSize += sizeof(WCHAR);
 					
 					hstr = GlobalAlloc(GHND, dwSize);
-					if (hstr == nullptr) FDebug::LogError(TagW, L"GlobalAlloc Failed");
+					if (hstr == nullptr) FDebug::Log<CharW>(Error, TagW, L"GlobalAlloc Failed");
 					
 					lpstr = (LPTSTR) GlobalLock(hstr);
-					if (lpstr == nullptr) FDebug::LogError(TagW, L"GlobalLock Failed");
+					if (lpstr == nullptr) FDebug::Log<CharW>(Error, TagW, L"GlobalLock Failed");
 					
 					// Read the result strings that is generated by IME into lpstr.
 					ImmGetCompositionString(hIMC, GCS_RESULTSTR, lpstr, dwSize);
@@ -299,7 +271,7 @@ namespace Whale::Win32
 		}
 	}
 	
-	StringA WWindow::GetNameA() const
+	StringA WWindowsWindow::GetNameA() const
 	{
 		int32   length = ::GetWindowTextLengthA((HWND) this->hWindow.handle) + 1;
 		StringA buffer{nullptr, (SizeT) length};
@@ -307,7 +279,7 @@ namespace Whale::Win32
 		return buffer;
 	}
 	
-	StringW WWindow::GetNameW() const
+	StringW WWindowsWindow::GetNameW() const
 	{
 		int32   length = ::GetWindowTextLengthW((HWND) this->hWindow.handle) + 1;
 		StringW buffer{nullptr, (SizeT) length};
@@ -315,41 +287,41 @@ namespace Whale::Win32
 		return buffer;
 	}
 	
-	void WWindow::SetName(const StringA &name)
+	void WWindowsWindow::SetName(const StringA &name)
 	{
 		::SetWindowTextA((HWND) this->hWindow.handle, name.CStr());
 	}
 	
-	void WWindow::SetName(const StringW &name)
+	void WWindowsWindow::SetName(const StringW &name)
 	{
 		::SetWindowTextW((HWND) this->hWindow.handle, name.CStr());
 	}
 	
-	HWindow WWindow::DesktopWindow()
+	HWindow WWindowsWindow::DesktopWindow()
 	{
 		return {::GetDesktopWindow()};
 	}
 	
-	Eigen::Vector2i WWindow::DesktopWindowSize()
+	Eigen::Vector2i WWindowsWindow::DesktopWindowSize()
 	{
 		RECT rect;
 		::GetWindowRect(::GetDesktopWindow(), &rect);
 		return {rect.right - rect.left, rect.bottom - rect.top};
 	}
 	
-	Eigen::Vector4i WWindow::GetRect() const
+	Eigen::Vector4i WWindowsWindow::GetRect() const
 	{
 		RECT rect;
 		::GetWindowRect((HWND) hWindow.handle, &rect);
 		return {rect.left, rect.top, rect.right, rect.bottom};
 	}
 	
-	void WWindow::SetRect(const Eigen::Vector4i &rect)
+	void WWindowsWindow::SetRect(const Eigen::Vector4i &rect)
 	{
 		::MoveWindow((HWND) hWindow.handle, rect.x(), rect.y(), rect.z(), rect.w(), true);
 	}
 	
-	Bool WWindow::GetFileDragAndDropPermission() const noexcept
+	Bool WWindowsWindow::GetFileDragAndDropPermission() const noexcept
 	{
 		if (!ChangeWindowMessageFilterEx(
 			(HWND) this->hWindow.handle, WM_DROPFILES, MSGFLT_ADD, nullptr

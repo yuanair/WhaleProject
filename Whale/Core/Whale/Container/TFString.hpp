@@ -132,6 +132,7 @@ namespace Whale::Container
 	using StringA = TFString<CharA>;
 	using StringW = TFString<CharW>;
 	using StringT = TFString<CharT>;
+	using FString = TFString<Char>;
 	
 	template<class ElemT>
 	TFString<ElemT>::TFString()
@@ -277,6 +278,7 @@ namespace Whale
 	using Container::StringA;
 	using Container::StringW;
 	using Container::StringT;
+	using Container::FString;
 	
 	
 	template<class Arg>

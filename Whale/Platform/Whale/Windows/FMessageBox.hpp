@@ -8,7 +8,7 @@
 #include <Whale/TypeDef.hpp>
 #include "HWinDef.hpp"
 
-namespace Whale::Win32
+namespace Whale::Windows
 {
 	
 	///

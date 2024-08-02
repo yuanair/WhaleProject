@@ -6,7 +6,7 @@
 
 #include "TypeDef.hpp"
 
-#if WHALE_TARGET == WHALE_TARGET_WINDOWS
+#ifdef WHALE_TARGET_WINDOWS
 
 #include <intrin.h>
 
@@ -19,7 +19,7 @@ namespace Whale
 	
 	using AtomicCounterT = ULong;
 	
-	#if WHALE_TARGET == WHALE_TARGET_WINDOWS
+	#ifdef WHALE_TARGET_WINDOWS
 	
 	///
 	/// 内部函数
@@ -67,7 +67,7 @@ namespace Whale
 			return ::_InterlockedDecrement(reinterpret_cast<Long *>(addend));
 		}
 		
-		#if WHALE_COMPILER_BIT >= WHALE_COMPILER_BIT_64
+		#ifdef WHALE_COMPILER_BIT_64
 		
 		inline static int64 InterlockedIncrement(int64 *addend) noexcept
 		{

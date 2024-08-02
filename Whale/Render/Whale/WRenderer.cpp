@@ -19,13 +19,13 @@ namespace Whale
 		switch (type)
 		{
 			case ERendererTypeDirectX:
-				FDebug::LogInfo(WhaleTagW, ToStringW(type));
+				FDebug::Log<CharW>(Info, WhaleTagW, ToStringW(type));
 				return MakeUnique<DirectX::WRendererDirectX>();
 			case ERendererTypeOpenGL:
-				FDebug::LogInfo(WhaleTagW, ToStringW(type));
+				FDebug::Log<CharW>(Info, WhaleTagW, ToStringW(type));
 				return MakeUnique<OpenGL::WRendererOpenGL>();
 			default:
-				FDebug::LogError(WhaleTagW, ToStringW(type));
+				FDebug::Log<CharW>(Info, WhaleTagW, ToStringW(type));
 				return nullptr;
 		}
 	}
