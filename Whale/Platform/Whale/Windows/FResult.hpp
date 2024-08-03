@@ -45,6 +45,12 @@ namespace Whale
 	
 	public:
 		
+		static constexpr Char  logTag[]  = WTEXT("WhalePlatform::FResult");
+		static constexpr CharA logTagA[] = "WhalePlatform::FResult";
+		static constexpr CharW logTagW[] = L"WhalePlatform::FResult";
+	
+	public:
+		
 		FResult &operator=(const FResult &other) noexcept
 		{
 			FResult(other).Swap(*this);
@@ -75,6 +81,12 @@ namespace Whale
 		StringW ToString(const StringW &message) const;
 		
 		///
+		/// 输出到日志
+		void Log(const StringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		
+		void Log(const StringW &message, const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		
+		///
 		/// 输出到日志并抛异常
 		void Throw(const StringA &message, const FSourceLocation &sourceLocation = FSourceLocation::Current());
 		
@@ -97,6 +109,14 @@ namespace Whale
 		
 		void ThrowIfFailed(const StringW &message,
 		                   const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		
+		///
+		/// 如果失败则调用Log()
+		void LogIfFailed(const StringA &message,
+		                 const FSourceLocation &sourceLocation = FSourceLocation::Current());
+		
+		void LogIfFailed(const StringW &message,
+		                 const FSourceLocation &sourceLocation = FSourceLocation::Current());
 	
 	public:
 		

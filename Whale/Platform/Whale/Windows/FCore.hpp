@@ -8,7 +8,7 @@
 #include "Whale/Container/TFString.hpp"
 #include "FResult.hpp"
 
-namespace Whale::Windows
+namespace Whale
 {
 	// Win32核心功能
 	class WHALE_API FCore

@@ -8,8 +8,6 @@
 
 namespace Whale
 {
-	constexpr const CharA TagA[] = "Whale::Windows";
-	constexpr const CharW TagW[] = L"Whale::Windows";
 	
 	// 句柄
 	struct HHandle

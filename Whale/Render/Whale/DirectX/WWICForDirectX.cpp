@@ -4,8 +4,6 @@
 
 #include "WWICForDirectX.hpp"
 #include "Whale/FDebug.hpp"
-#include <Whale/Windows/FCore.hpp>
-#include <Whale/Windows/FFile.hpp>
 
 namespace Whale::DirectX
 {

@@ -3,6 +3,7 @@
 //
 
 #include "WWindowsFileManager.hpp"
+#include "WWindowsFile.hpp"
 
 #include <Windows.h>
 
@@ -12,6 +13,16 @@
 
 namespace Whale
 {
+	WGenericFile *WWindowsFileManager::PreOpenFile()
+	{
+		return WHALE_NEW_CLIENT WWindowsFile();
+	}
+	
+	WGenericFile *WWindowsFileManager::OpenFile(const FString &fileName, EFileOpenMode openMode)
+	{
+		return WHALE_NEW_CLIENT WWindowsFile(fileName, openMode);
+	}
+	
 	Bool WWindowsFileManager::CreateDirectory(const FString &directoryName)
 	{
 		SECURITY_ATTRIBUTES securityAttributes{};
@@ -27,5 +38,12 @@ namespace Whale
 	{
 		return ::RemoveDirectoryW(directoryName.CStr());
 	}
+	
+	WWindowsFileManager &WWindowsFileManager::Get()
+	{
+		static WWindowsFileManager fileManager;
+		return fileManager;
+	}
+	
 	
 } // Whale

@@ -15,7 +15,7 @@
 namespace Whale
 {
 	// 窗口
-	class WHALE_API WWindowsWindow : public Whale::WGenericWindow
+	class WHALE_API WWindowsWindow : public WGenericWindow
 	{
 	public:
 		
@@ -106,6 +106,10 @@ namespace Whale
 	
 	public:
 		
+		static constexpr Char logTag[] = WTEXT("WhalePlatform::WWindowsWindow");
+	
+	public:
+		
 		static LResult DefaultWindowProc(HWindow hWnd, UInt msg, WParam wParam, LParam lParam);
 		
 		///
@@ -139,7 +143,7 @@ namespace Whale
 		/// \param nCmdShow 可传入WinMain的参数nShowCmd。否则，传入SW_SHOW
 		inline void ShowAndUpdate() noexcept override
 		{
-			Show(Windows::FCore::GetCommandShow<CharT>());
+			Show(FCore::GetCommandShow<CharT>());
 			Update();
 		}
 		
@@ -160,7 +164,7 @@ namespace Whale
 		
 		///
 		/// \param deltaTime
-		inline void Tick(float deltaTime) override
+		inline void Tick(Double deltaTime) override
 		{
 			OnTick(deltaTime);
 		}
@@ -219,7 +223,7 @@ namespace Whale
 		/// Tick事件
 		///
 		/// \param deltaTIme 间隔时间
-		virtual void OnTick(float deltaTIme) {}
+		virtual void OnTick(Double deltaTIme) {}
 		
 		///
 		/// 活动事件

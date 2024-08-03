@@ -8,6 +8,7 @@
 #include "../CRT.hpp"
 #include "../TFMath.hpp"
 #include "InitList.hpp"
+#include "Whale/SourceLocation.hpp"
 
 namespace Whale::Container
 {
@@ -85,7 +86,8 @@ namespace Whale::Container
 		///
 		/// 改变数组长度
 		/// \param newLength 新长度
-		virtual void Relength(SizeT newLength) noexcept;
+		virtual void
+		Relength(SizeT newLength, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept;
 		
 		///
 		/// 添加元素
@@ -95,15 +97,16 @@ namespace Whale::Container
 		///
 		/// 添加元素
 		/// \param elem
-		virtual ElemT &Append(ElemT elem) noexcept;
+		virtual ElemT &Append(ElemT elem, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept;
 		
 		///
 		/// 添加元素
 		/// \param array
-		virtual ElemT &Append(TFArray array) noexcept;
+		virtual ElemT &
+		Append(TFArray array, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept;
 		
 		/// 擦除元素
-		void Erase(SizeT index) noexcept;
+		void Erase(SizeT index, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept;
 		
 		/// 弹出第一个元素
 		ElemT PopFirst()
@@ -323,9 +326,9 @@ namespace Whale::Container
 	}
 	
 	template<class ElemT>
-	void TFArray<ElemT>::Relength(SizeT newLength) noexcept
+	void TFArray<ElemT>::Relength(SizeT newLength, const FSourceLocation &sourceLocation) noexcept
 	{
-		auto       newPtr    = WHALE_NEW_CLIENT ElemT[newLength];
+		auto       newPtr    = WHALE_NEW_S(sourceLocation) ElemT[newLength];
 		auto       minLength = TFMath<SizeT>::Min(this->length, newLength);
 		for (SizeT index     = 0; index < minLength; index++)
 		{
@@ -345,18 +348,18 @@ namespace Whale::Container
 	}
 	
 	template<class ElemT>
-	ElemT &TFArray<ElemT>::Append(ElemT elem) noexcept
+	ElemT &TFArray<ElemT>::Append(ElemT elem, const FSourceLocation &sourceLocation) noexcept
 	{
 		SizeT oldLength = GetLength();
-		Relength(oldLength + 1);
+		Relength(oldLength + 1, sourceLocation);
 		return At(oldLength) = Whale::Move(elem);
 	}
 	
 	template<class ElemT>
-	ElemT &TFArray<ElemT>::Append(TFArray array) noexcept
+	ElemT &TFArray<ElemT>::Append(TFArray array, const FSourceLocation &sourceLocation) noexcept
 	{
 		SizeT oldLength = GetLength();
-		Relength(oldLength + array.GetLength());
+		Relength(oldLength + array.GetLength(), sourceLocation);
 		for (SizeT index = 0; index < array.GetLength(); index++)
 		{
 			At(oldLength + index) = Whale::Move(array.At(index));
@@ -365,13 +368,13 @@ namespace Whale::Container
 	}
 	
 	template<class ElemT>
-	void TFArray<ElemT>::Erase(SizeT index) noexcept
+	void TFArray<ElemT>::Erase(SizeT index, const FSourceLocation &sourceLocation) noexcept
 	{
 		for (; index < GetLength() - 1; index++)
 		{
 			At(index) = Whale::Move(At(index + 1));
 		}
-		Relength(GetLength() - 1);
+		Relength(GetLength() - 1, sourceLocation);
 	}
 	
 	template<class ElemT>

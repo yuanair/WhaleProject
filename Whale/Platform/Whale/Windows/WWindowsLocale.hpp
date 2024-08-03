@@ -14,8 +14,32 @@ namespace Whale
 	class WHALE_API WWindowsLocale : public WGenericLocale
 	{
 	public:
+		
+		static WWindowsLocale &Get();
 	
+	public:
+		
+		[[nodiscard]] StringA Between(
+			const StringA &str, const FString &fromEncoding, const FString &toEncoding) const override;
+		
+		[[nodiscard]] FString ToFString(const StringA &str) const override;
+		
+		[[nodiscard]] StringA ToAString(const FString &str) const override;
+		
+		[[nodiscard]] FString ToFString(const StringA &str, const FString &encoding) const override;
+		
+		[[nodiscard]] StringA ToAString(const FString &str, const FString &encoding) const override;
 	
+	public:
+		
+		[[nodiscard]] FString ToFString(const StringA &str, Int codePage) const;
+		
+		[[nodiscard]] StringA ToAString(const FString &str, Int codePage) const;
+	
+	private:
+		
+		WWindowsLocale() = default;
+		
 	};
 	
 	typedef WWindowsLocale WLocale;

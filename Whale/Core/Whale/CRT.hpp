@@ -14,6 +14,7 @@
 #define WHALE_NEW_NORMAL new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 #define WHALE_NEW_CLIENT new ( _CLIENT_BLOCK , __FILE__ , __LINE__ )
 #define WHALE_NEW_IGNORE new ( _IGNORE_BLOCK , __FILE__ , __LINE__ )
+#define WHALE_NEW_S(sourceLocation) new ( _NORMAL_BLOCK , (sourceLocation).FileName() , (sourceLocation).Line() )
 
 #else
 

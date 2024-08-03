@@ -7,10 +7,10 @@ namespace Whale
 	
 	template<class ElemT>
 	template<class T>
-	void TFSharedPtr<ElemT>::EnableShared(T *ptrArg) noexcept
+	void TFSharedPtr<ElemT>::EnableShared(T *ptrArg, const FSourceLocation &sourceLocation) noexcept
 	{
 		this->m_ptr      = ptrArg;
-		this->m_useCount = WHALE_NEW_CLIENT _TFUseCount<T>(ptrArg);
+		this->m_useCount = WHALE_NEW_S(sourceLocation) _TFUseCount<T>(ptrArg);
 	}
 	
 	template<class ElemT, class... Args>

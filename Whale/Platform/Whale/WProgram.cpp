@@ -15,7 +15,7 @@ namespace Whale
 	
 	}
 	
-	void WProgram::OnTick(Float deltaTime)
+	void WProgram::OnTick(Double deltaTime)
 	{
 	
 	}
@@ -23,31 +23,6 @@ namespace Whale
 	void WProgram::OnEndPlay()
 	{
 	
-	}
-	
-	int32 WProgram::Run()
-	{
-		MSG msg;
-		
-		BeginPlay();
-		
-		do
-		{
-			if (::PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE))
-			{
-				::TranslateMessage(&msg);
-				::DispatchMessageA(&msg);
-			}
-			else
-			{
-				Tick();
-			}
-		}
-		while (msg.message != WM_QUIT);
-		
-		EndPlay();
-		
-		return (int32) msg.wParam;
 	}
 	
 	
@@ -63,7 +38,7 @@ namespace Whale
 	void WProgram::Tick()
 	{
 		GetTimer().Tick();
-		OnTick(GetTimer().GetDeltaTimeF());
+		OnTick(GetTimer().GetDeltaTimeD());
 	}
 	
 	void WProgram::EndPlay()

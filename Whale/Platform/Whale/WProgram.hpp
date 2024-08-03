@@ -18,10 +18,11 @@ namespace Whale
 	{
 	public:
 		
-		///
-		/// 运行
-		/// \return 程序返回值
-		int32 Run();
+		void BeginPlay();
+		
+		void Tick();
+		
+		void EndPlay();
 	
 	protected:
 		
@@ -32,19 +33,11 @@ namespace Whale
 		///
 		/// 每帧
 		/// \param deltaTime 帧间隔时间（秒）
-		virtual void OnTick(Float deltaTime);
+		virtual void OnTick(Double deltaTime);
 		
 		///
 		/// 结束
 		virtual void OnEndPlay();
-	
-	private:
-		
-		void BeginPlay();
-		
-		void Tick();
-		
-		void EndPlay();
 	
 	public:
 		

@@ -17,12 +17,11 @@ namespace Whale
 	{
 	public:
 		
-		static WGenericFileManager &Get();
-	
-	public:
+		/// 新建文件
+		virtual WGenericFile *PreOpenFile() = 0;
 		
 		/// 打开文件
-		//virtual WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode) = 0;
+		virtual WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode) = 0;
 		
 		/// 创建文件夹
 		virtual Bool CreateDirectory(const FString &directoryName) = 0;

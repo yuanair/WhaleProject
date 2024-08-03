@@ -15,36 +15,36 @@ namespace Whale
 	class WHALE_API FLocale
 	{
 	public:
-		
-		static StringA Between(const StringA &text, const StringA &toEncoding, const StringA &fromEncoding);
-		
-		static StringW ToUTFString(const StringA &text, const StringA &fromEncoding);
-		
-		static StringA UTFToString(const StringW &text, const StringA &toEncoding);
-		
-		template<class StringType>
-		static StringType AToString(const StringA &text, const StringA &fromEncoding);
-		
-		template<class StringType>
-		static StringType WToString(const StringW &text, const StringA &toEncoding);
-		
-		inline static StringT AToTString(const StringA &text, const StringA &fromEncoding)
-		{
-			#ifdef WHALE_UNICODE
-			return ToUTFString(text, fromEncoding);
-			#else
-			return text;
-			#endif
-		}
-		
-		inline static StringT WToTString(const StringW &text, const StringA &toEncoding)
-		{
-			#ifdef WHALE_UNICODE
-			return text;
-			#else
-			return UTFToString(text, toEncoding);
-			#endif
-		}
+
+//		static StringA Between(const StringA &text, const StringA &toEncoding, const StringA &fromEncoding);
+//
+//		static StringW ToUTFString(const StringA &text, const StringA &fromEncoding);
+//
+//		static StringA UTFToString(const StringW &text, const StringA &toEncoding);
+//
+//		template<class StringType>
+//		static StringType AToString(const StringA &text, const StringA &fromEncoding);
+//
+//		template<class StringType>
+//		static StringType WToString(const StringW &text, const StringA &toEncoding);
+//
+//		inline static StringT AToTString(const StringA &text, const StringA &fromEncoding)
+//		{
+//			#ifdef WHALE_UNICODE
+//			return ToUTFString(text, fromEncoding);
+//			#else
+//			return text;
+//			#endif
+//		}
+//
+//		inline static StringT WToTString(const StringW &text, const StringA &toEncoding)
+//		{
+//			#ifdef WHALE_UNICODE
+//			return text;
+//			#else
+//			return UTFToString(text, toEncoding);
+//			#endif
+//		}
 		
 		///
 		/// \return 是否为EOF或WEOF
@@ -105,41 +105,41 @@ namespace Whale
 		static int32 Unescape(int32 ch);
 		
 	};
-	
-	template<class StringType>
-	StringType FLocale::AToString(const StringA &text, const StringA &fromEncoding)
-	{
-		return text;
-	}
-	
-	template<class StringType>
-	StringType FLocale::WToString(const StringW &text, const StringA &toEncoding)
-	{
-		return text;
-	}
-	
-	template<>
-	inline StringA WHALE_API FLocale::AToString(const StringA &text, const StringA &fromEncoding)
-	{
-		return text;
-	}
-	
-	template<>
-	inline StringW WHALE_API FLocale::AToString(const StringA &text, const StringA &fromEncoding)
-	{
-		return ToUTFString(text, fromEncoding);
-	}
-	
-	template<>
-	inline StringA WHALE_API FLocale::WToString(const StringW &text, const StringA &toEncoding)
-	{
-		return UTFToString(text, toEncoding);
-	}
-	
-	template<>
-	inline StringW WHALE_API FLocale::WToString(const StringW &text, const StringA &toEncoding)
-	{
-		return text;
-	}
+
+//	template<class StringType>
+//	StringType FLocale::AToString(const StringA &text, const StringA &fromEncoding)
+//	{
+//		return text;
+//	}
+//
+//	template<class StringType>
+//	StringType FLocale::WToString(const StringW &text, const StringA &toEncoding)
+//	{
+//		return text;
+//	}
+//
+//	template<>
+//	inline StringA WHALE_API FLocale::AToString(const StringA &text, const StringA &fromEncoding)
+//	{
+//		return text;
+//	}
+//
+//	template<>
+//	inline StringW WHALE_API FLocale::AToString(const StringA &text, const StringA &fromEncoding)
+//	{
+//		return ToUTFString(text, fromEncoding);
+//	}
+//
+//	template<>
+//	inline StringA WHALE_API FLocale::WToString(const StringW &text, const StringA &toEncoding)
+//	{
+//		return UTFToString(text, toEncoding);
+//	}
+//
+//	template<>
+//	inline StringW WHALE_API FLocale::WToString(const StringW &text, const StringA &toEncoding)
+//	{
+//		return text;
+//	}
 	
 } // Whale

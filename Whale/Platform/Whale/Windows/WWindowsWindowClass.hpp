@@ -17,6 +17,10 @@ namespace Whale
 	{
 	public:
 		
+		static constexpr Char logTag[] = WTEXT("WhalePlatform::WWindowsWindowClass");
+	
+	public:
+		
 		Bool Create(const FWindowClassCreateArg &arg) override;
 	
 	public:

@@ -4,14 +4,8 @@
 
 #include "WGenericFileManager.hpp"
 
-#include "AutoPlatform.hpp"
-
 namespace Whale
 {
-	
-	WGenericFileManager &WGenericFileManager::Get()
-	{
-		static WFileManager fileManager;
-		return fileManager;
-	}
+
+
 } // Whale

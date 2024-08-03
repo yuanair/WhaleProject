@@ -4,6 +4,9 @@
 
 #include "FDebug.hpp"
 
+#include "FPlatformManager.hpp"
+#include "WGenericFileManager.hpp"
+
 //#include "boost/log/expressions.hpp"
 //#include "boost/log/utility/setup.hpp"
 //#include "boost/log/support/date_time.hpp"
@@ -12,6 +15,8 @@
 //#include "boost/log/trivial.hpp"
 //
 //BOOST_LOG_ATTRIBUTE_KEYWORD(thread_id, "ThreadID", boost::log::attributes::current_thread_id::value_type)
+
+#include <Windows.h>
 
 namespace Whale
 {
@@ -66,48 +71,58 @@ namespace Whale
 	WHALE_API void FLogger::Log<CharA>(EDebugLevel level, const StringA &tag, const StringA &message,
 	                                   const FSourceLocation &sourceLocation)
 	{
-		m_fileStreamA.Write("[");
-		m_fileStreamA.Write(ToString<CharA>(level));
-		m_fileStreamA.Write("][");
-		m_fileStreamA.Write("%Time%");
-		m_fileStreamA.Write("][");
-		m_fileStreamA.Write("%ThreadId%");
-		m_fileStreamA.Write("][");
-		m_fileStreamA.Write(sourceLocation.FileName());
-		m_fileStreamA.Write("(");
-		m_fileStreamA.Write(sourceLocation.Line());
-		m_fileStreamA.Write(", ");
-		m_fileStreamA.Write(sourceLocation.Column());
-		m_fileStreamA.Write(")][");
-		m_fileStreamA.Write(sourceLocation.FunctionName());
-		m_fileStreamA.Write("]");
-		m_fileStreamA.Write(tag);
-		m_fileStreamA.Write(": ");
-		m_fileStreamA.WriteLine(message);
+		m_pFile->Write("[");
+		m_pFile->Write(ToString<CharA>(level));
+		m_pFile->Write("][");
+		m_pFile->Write("%Time%");
+		m_pFile->Write("][");
+		m_pFile->Write("%ThreadId%");
+		m_pFile->Write("][");
+		m_pFile->Write(sourceLocation.FileName());
+		m_pFile->Write("(");
+		//m_pFile->Write(sourceLocation.Line());
+		m_pFile->Write(", ");
+		//m_pFile->Write(sourceLocation.Column());
+		m_pFile->Write(")][");
+		m_pFile->Write(sourceLocation.FunctionName());
+		m_pFile->Write("]");
+		m_pFile->Write(tag);
+		m_pFile->Write(": ");
+		m_pFile->WriteLine(message);
+		if (level >= Warning)
+		{
+			::OutputDebugStringA(message.CStr());
+			m_pFile->Flush();
+		}
 	}
 	
 	template<>
 	WHALE_API void FLogger::Log<CharW>(EDebugLevel level, const StringW &tag, const StringW &message,
 	                                   const FSourceLocation &sourceLocation)
 	{
-		m_fileStreamW.Write(L"[");
-		m_fileStreamW.Write(ToString<CharW>(level));
-		m_fileStreamW.Write(L"][");
-		m_fileStreamW.Write(L"%Time%");
-		m_fileStreamW.Write(L"][");
-		m_fileStreamW.Write(L"%ThreadId%");
-		m_fileStreamW.Write(L"][");
-		m_fileStreamW.Write(FLocale::ToUTFString(sourceLocation.FileName(), "UTF-8"));
-		m_fileStreamW.Write(L"(");
-		m_fileStreamW.Write(sourceLocation.Line());
-		m_fileStreamW.Write(L", ");
-		m_fileStreamW.Write(sourceLocation.Column());
-		m_fileStreamW.Write(L")][");
-		m_fileStreamW.Write(FLocale::ToUTFString(sourceLocation.FunctionName(), "UTF-8"));
-		m_fileStreamW.Write(L"]");
-		m_fileStreamW.Write(tag);
-		m_fileStreamW.Write(L": ");
-		m_fileStreamW.WriteLine(message);
+		m_pFile->Write(L"[");
+		m_pFile->Write(ToString<CharW>(level));
+		m_pFile->Write(L"][");
+		m_pFile->Write(L"%Time%");
+		m_pFile->Write(L"][");
+		m_pFile->Write(L"%ThreadId%");
+		m_pFile->Write(L"][");
+		//m_pFile->Write(FLocale::ToUTFString(sourceLocation.FileName(), "UTF-8"));
+		m_pFile->Write(L"(");
+		//m_pFile->Write(sourceLocation.Line());
+		m_pFile->Write(L", ");
+		//m_pFile->Write(sourceLocation.Column());
+		m_pFile->Write(L")][");
+		//m_pFile->Write(FLocale::ToUTFString(sourceLocation.FunctionName(), "UTF-8"));
+		m_pFile->Write(L"]");
+		m_pFile->Write(tag);
+		m_pFile->Write(L": ");
+		m_pFile->WriteLine(message);
+		if (level >= Warning)
+		{
+			::OutputDebugStringW(message.CStr());
+			m_pFile->Flush();
+		}
 	}
 
 //	typedef boost::log::sinks::text_file_backend Backend;
@@ -266,10 +281,6 @@ namespace Whale
 	                                  const FSourceLocation &sourceLocation)
 	{
 		m_logger.Log<CharA>(level, tag, message, sourceLocation);
-		if (level >= Warning)
-		{
-			LogFlush();
-		}
 	}
 	
 	template<>
@@ -277,13 +288,10 @@ namespace Whale
 	                                  const FSourceLocation &sourceLocation)
 	{
 		m_logger.Log<CharW>(level, tag, message, sourceLocation);
-		if (level >= Warning)
-		{
-			LogFlush();
-		}
 	}
 	
 	FLogger::FLogger()
+		: m_pFile(FPlatformManager::Get().GetFileManager().PreOpenFile())
 	{
 	
 	}
@@ -294,54 +302,30 @@ namespace Whale
 	
 	}
 	
-	Bool FLogger::Good() const noexcept
+	Bool FLogger::IsOpened() const noexcept
 	{
-		return m_fileStreamA.Good() && m_fileStreamW.Good();
-	}
-	
-	Bool FLogger::Bad() const noexcept
-	{
-		return m_fileStreamA.Bad() || m_fileStreamW.Bad();
-	}
-	
-	Bool FLogger::IsError() const noexcept
-	{
-		return m_fileStreamA.IsError() || m_fileStreamW.IsError();
-	}
-	
-	Bool FLogger::IsEOF() const noexcept
-	{
-		return m_fileStreamA.IsEOF() || m_fileStreamW.IsEOF();
-	}
-	
-	Bool FLogger::IsOpen() const noexcept
-	{
-		return m_fileStreamA.IsOpen() && m_fileStreamW.IsOpen();
+		return m_pFile->IsOpened();
 	}
 	
 	void FLogger::Open(const StringA &logDir, const StringA &logFileName)
 	{
-		m_fileStreamA.Open(logDir + logFileName, "w+");
-		m_fileStreamW.Open(logDir + logFileName, "w+");
+		m_pFile->Open(logDir + "/" + logFileName, EFileOpenModeWrite, EFileSharedModeRead, EFileCreateModeNoFound);
 	}
 	
 	void FLogger::Open(const StringW &logDir, const StringW &logFileName)
 	{
 		
-		m_fileStreamA.Open(logDir + logFileName, L"w+");
-		m_fileStreamW.Open(logDir + logFileName, L"w+");
+		m_pFile->Open(logDir + L"/" + logFileName, EFileOpenModeWrite, EFileSharedModeRead, EFileCreateModeNoFound);
 	}
 	
 	void FLogger::Flush()
 	{
-		m_fileStreamA.Flush();
-		m_fileStreamW.Flush();
+		m_pFile->Flush();
 	}
 	
 	void FLogger::Close()
 	{
-		m_fileStreamA.Close();
-		m_fileStreamW.Close();
+		m_pFile->Close();
 	}
 	
 	

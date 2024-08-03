@@ -4,7 +4,11 @@
 
 #include "FPlatformManager.hpp"
 
-#include "AutoPlatform.hpp"
+#ifdef WHALE_TARGET_WINDOWS
+	
+	#include "Windows/WWindowsPlatform.hpp"
+
+#endif
 
 namespace Whale
 {
@@ -14,15 +18,18 @@ namespace Whale
 		return platformManager;
 	}
 	
-	WGenericPlatform *FPlatformManager::GetPlatform()
+	WGenericPlatform &FPlatformManager::GetPlatform()
 	{
-		static TFUniquePtr<WGenericPlatform> platform = MakeUnique<WPlatform>();
-		return platform.GetPtr();
+		return WPlatform::Get();
 	}
 	
-	WGenericLocale *FPlatformManager::GetLocale()
+	WGenericLocale &FPlatformManager::GetLocale()
 	{
-		static TFUniquePtr<WGenericLocale> locale = MakeUnique<WLocale>();
-		return locale.GetPtr();
+		return GetPlatform().GetLocale();
+	}
+	
+	WGenericFileManager &FPlatformManager::GetFileManager()
+	{
+		return GetPlatform().GetFileManager();
 	}
 } // Whale

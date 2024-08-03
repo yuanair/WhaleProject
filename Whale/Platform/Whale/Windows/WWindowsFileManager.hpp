@@ -14,13 +14,23 @@ namespace Whale
 	{
 	public:
 		
-		//WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode) override;
+		static WWindowsFileManager &Get();
+	
+	public:
+		
+		WGenericFile *PreOpenFile() override;
+		
+		WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode) override;
 		
 		Bool CreateDirectory(const FString &directoryName) override;
 		
 		Bool MoveFile(const FString &fileName, const FString &newFileName) override;
 		
 		Bool RemoveDirectory(const FString &directoryName) override;
+	
+	private:
+		
+		WWindowsFileManager() = default;
 		
 	};
 	

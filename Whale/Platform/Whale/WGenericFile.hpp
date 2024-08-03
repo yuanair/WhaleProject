@@ -13,35 +13,43 @@ namespace Whale
 {
 	
 	/// 打开模式
-	enum EFileOpenMode : int32
+	enum EFileOpenMode
 	{
-		EFileOpenModeNone = 0x0000,
-		
+		/// None
+		EFileOpenModeNone      = 0x0000,
 		/// 读模式
 		EFileOpenModeRead      = 0x0001,
 		/// 写模式
 		EFileOpenModeWrite     = 0x0002,
 		EFileOpenModeReadWrite = EFileOpenModeRead | EFileOpenModeWrite,
-		
+	};
+	
+	/// 共享模式
+	enum EFileSharedMode
+	{
 		/// 不共享
-		EFileSharedNone        = 0x0000,
+		EFileSharedModeNone        = 0x0000,
 		/// 共享读模式，二次访问可读文件
-		EFileSharedRead        = 0x0010,
+		EFileSharedModeRead        = 0x0010,
 		/// 共享写模式，二次访问可写文件
-		EFileSharedWrite       = 0x0020,
+		EFileSharedModeWrite       = 0x0020,
 		/// 共享删除模式，二次访问可删除文件
-		EFileSharedDelete      = 0x0040,
-		EFileSharedReadWrite   = EFileSharedRead | EFileSharedWrite,
-		EFileSharedReadDelete  = EFileSharedRead | EFileSharedDelete,
-		EFileSharedWriteDelete = EFileSharedWrite | EFileSharedDelete,
-		EFileSharedAll         = EFileSharedRead | EFileSharedWrite | EFileSharedDelete,
-		
+		EFileSharedModeDelete      = 0x0040,
+		EFileSharedModeReadWrite   = EFileSharedModeRead | EFileSharedModeWrite,
+		EFileSharedModeReadDelete  = EFileSharedModeRead | EFileSharedModeDelete,
+		EFileSharedModeWriteDelete = EFileSharedModeWrite | EFileSharedModeDelete,
+		EFileSharedModeAll         = EFileSharedModeRead | EFileSharedModeWrite | EFileSharedModeDelete,
+	};
+	
+	/// 创建模式
+	enum EFileCreateMode
+	{
 		/// 不创建文件
-		EFileCreateNone    = 0x0000,
+		EFileCreateModeNone    = 0x0000,
 		/// 未找到创建文件
-		EFileCreateNoFound = 0x0100,
+		EFileCreateModeNoFound = 0x0100,
 		/// 始终创建文件
-		EFileCreateAlways  = 0x0200,
+		EFileCreateModeAlways  = 0x0200,
 	};
 	
 	/// 文件
@@ -59,8 +67,58 @@ namespace Whale
 	
 	public:
 		
+		/// 是否已打开
+		[[nodiscard]] virtual Bool IsOpened() const = 0;
+		
 		/// 打开文件
-		virtual void Open(const FString &fileName, EFileOpenMode openMode) = 0;
+		virtual void Open(
+			const FString &fileName, EFileOpenMode openMode,
+			EFileSharedMode sharedMode = EFileSharedModeNone,
+			EFileCreateMode createMode = EFileCreateModeNone
+		) = 0;
+		
+		/// 打开文件
+		virtual void Open(
+			const StringA &fileName, EFileOpenMode openMode,
+			EFileSharedMode sharedMode = EFileSharedModeNone,
+			EFileCreateMode createMode = EFileCreateModeNone
+		) = 0;
+		
+		/// 写入字符
+		virtual Bool Write(Char ch) = 0;
+		
+		/// 写入字符串
+		virtual Bool Write(const FString &str) = 0;
+		
+		/// 写入换行
+		virtual Bool WriteLine() = 0;
+		
+		/// 写入字符串，并换行
+		virtual Bool WriteLine(const FString &str) = 0;
+		
+		/// 写入字符
+		virtual Bool Write(CharA ch) = 0;
+		
+		/// 写入字符串
+		virtual Bool Write(const StringA &str) = 0;
+		
+		/// 写入字符串，并换行
+		virtual Bool WriteLine(const StringA &str) = 0;
+		
+		/// 读取字符
+		virtual Bool Read(Char &ch) = 0;
+		
+		/// 读取字符串
+		virtual Bool Read(FString &str) = 0;
+		
+		/// 读取字符
+		virtual Bool Read(CharA &ch) = 0;
+		
+		/// 读取字符串
+		virtual Bool Read(StringA &str) = 0;
+		
+		/// 刷新缓冲区
+		virtual Bool Flush() = 0;
 		
 		/// 关闭文件
 		virtual void Close() = 0;

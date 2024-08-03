@@ -7,8 +7,9 @@
 #include <Whale/Container/TFString.hpp>
 #include "HWinDef.hpp"
 #include "FResult.hpp"
+#include "../WGenericFile.hpp"
 
-namespace Whale::Windows
+namespace Whale
 {
 	
 	/// PE文件格式
@@ -22,12 +23,16 @@ namespace Whale::Windows
 	
 	public:
 		
+		static constexpr Char logTag[] = WTEXT("WhalePlatform::PE");
+	
+	public:
+		
 		///
 		/// 从文件加载
 		/// \tparam ElemT
-		/// \param hFile
+		/// \param pFile
 		template<class ElemT>
-		FResult LoadFromFile(HHandle hFile);
+		FResult LoadFromFile(WGenericFile *pFile);
 		
 		/// 销毁
 		void Destroy();

@@ -5,7 +5,6 @@
 #pragma once
 
 #include "TypeDef.hpp"
-#include "FLocale.hpp"
 
 namespace Whale
 {

@@ -14,7 +14,51 @@ namespace Whale
 	{
 	public:
 		
-		void Open(const FString &fileName, EFileOpenMode openMode) override;
+		WWindowsFile();
+		
+		WWindowsFile(const FString &fileName, EFileOpenMode openMode);
+		
+		~WWindowsFile() override;
+	
+	public:
+		
+		[[nodiscard]] Bool IsOpened() const override;
+		
+		void Open(
+			const FString &fileName, EFileOpenMode openMode,
+			EFileSharedMode sharedMode = EFileSharedModeNone,
+			EFileCreateMode createMode = EFileCreateModeNone
+		) override;
+		
+		void Open(
+			const StringA &fileName, EFileOpenMode openMode,
+			EFileSharedMode sharedMode = EFileSharedModeNone,
+			EFileCreateMode createMode = EFileCreateModeNone
+		) override;
+		
+		Bool Write(Char ch) override;
+		
+		Bool Write(const FString &str) override;
+		
+		Bool WriteLine() override;
+		
+		Bool WriteLine(const FString &str) override;
+		
+		Bool Write(CharA ch) override;
+		
+		Bool Write(const StringA &str) override;
+		
+		Bool WriteLine(const StringA &str) override;
+		
+		Bool Read(Char &ch) override;
+		
+		Bool Read(FString &str) override;
+		
+		Bool Read(CharA &ch) override;
+		
+		Bool Read(StringA &str) override;
+		
+		Bool Flush() override;
 		
 		void Close() override;
 	

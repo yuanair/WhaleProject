@@ -9,6 +9,7 @@
 #include "FIntrinsics.hpp"
 #include "Exception.hpp"
 #include "IGoodAndBad.hpp"
+#include "SourceLocation.hpp"
 
 namespace Whale
 {
@@ -416,12 +417,13 @@ namespace Whale
 		}
 		
 		template<typename T>
-		TFSharedPtr(TFUniquePtr<T> &&other) // NOLINT(*-explicit-constructor)
+		TFSharedPtr(TFUniquePtr<T> &&other,
+		            const FSourceLocation &sourceLocation = FSourceLocation::Current()) // NOLINT(*-explicit-constructor)
 		{
 			auto *ptr = other.GetPtr();
 			if (ptr)
 			{
-				EnableShared(ptr);
+				EnableShared(ptr, sourceLocation);
 				other.Release();
 			}
 		}
@@ -494,7 +496,7 @@ namespace Whale
 	private:
 		
 		template<class T>
-		void EnableShared(T *ptrArg) noexcept;
+		void EnableShared(T *ptrArg, const FSourceLocation &sourceLocation) noexcept;
 		
 	};
 	

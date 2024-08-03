@@ -17,14 +17,20 @@ namespace Whale
 	
 	Bool WWindowsWindowClass::Create(const FWindowClassCreateArg &arg)
 	{
-		auto hModule = FPlatformManager::Get().GetPlatform()->GetModuleHandle();
+		auto hModule = FPlatformManager::Get().GetPlatform().GetModuleHandle();
 		return Create(
 			arg,
 			hModule,
-			{::LoadImageW(static_cast<HINSTANCE>(hModule.handle), MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, 0, 0, 0)},
 			{
 				::LoadImageW(
-					static_cast<HINSTANCE>(hModule.handle), MAKEINTRESOURCEW(IDI_APP_ICON_SM), IMAGE_ICON, 0, 0, 0
+					static_cast<HINSTANCE>(hModule.handle), MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, 0, 0,
+					LR_DEFAULTCOLOR
+				)
+			},
+			{
+				::LoadImageW(
+					static_cast<HINSTANCE>(hModule.handle), MAKEINTRESOURCEW(IDI_APP_ICON_SM), IMAGE_ICON, 0, 0,
+					LR_DEFAULTCOLOR
 				)
 			}
 		);
@@ -32,7 +38,7 @@ namespace Whale
 	
 	Bool WWindowsWindowClass::Create(const FWindowClassCreateArg &arg, HInstance hInstance, HIcon icon, HIcon iconSm)
 	{
-		m_name      = arg.m_name;
+		m_name = arg.m_name;
 		m_hInstance = hInstance;
 		WNDCLASSEXW wnd
 			            {
@@ -49,7 +55,9 @@ namespace Whale
 				            .lpszClassName = arg.m_name.CStr(),
 				            .hIconSm = static_cast<HICON>(iconSm.handle),
 			            };
-		return (Bool) ::RegisterClassExW(&wnd);
+		auto        result = ::RegisterClassExW(&wnd);
+		FCore::GetLastError().LogIfFailed(logTag);
+		return result;
 	}
 	
 } // Whale

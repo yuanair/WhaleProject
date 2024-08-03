@@ -58,24 +58,26 @@ namespace Whale::Container
 	
 	public:
 		
-		void Relength(SizeT newLength) noexcept override
+		void
+		Relength(SizeT newLength, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept override
 		{
-			TFArray<ElemT>::Relength(newLength + 1);
+			TFArray<ElemT>::Relength(newLength + 1, sourceLocation);
 		}
 		
-		ElemT &Append(ElemT elem) noexcept override
+		ElemT &Append(ElemT elem, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept override
 		{
 			SizeT oldLength = GetLength();
-			Relength(oldLength + 1);
+			Relength(oldLength + 1, sourceLocation);
 			ElemT &result                  = this->At(oldLength) = elem;
 			this->ProtectedAt(GetLength()) = 0;
 			return result;
 		}
 		
-		ElemT &Append(TFArray<ElemT> array) noexcept override
+		ElemT &Append(TFArray<ElemT> array,
+		              const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept override
 		{
 			SizeT oldLength = GetLength();
-			Relength(oldLength + array.GetLength());
+			Relength(oldLength + array.GetLength(), sourceLocation);
 			for (SizeT index   = 0; index < array.GetLength(); index++)
 			{
 				this->At(oldLength + index) = Whale::Move(array.At(index));
@@ -85,10 +87,10 @@ namespace Whale::Container
 			return result;
 		}
 		
-		ElemT &Append(TFString str) noexcept
+		ElemT &Append(TFString str, const FSourceLocation &sourceLocation = FSourceLocation::Current()) noexcept
 		{
 			SizeT oldLength = GetLength();
-			Relength(oldLength + str.GetLength());
+			Relength(oldLength + str.GetLength(), sourceLocation);
 			for (SizeT index   = 0; index < str.GetLength(); index++)
 			{
 				this->At(oldLength + index) = Whale::Move(str.At(index));

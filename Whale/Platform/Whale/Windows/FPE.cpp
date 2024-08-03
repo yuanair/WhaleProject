@@ -6,9 +6,10 @@
 #include "FCore.hpp"
 
 #include "Whale/FDebug.hpp"
+#include "WWindowsFile.hpp"
 #include <windows.h>
 
-namespace Whale::Windows
+namespace Whale
 {
 	FPE::FPE() = default;
 	
@@ -18,10 +19,12 @@ namespace Whale::Windows
 	}
 	
 	template<>
-	WHALE_API FResult FPE::LoadFromFile<CharA>(HHandle hFile)
+	WHALE_API FResult FPE::LoadFromFile<CharA>(WGenericFile *pFile)
 	{
 		Destroy();
-		m_hMapping.handle = CreateFileMappingA(hFile.handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
+		auto *pWinFile = dynamic_cast<WWindowsFile *>(pFile);
+		if (pWinFile == nullptr) return E_INVALIDARG;
+		m_hMapping.handle = CreateFileMappingA(pWinFile->GetHandle().handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
 		if (!m_hMapping.handle)
 		{
 			return FCore::GetLastError();
@@ -31,7 +34,7 @@ namespace Whale::Windows
 		if (!m_imageBase.handle)
 		{
 			Destroy();
-			FDebug::Log<CharA>(Error, TagA, "文件映射错误");
+			FDebug::Log<Char>(Error, logTag, WTEXT("文件映射错误"));
 			return FCore::GetLastError();
 		}
 		return S_OK;
@@ -39,10 +42,12 @@ namespace Whale::Windows
 	
 	
 	template<>
-	WHALE_API FResult FPE::LoadFromFile<CharW>(HHandle hFile)
+	WHALE_API FResult FPE::LoadFromFile<CharW>(WGenericFile *pFile)
 	{
 		Destroy();
-		m_hMapping.handle = CreateFileMappingW(hFile.handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
+		auto *pWinFile = dynamic_cast<WWindowsFile *>(pFile);
+		if (pWinFile == nullptr) return E_INVALIDARG;
+		m_hMapping.handle = CreateFileMappingW(pWinFile->GetHandle().handle, nullptr, PAGE_READONLY, 0, 0, nullptr);
 		if (!m_hMapping.handle)
 		{
 			return FCore::GetLastError();
@@ -52,7 +57,7 @@ namespace Whale::Windows
 		if (!m_imageBase.handle)
 		{
 			Destroy();
-			FDebug::Log<CharW>(Error, TagW, L"文件映射错误");
+			FDebug::Log<Char>(Error, logTag, WTEXT("文件映射错误"));
 			return FCore::GetLastError();
 		}
 		return S_OK;

@@ -192,17 +192,21 @@ namespace Whale::DirectX
 	
 	void WRendererDirectX::OnResourceDestroy() noexcept
 	{
-		#if defined(DEBUG) || defined(_DEBUG)
-		m_pID3D12Debug = nullptr;
-		#endif
 		
 		m_pIDXGIFactory        = nullptr;
 		m_pID3D12Device        = nullptr;
 		m_pID3D12RootSignature = nullptr;
 		m_pCommandList         = nullptr;
-		m_pWICForDirectX       = nullptr;
+		
+		m_pSRVHeap = nullptr;
 		
 		m_RTVDescriptorSize = 0;
+		
+		#if defined(DEBUG) || defined(_DEBUG)
+		m_pID3D12Debug = nullptr;
+		#endif
+		
+		m_pWICForDirectX = nullptr;
 	}
 	
 	

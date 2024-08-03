@@ -35,7 +35,7 @@ namespace Whale::DirectX
 		uint32                                      height = 0;
 		uint32                                      BPP    = 0;
 		
-		file->Open(arg.m_fileName, EFileOpenMode(EFileOpenModeRead | EFileSharedRead | EFileCreateNone));
+		file->Open(arg.m_fileName, EFileOpenModeRead, EFileSharedModeRead, EFileCreateModeNone);
 		m_pRenderer->GetPWICForDirectX()->LoadFromFile(file.GetPtr(), pIBMP, pIWICPixelInfo, targetFormat);
 		
 		//获得图片大小（单位：像素）
