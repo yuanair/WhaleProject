@@ -56,6 +56,9 @@ namespace Whale
 		/// 获取本地化
 		[[nodiscard]] virtual class WGenericLocale &GetLocale() const = 0;
 		
+		/// 新计时器
+		[[nodiscard]] virtual WGenericTimer *NewTimer() const = 0;
+		
 	};
 	
 	

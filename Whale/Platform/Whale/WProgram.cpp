@@ -7,6 +7,7 @@
 #include <Whale/FCore.hpp>
 
 #include <Windows.h>
+#include <format>
 
 namespace Whale
 {
@@ -31,14 +32,14 @@ namespace Whale
 		FDebug::Log<Char>(Info, WhaleTag, WTEXT("WProgram Start"));
 		FDebug::Log<Char>(
 			Info, WhaleTag, std::format(WTEXT("{} {}"), FCore::GetAppName(), FCore::GetVersion()).c_str());
-		GetTimer().Restart();
+		GetTimer()->Reset();
 		OnBeginPlay();
 	}
 	
 	void WProgram::Tick()
 	{
-		GetTimer().Tick();
-		OnTick(GetTimer().GetDeltaTimeD());
+		GetTimer()->Tick();
+		OnTick(GetTimer()->GetDeltaTime());
 	}
 	
 	void WProgram::EndPlay()
@@ -47,6 +48,14 @@ namespace Whale
 		FDebug::Log<Char>(Info, WhaleTag, WTEXT("WProgram End"));
 		FDebug::LogFlush();
 		FDebug::LogClose();
+	}
+	
+	WProgram::WProgram(WGenericTimer *pTimer) : pTimer(pTimer) {}
+	
+	WProgram::~WProgram()
+	{
+		if (this->pTimer) delete this->pTimer;
+		this->pTimer = nullptr;
 	}
 	
 	

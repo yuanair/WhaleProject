@@ -5,8 +5,9 @@
 #pragma once
 
 #include <Whale/WObject.hpp>
-#include <Whale/TFTimer.hpp>
 #include <Whale/Container/TFString.hpp>
+
+#include "WGenericTimer.hpp"
 
 namespace Whale
 {
@@ -16,6 +17,12 @@ namespace Whale
 	///
 	class WHALE_API WProgram : public WObject
 	{
+	public:
+		
+		explicit WProgram(WGenericTimer *pTimer);
+		
+		~WProgram() override;
+	
 	public:
 		
 		void BeginPlay();
@@ -42,13 +49,13 @@ namespace Whale
 	public:
 		
 		[[nodiscard]]
-		inline const TFTimer<std::chrono::system_clock> &GetTimer() const { return this->timer; }
+		inline WGenericTimer *const &GetTimer() const { return this->pTimer; }
 		
-		inline TFTimer<std::chrono::system_clock> &GetTimer() { return this->timer; }
+		inline WGenericTimer *&GetTimer() { return this->pTimer; }
 	
 	private:
 		
-		TFTimer<std::chrono::system_clock> timer;
+		WGenericTimer *pTimer;
 		
 	};
 	

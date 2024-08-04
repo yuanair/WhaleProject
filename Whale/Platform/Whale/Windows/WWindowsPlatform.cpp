@@ -6,6 +6,7 @@
 #include "WWindowsFileManager.hpp"
 #include "WWindowsLocale.hpp"
 #include "WWindowsWindowManager.hpp"
+#include "WWindowsTimer.hpp"
 
 #include <windows.h>
 #include <ShlObj.h>
@@ -83,5 +84,10 @@ namespace Whale
 	WGenericWindowManager &WWindowsPlatform::GetWindowManager() const
 	{
 		return WWindowsWindowManager::Get();
+	}
+	
+	WGenericTimer *WWindowsPlatform::NewTimer() const
+	{
+		return WHALE_NEW_CLIENT WWindowsTimer();
 	}
 } // Whale

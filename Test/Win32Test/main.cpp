@@ -59,14 +59,13 @@ class Program : public WProgram
 {
 public:
 	
-	Program() : dataDirectoryA("./" CMAKE_PROJECT_NAME "Data"), dataDirectoryW(L"./" CMAKE_PROJECT_NAME "Data")
+	Program() : WProgram(FPlatformManager::Get().GetPlatform().NewTimer()),
+	            dataDirectoryA("./" CMAKE_PROJECT_NAME "Data"),
+	            dataDirectoryW(L"./" CMAKE_PROJECT_NAME "Data")
 	{
 	}
 	
-	~Program() override
-	{
-	
-	}
+	~Program() override = default;
 
 public:
 	
@@ -84,6 +83,12 @@ protected:
 	void OnBeginPlay() override
 	{
 		WProgram::OnBeginPlay();
+		Bool isRunAsAdministrator = FPlatformManager::Get().GetPlatform().IsRunAsAdministrator();
+		FDebug::Log<CharT>(
+			isRunAsAdministrator ? Info : Fatal,
+			WTEXT("IsRunAsAdministrator"),
+			isRunAsAdministrator ? WTEXT("true") : WTEXT("false")
+		);
 		InitData();
 		InitDirectX();
 	}
@@ -296,16 +301,8 @@ void MyWindow::OnDropFiles(HDrop hDrop)
 
 int WhaleMain()
 {
-	GetProgram();
-	auto h = FPlatformManager::Get().GetPlatform().GetModuleHandle();
 	FPlatformManager::Get().GetFileManager().CreateDirectory(WTEXT("./Logs"));
 	FDebug::LogToFile(WTEXT("./Logs"), WTEXT("%Y%m%d.log"));
-	Bool isRunAsAdministrator = FPlatformManager::Get().GetPlatform().IsRunAsAdministrator();
-	FDebug::Log<CharT>(
-		isRunAsAdministrator ? Info : Fatal,
-		WTEXT("IsRunAsAdministrator"),
-		isRunAsAdministrator ? WTEXT("true") : WTEXT("false")
-	);
 	return FPlatformManager::Get().GetPlatform().Run(GetProgram());
 }
 

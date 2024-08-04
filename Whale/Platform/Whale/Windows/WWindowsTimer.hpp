@@ -72,4 +72,6 @@ namespace Whale
 		
 	};
 	
+	typedef WWindowsTimer WTimer;
+	
 } // Whale

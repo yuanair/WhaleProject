@@ -35,6 +35,8 @@ namespace Whale
 		[[nodiscard]] WGenericFileManager &GetFileManager() const override;
 		
 		[[nodiscard]] WGenericLocale &GetLocale() const override;
+		
+		WGenericTimer *NewTimer() const override;
 	
 	private:
 		
