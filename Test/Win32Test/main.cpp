@@ -12,8 +12,6 @@
 #include <Whale/Windows/FMessageBox.hpp>
 #include <Whale/Windows/FPE.hpp>
 
-#include "./Resources/Resources.h"
-
 using namespace Whale;
 
 class MyWindow

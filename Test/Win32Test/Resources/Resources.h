@@ -5,6 +5,6 @@
 #ifndef RESOURCES_HEADER
 #define RESOURCES_HEADER
 
-#include "../../Whale/Platform/Whale/Windows/Resources.h"
+#include <Whale/Windows/Resources.h>
 
 #endif
