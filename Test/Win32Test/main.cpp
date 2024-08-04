@@ -4,8 +4,6 @@
 #include <Whale/WShader.hpp>
 #include <Whale/WStaticMesh.hpp>
 #include <Whale/WWindowRenderTarget.hpp>
-#include <Whale/IO.hpp>
-#include <Whale/Json/TFValue.hpp>
 
 #include <Whale/FPlatformManager.hpp>
 #include <Whale/WGenericWindowManager.hpp>
@@ -156,41 +154,6 @@ static Program &GetProgram()
 	return program;
 }
 
-void Program::InitData()
-{
-	
-	this->data.toEncoding      = WTEXT("GBK");
-	this->data.fromEncoding    = WTEXT("UTF-8");
-	this->data.windowData.name = "鲸鱼测试";
-	this->data.windowData.name = FPlatformManager::Get().GetLocale().Between(
-		this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
-	);
-	this->data.shader          = dataDirectoryA + "/test.hlsl";
-	
-	pWindowClass = FPlatformManager::Get().GetPlatform().GetWindowManager().NewWindowClass();
-	pWindowClass->Create({.m_name = WTEXT("WhaleTestWindowClass")});
-	
-	window.pWindow->Create(
-		{
-			.m_name = FPlatformManager::Get().GetLocale().ToFString(
-				this->data.windowData.name, this->data.toEncoding
-			), .m_class = pWindowClass
-		}
-	);
-	
-	
-	window2.pWindow->Create(
-		{
-			.m_name = FPlatformManager::Get().GetLocale().ToFString(
-				this->data.windowData.name, this->data.toEncoding
-			), .m_class = pWindowClass
-		}
-	);
-	window.pWindow->ShowAndUpdate();
-	window2.pWindow->ShowAndUpdate();
-	
-	
-}
 
 void Program::InitDirectX()
 {
@@ -339,6 +302,42 @@ void MyWindow::OnDestroy(const ActionEventArg &arg)
 //		if (arrs[index].Get() == G)
 //	}
 
+}
+
+void Program::InitData()
+{
+	
+	this->data.toEncoding      = WTEXT("GBK");
+	this->data.fromEncoding    = WTEXT("UTF-8");
+	this->data.windowData.name = "鲸鱼测试";
+	this->data.windowData.name = FPlatformManager::Get().GetLocale().Between(
+		this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
+	);
+	this->data.shader          = dataDirectoryA + "/test.hlsl";
+	
+	pWindowClass = FPlatformManager::Get().GetPlatform().GetWindowManager().NewWindowClass();
+	pWindowClass->Create({.m_name = WTEXT("WhaleTestWindowClass")});
+	
+	window.pWindow->Create(
+		{
+			.m_name = FPlatformManager::Get().GetLocale().ToFString(
+				this->data.windowData.name, this->data.toEncoding
+			), .m_class = pWindowClass
+		}
+	);
+	
+	
+	window2.pWindow->Create(
+		{
+			.m_name = FPlatformManager::Get().GetLocale().ToFString(
+				this->data.windowData.name, this->data.toEncoding
+			), .m_class = pWindowClass
+		}
+	);
+	window.pWindow->ShowAndUpdate();
+	window2.pWindow->ShowAndUpdate();
+	
+	
 }
 
 //*/

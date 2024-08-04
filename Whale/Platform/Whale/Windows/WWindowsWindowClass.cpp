@@ -38,7 +38,7 @@ namespace Whale
 	
 	Bool WWindowsWindowClass::Create(const FWindowClassCreateArg &arg, HInstance hInstance, HIcon icon, HIcon iconSm)
 	{
-		m_name = arg.m_name;
+		m_name      = arg.m_name;
 		m_hInstance = hInstance;
 		WNDCLASSEXW wnd
 			            {
