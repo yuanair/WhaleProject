@@ -79,12 +79,6 @@ protected:
 	void OnBeginPlay() override
 	{
 		WProgram::OnBeginPlay();
-		Bool isRunAsAdministrator = FPlatformManager::Get().GetPlatform().IsRunAsAdministrator();
-		FDebug::Log<CharT>(
-			isRunAsAdministrator ? Info : Fatal,
-			WTEXT("IsRunAsAdministrator"),
-			isRunAsAdministrator ? WTEXT("true") : WTEXT("false")
-		);
 		InitData();
 		InitDirectX();
 	}
@@ -113,9 +107,10 @@ private:
 		FString fromEncoding;
 		struct WindowData
 		{
-			StringA name;
+			FString className;
+			FString name;
 		}       windowData;
-		StringA shader;
+		FString shader;
 	}                             data;
 	MyWindow                      window;
 	MyWindow                      window2;
@@ -168,14 +163,14 @@ void Program::InitDirectX()
 	
 	pVertexShader.Lock()->CreateFromFile(
 		{
-			.m_fileName=FPlatformManager::Get().GetLocale().ToFString(data.shader, data.fromEncoding),
+			.m_fileName=data.shader,
 			.m_type=EShaderTypeVertex,
 			.entryPoint="vertex"
 		}
 	);
 	pPixelShader.Lock()->CreateFromFile(
 		{
-			.m_fileName=FPlatformManager::Get().GetLocale().ToFString(data.shader, data.fromEncoding),
+			.m_fileName=data.shader,
 			.m_type=EShaderTypePixel,
 			.entryPoint="pixel"
 		}
@@ -294,48 +289,24 @@ void MyWindow::ShowPE(const StringW &fileName) const
 void MyWindow::OnDestroy(const ActionEventArg &arg)
 {
 	FPlatformManager::Get().GetPlatform().Exit(0);
-	auto &arrs = GetProgram().GetPRender()->m_pRenderTargets;
-//	for (SizeT index = 0; index <= arrs.GetLength(); index++)
-//	{
-//		if (arrs[index].Get() == G)
-//	}
-
 }
 
 void Program::InitData()
 {
-	
-	this->data.toEncoding      = WTEXT("GBK");
-	this->data.fromEncoding    = WTEXT("UTF-8");
-	this->data.windowData.name = "鲸鱼测试";
-	this->data.windowData.name = FPlatformManager::Get().GetLocale().Between(
-		this->data.windowData.name, this->data.toEncoding, this->data.fromEncoding
-	);
-	this->data.shader          = dataDirectoryA + "/test.hlsl";
+	data.toEncoding           = WTEXT("GBK");
+	data.fromEncoding         = WTEXT("UTF-8");
+	data.windowData.className = WTEXT("WhaleTestWindowClass");
+	data.windowData.name      = WTEXT("鲸鱼测试");
+	data.shader               = dataDirectoryW + WTEXT("/test.hlsl");
 	
 	pWindowClass = FPlatformManager::Get().GetPlatform().GetWindowManager().NewWindowClass();
-	pWindowClass->Create({.m_name = WTEXT("WhaleTestWindowClass")});
+	pWindowClass->Create({.m_name = data.windowData.className});
 	
-	window.pWindow->Create(
-		{
-			.m_name = FPlatformManager::Get().GetLocale().ToFString(
-				this->data.windowData.name, this->data.toEncoding
-			), .m_class = pWindowClass
-		}
-	);
+	window.pWindow->Create({.m_name = data.windowData.name, .m_class = pWindowClass});
+	window2.pWindow->Create({.m_name = data.windowData.name, .m_class = pWindowClass});
 	
-	
-	window2.pWindow->Create(
-		{
-			.m_name = FPlatformManager::Get().GetLocale().ToFString(
-				this->data.windowData.name, this->data.toEncoding
-			), .m_class = pWindowClass
-		}
-	);
 	window.pWindow->ShowAndUpdate();
 	window2.pWindow->ShowAndUpdate();
-	
-	
 }
 
 //*/

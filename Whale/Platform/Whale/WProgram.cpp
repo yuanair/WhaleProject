@@ -3,6 +3,7 @@
 //
 
 #include "WProgram.hpp"
+#include "FPlatformManager.hpp"
 #include <Whale/FDebug.hpp>
 #include <Whale/FCore.hpp>
 
@@ -29,9 +30,16 @@ namespace Whale
 	
 	void WProgram::BeginPlay()
 	{
-		FDebug::Log<Char>(Info, WhaleTag, WTEXT("WProgram Start"));
+		FDebug::Log<Char>(Info, logTag, WTEXT("Start"));
 		FDebug::Log<Char>(
-			Info, WhaleTag, std::format(WTEXT("{} {}"), FCore::GetAppName(), FCore::GetVersion()).c_str());
+			Info, logTag, std::format(
+				WTEXT("{0} | {1} {2}{0} | IsRunAsAdministrator: {3}{0} | System: {4} {5}"),
+				FPlatformManager::Get().GetPlatform().GetNewLine().CStr(),
+				FCore::GetAppName(), FCore::GetVersion(),
+				FPlatformManager::Get().GetPlatform().IsRunAsAdministrator() ? WTEXT("true") : WTEXT("false"),
+				FPlatformManager::Get().GetPlatform().GetName().CStr(),
+				FPlatformManager::Get().GetPlatform().GetVersion().CStr()
+			).c_str());
 		GetTimer()->Reset();
 		OnBeginPlay();
 	}
@@ -45,7 +53,7 @@ namespace Whale
 	void WProgram::EndPlay()
 	{
 		OnEndPlay();
-		FDebug::Log<Char>(Info, WhaleTag, WTEXT("WProgram End"));
+		FDebug::Log<Char>(Info, logTag, WTEXT("End"));
 		FDebug::LogFlush();
 		FDebug::LogClose();
 	}

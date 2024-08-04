@@ -6,6 +6,8 @@
 #include "WRendererDirectX.hpp"
 #include "WCommandListDirectX.hpp"
 
+#include <Whale/FPlatformManager.hpp>
+
 namespace Whale::DirectX
 {
 	
@@ -29,7 +31,7 @@ namespace Whale::DirectX
 		// 定义一个位图格式的图片数据对象接口
 		Microsoft::WRL::ComPtr<IWICBitmapSource>    pIBMP;
 		Microsoft::WRL::ComPtr<IWICPixelFormatInfo> pIWICPixelInfo;
-		TFUniquePtr<WFile>                          file   = MakeUnique<WFile>();
+		TFUniquePtr<WGenericFile>                   file{FPlatformManager::Get().GetFileManager().PreOpenFile()};
 		DXGI_FORMAT                                 targetFormat;
 		uint32                                      width  = 0;
 		uint32                                      height = 0;

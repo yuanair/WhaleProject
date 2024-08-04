@@ -20,7 +20,7 @@ namespace Whale
 		FResultException()
 			: FException() {}
 		
-		explicit FResultException(const CharA *message)
+		explicit FResultException(const Char *message)
 			: FException(message) {}
 		
 	};

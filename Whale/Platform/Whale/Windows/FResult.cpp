@@ -61,7 +61,7 @@ namespace Whale
 		m_isThrowIfFailedAtDestructTime = false;
 		StringA buffer = ToString(message);
 		FDebug::Log<CharA>(Fatal, logTagA, buffer, sourceLocation);
-		throw FResultException(buffer.CStr());
+		throw FResultException(FPlatformManager::Get().GetLocale().ToFString(buffer).CStr());
 	}
 	
 	void FResult::Throw(const StringW &message, const FSourceLocation &sourceLocation)
@@ -69,7 +69,7 @@ namespace Whale
 		m_isThrowIfFailedAtDestructTime = false;
 		StringW buffer = ToString(message);
 		FDebug::Log<CharW>(Fatal, logTagW, buffer, sourceLocation);
-		throw FResultException(FPlatformManager::Get().GetLocale().ToAString(buffer).CStr());
+		throw FResultException(buffer.CStr());
 	}
 	
 	

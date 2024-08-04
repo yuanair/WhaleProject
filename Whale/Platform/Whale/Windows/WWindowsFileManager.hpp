@@ -34,6 +34,4 @@ namespace Whale
 		
 	};
 	
-	typedef WWindowsFileManager WFileManager;
-	
 } // Whale

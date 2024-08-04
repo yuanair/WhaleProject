@@ -9,7 +9,6 @@
 #include <Whale/Container/TFString.hpp>
 
 #include "Windows/HWinDef.hpp"
-#include "WProgram.hpp"
 
 namespace Whale
 {
@@ -30,13 +29,16 @@ namespace Whale
 	public:
 		
 		/// 运行程序
-		virtual int32 Run(WProgram &program) const = 0;
+		virtual int32 Run(class WProgram &program) const = 0;
 		
 		/// 退出
 		virtual void Exit(int32 result) const = 0;
 		
 		/// 获取平台名称
 		[[nodiscard]] virtual FString GetName() const = 0;
+		
+		/// 获取平台版本
+		[[nodiscard]] virtual FString GetVersion() const = 0;
 		
 		/// 获取换行符号
 		[[nodiscard]] virtual FString GetNewLine() const = 0;
@@ -56,8 +58,11 @@ namespace Whale
 		/// 获取本地化
 		[[nodiscard]] virtual class WGenericLocale &GetLocale() const = 0;
 		
+		/// 获取时间
+		[[nodiscard]] virtual class WGenericTime &GetTime() const = 0;
+		
 		/// 新计时器
-		[[nodiscard]] virtual WGenericTimer *NewTimer() const = 0;
+		[[nodiscard]] virtual class WGenericTimer *NewTimer() const = 0;
 		
 	};
 	

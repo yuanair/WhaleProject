@@ -33,6 +33,4 @@ namespace Whale
 		
 	};
 	
-	typedef WWindowsWindowClass WWindowClass;
-	
 } // Whale

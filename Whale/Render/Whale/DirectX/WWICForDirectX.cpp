@@ -233,19 +233,20 @@ namespace Whale::DirectX
 	
 	
 	FResult
-	WWICForDirectX::LoadFromFile(WFile *fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
+	WWICForDirectX::LoadFromFile(WGenericFile *fileHandle, Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
 	                             Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
 	                             DXGI_FORMAT &targetFormat)
 	{
 		Microsoft::WRL::ComPtr<IWICBitmapDecoder>     pIWICDecoder;
 		Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> pIWICFrame;
-		// 使用WIC创建并加载一个2D纹理
+		auto                                          *windowsFileHandle = dynamic_cast<WWindowsFile *>(fileHandle);
+		if (windowsFileHandle == nullptr) return E_INVALIDARG;
 		
 		//使用WIC类厂对象接口加载纹理图片，并得到一个WIC解码器对象接口，图片信息就在这个接口代表的对象中了
 		
 		THROW_IF_FAILED(
 			m_pIWICFactory->CreateDecoderFromFileHandle(
-				reinterpret_cast<ULONG_PTR>(fileHandle->GetHandle().handle),
+				reinterpret_cast<ULONG_PTR>(windowsFileHandle->GetHandle().handle),
 				nullptr,                            // 不指定解码器，使用默认
 				WICDecodeMetadataCacheOnDemand,  // 若需要就缓冲数据
 				pIWICDecoder.ReleaseAndGetAddressOf()                    // 解码器对象

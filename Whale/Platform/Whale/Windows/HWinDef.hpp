@@ -6,6 +6,8 @@
 
 #include <Whale/TypeDef.hpp>
 
+#pragma comment(lib, "Netapi32.lib")
+
 namespace Whale
 {
 	

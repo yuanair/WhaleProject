@@ -24,7 +24,9 @@ namespace Whale
 		
 		[[nodiscard]] FString GetName() const override;
 		
-		FString GetNewLine() const override;
+		[[nodiscard]] FString GetVersion() const override;
+		
+		[[nodiscard]] FString GetNewLine() const override;
 		
 		[[nodiscard]] Bool IsRunAsAdministrator() const override;
 		
@@ -36,7 +38,9 @@ namespace Whale
 		
 		[[nodiscard]] WGenericLocale &GetLocale() const override;
 		
-		WGenericTimer *NewTimer() const override;
+		[[nodiscard]] WGenericTime &GetTime() const override;
+		
+		[[nodiscard]] WGenericTimer *NewTimer() const override;
 	
 	private:
 		

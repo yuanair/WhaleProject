@@ -190,7 +190,7 @@ namespace Whale::Json
 	template<class CharT>
 	const TFValue<CharT> &TFValue<CharT>::At(const String &key) const
 	{
-		if (!IsObject()) throw FInvalidCastException("this json is not a Object");
+		if (!IsObject()) throw FInvalidCastException(WTEXT("this json is not a Object"));
 		return value.pObject->operator[](key);
 	}
 	

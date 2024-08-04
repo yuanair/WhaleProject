@@ -70,6 +70,4 @@ namespace Whale
 		
 	};
 	
-	typedef WWindowsLocale WLocale;
-	
 } // Whale

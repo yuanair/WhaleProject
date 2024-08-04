@@ -25,6 +25,10 @@ namespace Whale
 	
 	public:
 		
+		static constexpr Char logTag[] = WTEXT("WhalePlatform::WProgram");
+	
+	public:
+		
 		void BeginPlay();
 		
 		void Tick();

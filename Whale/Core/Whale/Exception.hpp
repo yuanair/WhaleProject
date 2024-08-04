@@ -16,13 +16,13 @@ namespace Whale
 	{
 	public:
 		
-		FException() : std::runtime_error("") {}
+		explicit FException(const Char *message) : std::runtime_error(reinterpret_cast<const char *>(message)) {}
 		
-		explicit FException(const CharA *message) : std::runtime_error(message) {}
+		FException() : FException(WTEXT("")) {}
 	
 	public:
 		
-		[[nodiscard]] const CharA *What() const noexcept { return this->what(); }
+		[[nodiscard]] const Char *What() const noexcept { return reinterpret_cast<const Char *>(this->what()); }
 		
 	};
 	
@@ -34,7 +34,7 @@ namespace Whale
 		
 		FNullPtrException() : FException() {}
 		
-		explicit FNullPtrException(const CharA *message) : FException(message) {}
+		explicit FNullPtrException(const Char *message) : FException(message) {}
 		
 	};
 	
@@ -47,7 +47,7 @@ namespace Whale
 		
 		FInvalidCastException() : FException() {}
 		
-		explicit FInvalidCastException(const CharA *message) : FException(message) {}
+		explicit FInvalidCastException(const Char *message) : FException(message) {}
 		
 	};
 	
@@ -59,7 +59,7 @@ namespace Whale
 		
 		FIOException() : FException() {}
 		
-		explicit FIOException(const CharA *message) : FException(message) {}
+		explicit FIOException(const Char *message) : FException(message) {}
 		
 	};
 	
@@ -71,7 +71,7 @@ namespace Whale
 		
 		FFileNotFoundException() : FException() {}
 		
-		explicit FFileNotFoundException(const CharA *message) : FException(message) {}
+		explicit FFileNotFoundException(const Char *message) : FException(message) {}
 		
 	};
 	
@@ -83,7 +83,7 @@ namespace Whale
 		
 		FLoadException() : FException() {}
 		
-		explicit FLoadException(const CharA *message) : FException(message) {}
+		explicit FLoadException(const Char *message) : FException(message) {}
 		
 	};
 	

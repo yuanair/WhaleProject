@@ -51,7 +51,7 @@ namespace Whale::DirectX
 		/// 从文件句柄加载图片
 		/// \param fileHandle 文件
 		/// \param targetFormat 目标格式
-		FResult LoadFromFile(WFile *fileHandle,
+		FResult LoadFromFile(WGenericFile *fileHandle,
 		                     Microsoft::WRL::ComPtr<IWICBitmapSource> &pIWICSource,
 		                     Microsoft::WRL::ComPtr<IWICPixelFormatInfo> &pIWICPixelInfo,
 		                     DXGI_FORMAT &targetFormat);
