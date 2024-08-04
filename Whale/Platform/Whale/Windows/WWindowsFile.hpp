@@ -58,6 +58,10 @@ namespace Whale
 		
 		Bool Read(StringA &str) override;
 		
+		Bool SetPosToBegin() override;
+		
+		Bool SetPosToEnd() override;
+		
 		Bool Flush() override;
 		
 		void Close() override;

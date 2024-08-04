@@ -52,7 +52,6 @@ namespace Whale
 			fileName.CStr(), dwDesiredAccess, dwShareMode,
 			lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile
 		);
-		::SetFilePointer(m_handle.handle, 0, 0, FILE_END);
 	}
 	
 	void WWindowsFile::Open(const StringA &fileName, EFileOpenMode openMode,
@@ -76,22 +75,12 @@ namespace Whale
 			fileName.CStr(), dwDesiredAccess, dwShareMode,
 			lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile
 		);
-		::SetFilePointer(m_handle.handle, 0, 0, FILE_END);
 	}
 	
 	Bool WWindowsFile::Write(Char ch)
 	{
 		DWORD number;
-		union A
-		{
-			CharW chW;
-			CharA chA[2];
-		}     a;
-		a.chW = ch;
-		
 		if ((ch & 0xFF00) == 0x0000) return ::WriteFile(m_handle.handle, &ch, 1, &number, nullptr);
-		// if (a.chA[1] == 0) return ::WriteFile(m_handle.handle, &ch, 1, &number, nullptr);
-		
 		return ::WriteFile(m_handle.handle, &ch, sizeof(ch) * 1, &number, nullptr);
 	}
 	
@@ -155,6 +144,16 @@ namespace Whale
 	{
 		DWORD number;
 		return ::ReadFile(m_handle.handle, str.GetPtr(), sizeof(*str.CStr()) * str.GetLength(), &number, nullptr);
+	}
+	
+	Bool WWindowsFile::SetPosToBegin()
+	{
+		return ::SetFilePointer(m_handle.handle, 0, nullptr, FILE_BEGIN) != INVALID_SET_FILE_POINTER;
+	}
+	
+	Bool WWindowsFile::SetPosToEnd()
+	{
+		return ::SetFilePointer(m_handle.handle, 0, nullptr, FILE_END) != INVALID_SET_FILE_POINTER;
 	}
 	
 	Bool WWindowsFile::Flush()

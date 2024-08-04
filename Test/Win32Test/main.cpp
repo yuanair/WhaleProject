@@ -23,14 +23,18 @@ public:
 		//this->bEnableOnChar = true;
 		//this->bEnableOnString = true;
 		pWindow = FPlatformManager::Get().GetPlatform().GetWindowManager().NewWindow();
+		pWindow->m_inputSystem.onCreate += OnCreate;
 		pWindow->m_inputSystem.onDrop += OnDropFiles;
 	}
 	
-	static void OnDestroy(const ActionEventArg &arg);
+	static void OnDestroy(WGenericWindow *pWindow)
+	{
+		FPlatformManager::Get().GetPlatform().Exit(0);
+	}
 
 protected:
 	
-	void OnCreate(const ActionEventArg &arg)
+	static void OnCreate(WGenericWindow *pWindow)
 	{
 		pWindow->EnableFileDrag();
 	}
@@ -223,7 +227,7 @@ void Program::InitDirectX()
 	window.pRenderTarget  = pRender->MakeWindowRenderTarget();
 	window.pRenderTarget.Lock()->Create({.m_window=*window.pWindow, .m_frameBackBufferCount=3});
 	window.pRenderTarget.Lock()->Enable();
-	window.pWindow->m_inputSystem.onDestroy.started += MyWindow::OnDestroy;
+	window.pWindow->m_inputSystem.onDestroy += MyWindow::OnDestroy;
 	window2.pRenderTarget = pRender->MakeWindowRenderTarget();
 	window2.pRenderTarget.Lock()->Create({.m_window=*window2.pWindow, .m_frameBackBufferCount=3});
 	window2.pRenderTarget.Lock()->Enable();
@@ -284,11 +288,6 @@ void MyWindow::ShowPE(const StringW &fileName) const
 		FDebug::Log<CharA>(Error, "", "Not a valid PE file!");
 		return;
 	}
-}
-
-void MyWindow::OnDestroy(const ActionEventArg &arg)
-{
-	FPlatformManager::Get().GetPlatform().Exit(0);
 }
 
 void Program::InitData()

@@ -17,15 +17,15 @@ namespace Whale
 	{
 	public:
 		
-		WAction onCreate;
+		TFEvent<class WGenericWindow *> onCreate;
 		
 		WAction onResize;
 		
 		WAction onKey;
 		
-		WAction onClose;
+		TFEvent<class WGenericWindow *> onClose;
 		
-		WAction onDestroy;
+		TFEvent<class WGenericWindow *> onDestroy;
 		
 		TFEvent<HDrop> onDrop;
 		

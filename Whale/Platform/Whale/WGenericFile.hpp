@@ -117,6 +117,12 @@ namespace Whale
 		/// 读取字符串
 		virtual Bool Read(StringA &str) = 0;
 		
+		/// 设置位置为开始
+		virtual Bool SetPosToBegin() = 0;
+		
+		/// 设置位置为结束
+		virtual Bool SetPosToEnd() = 0;
+		
 		/// 刷新缓冲区
 		virtual Bool Flush() = 0;
 		

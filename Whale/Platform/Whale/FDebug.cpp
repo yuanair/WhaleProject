@@ -179,12 +179,13 @@ namespace Whale
 	void FLogger::Open(const StringA &logDir, const StringA &logFileName)
 	{
 		m_pFile->Open(logDir + "/" + logFileName, EFileOpenModeWrite, EFileSharedModeRead, EFileCreateModeNoFound);
+		m_pFile->SetPosToEnd();
 	}
 	
 	void FLogger::Open(const StringW &logDir, const StringW &logFileName)
 	{
-		
 		m_pFile->Open(logDir + L"/" + logFileName, EFileOpenModeWrite, EFileSharedModeRead, EFileCreateModeNoFound);
+		m_pFile->SetPosToEnd();
 	}
 	
 	void FLogger::Flush()

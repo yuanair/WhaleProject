@@ -6,7 +6,10 @@
 
 #include <Whale/TypeDef.hpp>
 
+#pragma comment(lib, "Kernel32.lib")
+#pragma comment(lib, "User32.lib")
 #pragma comment(lib, "Netapi32.lib")
+#pragma comment(lib, "Imm32.lib")
 
 namespace Whale
 {

@@ -10,8 +10,6 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#pragma comment(lib, "Imm32.lib")
-
 namespace Whale
 {
 	
@@ -160,7 +158,7 @@ namespace Whale
 			}
 			case WM_CREATE:
 			{
-				m_inputSystem.onCreate.Press({});
+				m_inputSystem.onCreate.Call(this);
 				return OnCreate();
 			}
 			case WM_SIZE:
@@ -254,7 +252,7 @@ namespace Whale
 				// 禁用 alt-enter.
 				return MAKELRESULT(0, MNC_CLOSE);
 			case WM_CLOSE:
-				m_inputSystem.onClose.Press({});
+				m_inputSystem.onClose.Call(this);
 				return OnClose();
 			case WM_QUERYENDSESSION:
 				return OnQueryEndSession();
@@ -262,7 +260,7 @@ namespace Whale
 				return OnEndSession();
 			case WM_DESTROY:
 			{
-				m_inputSystem.onDestroy.Press({});
+				m_inputSystem.onDestroy.Call(this);
 				auto result = OnDestroy();
 				this->hWindow.handle = nullptr;
 				return result;
