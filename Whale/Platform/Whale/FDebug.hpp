@@ -55,6 +55,8 @@ namespace Whale
 		
 		TFUniquePtr<WGenericFile> m_pFile;
 		
+		uint64 count;
+		
 	};
 	
 	/// 调试类

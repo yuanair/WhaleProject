@@ -306,7 +306,6 @@ int WhaleMain()
 		WTEXT("IsRunAsAdministrator"),
 		isRunAsAdministrator ? WTEXT("true") : WTEXT("false")
 	);
-	FDebug::Log<Char>(Info, WTEXT(""), std::format(WTEXT("{}"), h.handle).c_str());
 	return FPlatformManager::Get().GetPlatform().Run(GetProgram());
 }
 

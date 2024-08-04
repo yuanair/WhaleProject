@@ -52,6 +52,7 @@ namespace Whale
 			fileName.CStr(), dwDesiredAccess, dwShareMode,
 			lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile
 		);
+		::SetFilePointer(m_handle.handle, 0, 0, FILE_END);
 	}
 	
 	void WWindowsFile::Open(const StringA &fileName, EFileOpenMode openMode,
@@ -75,6 +76,7 @@ namespace Whale
 			fileName.CStr(), dwDesiredAccess, dwShareMode,
 			lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile
 		);
+		::SetFilePointer(m_handle.handle, 0, 0, FILE_END);
 	}
 	
 	Bool WWindowsFile::Write(Char ch)
