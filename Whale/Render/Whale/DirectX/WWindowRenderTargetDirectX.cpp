@@ -143,37 +143,14 @@ namespace Whale::DirectX
 		);
 		
 		m_pRenderer->GetPCommandList()->Run();
-		//关闭命令列表，可以去执行了
-//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandList()->Close());
-//		//执行命令列表
-//		ID3D12CommandList *ppCommandLists[] = {m_pRenderer->GetPid3D12CommandList().Get()};
-//		m_pRenderer->GetPid3D12CommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-		
 		//提交画面
 		THROW_IF_FAILED(this->m_pIDXGISwapChain->Present(1, 0));
 		m_pRenderer->GetPCommandList()->Wait();
-//		//开始同步GPU与CPU的执行，先记录围栏标记值
-//		const uint64 fence = m_pRenderer->GetN64FenceValue();
-//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandQueue()->Signal(m_pRenderer->GetPid3D12Fence().Get(), fence));
-//		m_pRenderer->AddN64FenceValue();
-//
-//		// 看命令有没有真正执行到围栏标记的这里，没有就利用事件去等待，注意使用的是命令队列对象的指针
-//		if (m_pRenderer->GetPid3D12Fence()->GetCompletedValue() < fence)
-//		{
-//			THROW_IF_FAILED(
-//				m_pRenderer->GetPid3D12Fence()->SetEventOnCompletion(fence, m_pRenderer->GetHFenceEvent()));
-//			WaitForSingleObject(m_pRenderer->GetHFenceEvent(), INFINITE);
-//		}
 		
 		//到这里说明一个命令队列完整的执行完了，在这里就代表我们的一帧已经渲染完了，接着准备执行下一帧//渲染
 		//获取新的后缓冲序号，因为Present真正完成时后缓冲的序号就更新了
 		this->m_nFrameIndex = this->m_pIDXGISwapChain->GetCurrentBackBufferIndex();
 		m_pRenderer->GetPCommandList()->Reset();
-//		//命令分配器先Reset一下
-//		THROW_IF_FAILED(m_pRenderer->GetPid3D12CommandAllocator()->Reset());
-//		//Reset命令列表，并重新指定命令分配器和PSO对象
-//		THROW_IF_FAILED(
-//			m_pRenderer->GetPid3D12CommandList()->Reset(m_pRenderer->GetPid3D12CommandAllocator().Get(), nullptr));
 	}
 	
 	void WWindowRenderTargetDirectX::OnEnable() noexcept

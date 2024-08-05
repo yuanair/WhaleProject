@@ -26,27 +26,18 @@ namespace Whale
 	
 	int32 WWindowsPlatform::Run(WProgram &program) const
 	{
-		MSG msg;
-		
 		program.BeginPlay();
 		
 		do
 		{
-			if (::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
-			{
-				::TranslateMessage(&msg);
-				::DispatchMessageW(&msg);
-			}
-			else
-			{
-				program.Tick();
-			}
+			program.Tick();
+			Sleep(100);
 		}
-		while (msg.message != WM_QUIT);
+		while (!IsCalledExit());
 		
 		program.EndPlay();
 		
-		return (int32) msg.wParam;
+		return 0;
 	}
 	
 	FString WWindowsPlatform::GetName() const
@@ -92,6 +83,7 @@ namespace Whale
 	
 	void WWindowsPlatform::Exit(int32 result) const
 	{
+		m_isCalledExit = true;
 		::PostQuitMessage(result);
 	}
 	
@@ -123,5 +115,11 @@ namespace Whale
 	WGenericTimer *WWindowsPlatform::NewTimer() const
 	{
 		return WHALE_NEW_CLIENT WWindowsTimer();
+	}
+	
+	WWindowsPlatform::WWindowsPlatform()
+		: m_isCalledExit(false)
+	{
+	
 	}
 } // Whale

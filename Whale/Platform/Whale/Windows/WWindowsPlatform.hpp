@@ -42,9 +42,17 @@ namespace Whale
 		
 		[[nodiscard]] WGenericTimer *NewTimer() const override;
 	
+	public:
+		
+		[[nodiscard]] Bool IsCalledExit() const noexcept { return m_isCalledExit; }
+	
 	private:
 		
-		WWindowsPlatform() = default;
+		WWindowsPlatform();
+	
+	private:
+		
+		mutable Bool m_isCalledExit;
 		
 	};
 	

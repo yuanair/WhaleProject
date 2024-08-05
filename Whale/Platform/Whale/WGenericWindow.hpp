@@ -48,11 +48,13 @@ namespace Whale
 		/// 显示窗口
 		virtual void ShowAndUpdate() = 0;
 		
-		///
-		virtual void Tick(Double deltaTime) = 0;
-		
 		/// 开启文件拖放
 		virtual Bool EnableFileDrag() = 0;
+		
+		/// 消息处理
+		virtual void MessageHanding() = 0;
+	
+	public:
 		
 		/// 窗口矩形
 		[[nodiscard]]

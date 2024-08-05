@@ -1,6 +1,7 @@
 ﻿
 
 #include "CommandManager.hpp"
+#include "Whale/Container/TFRange.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -98,13 +99,12 @@ void ListColors(MyCommandManager &commandManager)
 	commandManager.out.WriteLine();
 }
 
-int WhaleMain0()
+int WhaleMain()
 {
-	FDebug::LogToFile(".\\logs\\%Y%m%d.log");
 	
 	ConsoleT        console;
-	IO::FileStreamT &in = console.in;
-	IO::FileStreamT out{WHALE_TEXT("./test.txt"), WHALE_TEXT("w")};
+	IO::FileStreamT &in  = console.in;
+	IO::FileStreamT &out = console.out;
 	
 	MyCommandManager commandManager{in, out};
 	
@@ -137,7 +137,6 @@ int WhaleMain0()
 	}
 	out.WriteLine(WHALE_TEXT("Thanks for using"));
 	
-	FDebug::LogClose();
 	value = nullptr;
 	
 	return 0;
@@ -166,11 +165,4 @@ HelloMain ENDP
 END
  */
 
-int WhaleMain()
-{
-	
-	
-	return HelloMain();
-}
-
-#include "Whale/Platform/Whale/WhaleMain.hpp"
+#include <Whale/WhaleMain.hpp>

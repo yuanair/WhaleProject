@@ -158,30 +158,13 @@ namespace Whale
 		///
 		void Update() const;
 		
+		void MessageHanding() override;
+		
 		///
 		/// 销毁窗口
 		void Destroy();
-		
-		///
-		/// \param deltaTime
-		inline void Tick(Double deltaTime) override
-		{
-			OnTick(deltaTime);
-		}
 	
 	protected:
-		
-		///
-		/// 按下按键事件
-		///
-		/// \param args 参数
-		virtual LResult OnKeyDown(const EventKeyArgs &args) { return 0; }
-		
-		///
-		/// 松开按键事件
-		///
-		/// \param args 参数
-		virtual LResult OnKeyUp(const EventKeyArgs &args) { return 0; }
 		
 		///
 		/// 鼠标移动事件
@@ -220,12 +203,6 @@ namespace Whale
 		virtual LResult OnString(const StringT &input) { return 0; }
 		
 		///
-		/// Tick事件
-		///
-		/// \param deltaTIme 间隔时间
-		virtual void OnTick(Double deltaTIme) {}
-		
-		///
 		/// 活动事件
 		///
 		virtual LResult OnInactive() { return 0; }
@@ -245,15 +222,6 @@ namespace Whale
 		///
 		/// \param hDropInfo 拖放的文件
 		virtual LResult OnDropFiles(HDrop hDropInfo) { return 0; };
-		
-		///
-		/// 关闭事件
-		///
-		virtual LResult OnClose()
-		{
-			Destroy();
-			return 0;
-		}
 		
 		///
 		/// 销毁事件
@@ -306,7 +274,7 @@ namespace Whale
 	
 	private:
 		
-		static LResult WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam);
+		static LResult WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam) noexcept;
 	
 	protected:
 		

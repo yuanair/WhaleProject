@@ -43,6 +43,10 @@ protected:
 
 public:
 	
+	void Tick(Double deltaTime);
+
+public:
+	
 	[[nodiscard]]
 	auto &GetPRenderTarget() const noexcept { return pRenderTarget; }
 
@@ -90,6 +94,8 @@ protected:
 	void OnTick(Double deltaTime) override
 	{
 		WProgram::OnTick(deltaTime);
+		window.Tick(deltaTime);
+		window2.Tick(deltaTime);
 		pRender->Render();
 	}
 	
@@ -267,6 +273,8 @@ int WhaleMain()
 }
 
 #include <Whale/WhaleMain.hpp>
+#include <format>
+#include "Whale/Container/TFRange.hpp"
 
 void MyWindow::ShowPE(const StringW &fileName) const
 {
@@ -287,6 +295,25 @@ void MyWindow::ShowPE(const StringW &fileName) const
 	{
 		FDebug::Log<CharA>(Error, "", "Not a valid PE file!");
 		return;
+	}
+}
+
+void MyWindow::Tick(Double deltaTime)
+{
+	if (pWindow == nullptr) return;
+	pWindow->MessageHanding();
+	if (pWindow->m_inputSystem.GetCloseButton().IsStarted())
+	{
+		pRenderTarget.Reset();
+		FPlatformManager::Get().GetPlatform().GetWindowManager().DeleteWindow(pWindow);
+		pWindow = nullptr;
+		return;
+	}
+	::OutputDebugStringW(std::format(WTEXT("{0}{0}{0}{0}{0}\r\n"), WTEXT("----- ----- ")).c_str());
+	for (auto &key: pWindow->m_inputSystem.GetKeys())
+	{
+		::OutputDebugStringW(
+			std::format(WTEXT("{{{}:{}}}\r\n"), static_cast<uint64>(key.GetType()), key.IsTriggered()).c_str());
 	}
 }
 

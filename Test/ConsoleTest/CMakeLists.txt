@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME} main.cpp CommandManager.cpp Hello.asm)
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC WhaleCore
+        PUBLIC WhalePlatform
         PUBLIC WhaleLanguage
         PUBLIC WhaleTool
 )

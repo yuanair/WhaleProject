@@ -117,12 +117,12 @@ namespace Whale
 	
 	///
 	/// 符号
-	template<class ElemT>
+	template<class Base>
 	class WHALE_API TWToken : public WObject
 	{
 	public:
 		
-		using String = Container::TFString<ElemT>;
+		using String = Container::TFString<Base>;
 	
 	public:
 		
@@ -144,16 +144,16 @@ namespace Whale
 	
 	///
 	/// 结束符
-	template<class ElemT>
-	class WHALE_API TWEOFToken : public TWToken<ElemT>, public FObjectCloneable<TWEOFToken<ElemT>>
+	template<class Base>
+	class WHALE_API TWEOFToken : public TWToken<Base>, public FObjectCloneable<TWEOFToken<Base>>
 	{
 	public:
 		
-		using String = typename TWToken<ElemT>::String;
+		using String = typename TWToken<Base>::String;
 	
 	public:
 		
-		explicit TWEOFToken(const FTokenPos &pos) : TWToken<ElemT>(pos) {}
+		explicit TWEOFToken(const FTokenPos &pos) : TWToken<Base>(pos) {}
 	
 	public:
 		
@@ -177,16 +177,16 @@ namespace Whale
 	
 	///
 	/// 操作符
-	template<class ElemT>
-	class WHALE_API TWOperatorToken : public TWToken<ElemT>, public FObjectCloneable<TWOperatorToken<ElemT>>
+	template<class Base>
+	class WHALE_API TWOperatorToken : public TWToken<Base>, public FObjectCloneable<TWOperatorToken<Base>>
 	{
 	public:
 		
-		using String = typename TWToken<ElemT>::String;
+		using String = typename TWToken<Base>::String;
 	
 	public:
 		
-		explicit TWOperatorToken(const FTokenPos &pos, ElemT anOperator) : TWToken<ElemT>(pos),
+		explicit TWOperatorToken(const FTokenPos &pos, Base anOperator) : TWToken<Base>(pos),
 																		   m_operator(anOperator) {}
 	
 	public:
@@ -202,7 +202,7 @@ namespace Whale
 	
 	public:
 		
-		ElemT m_operator;
+		Base m_operator;
 		
 	};
 	
@@ -216,17 +216,17 @@ namespace Whale
 	
 	///
 	/// 标识符
-	template<class ElemT>
+	template<class Base>
 	class WHALE_API TWIdentifierToken
-		: public TWToken<ElemT>, public FObjectCloneable<TWIdentifierToken<ElemT>>
+		: public TWToken<Base>, public FObjectCloneable<TWIdentifierToken<Base>>
 	{
 	public:
 		
-		using String = typename TWToken<ElemT>::String;
+		using String = typename TWToken<Base>::String;
 	
 	public:
 		
-		explicit TWIdentifierToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+		explicit TWIdentifierToken(const FTokenPos &pos, const String &anString) : TWToken<Base>(pos),
 																				   m_string(anString) {}
 	
 	public:
@@ -254,18 +254,18 @@ namespace Whale
 	
 	///
 	/// 字符字面量
-	template<class ElemT>
-	class WHALE_API TWCharToken : public TWToken<ElemT>, public FObjectCloneable<TWCharToken<ElemT>>
+	template<class Base>
+	class WHALE_API TWCharToken : public TWToken<Base>, public FObjectCloneable<TWCharToken<Base>>
 	{
 	public:
 		
-		using String = typename TWToken<ElemT>::String;
+		using String = typename TWToken<Base>::String;
 	
 	public:
 		
 		TWCharToken() : m_char() {}
 		
-		explicit TWCharToken(const FTokenPos &pos, const ElemT &anChar) : TWToken<ElemT>(pos),
+		explicit TWCharToken(const FTokenPos &pos, const Base &anChar) : TWToken<Base>(pos),
 																		  m_char(anChar) {}
 	
 	public:
@@ -278,7 +278,7 @@ namespace Whale
 	
 	public:
 		
-		ElemT m_char;
+		Base m_char;
 		
 	};
 	
@@ -293,18 +293,18 @@ namespace Whale
 	
 	///
 	/// 字符串字面量
-	template<class ElemT>
-	class WHALE_API TWStringToken : public TWToken<ElemT>, public FObjectCloneable<TWStringToken<ElemT>>
+	template<class Base>
+	class WHALE_API TWStringToken : public TWToken<Base>, public FObjectCloneable<TWStringToken<Base>>
 	{
 	public:
 		
-		using String = typename TWToken<ElemT>::String;
+		using String = typename TWToken<Base>::String;
 	
 	public:
 		
 		TWStringToken() : m_string() {}
 		
-		explicit TWStringToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+		explicit TWStringToken(const FTokenPos &pos, const String &anString) : TWToken<Base>(pos),
 																			   m_string(anString) {}
 	
 	public:
@@ -331,18 +331,18 @@ namespace Whale
 	
 	///
 	/// 数字字面量
-	template<class ElemT>
-	class WHALE_API TWNumberToken : public TWToken<ElemT>, public FObjectCloneable<TWNumberToken<ElemT>>
+	template<class Base>
+	class WHALE_API TWNumberToken : public TWToken<Base>, public FObjectCloneable<TWNumberToken<Base>>
 	{
 	public:
 		
-		using String = typename TWToken<ElemT>::String;
+		using String = typename TWToken<Base>::String;
 	
 	public:
 		
 		TWNumberToken() : m_string() {}
 		
-		explicit TWNumberToken(const FTokenPos &pos, const String &anString) : TWToken<ElemT>(pos),
+		explicit TWNumberToken(const FTokenPos &pos, const String &anString) : TWToken<Base>(pos),
 																			   m_string(anString) {}
 	
 	public:

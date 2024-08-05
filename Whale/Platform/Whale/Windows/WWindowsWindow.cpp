@@ -91,12 +91,23 @@ namespace Whale
 	}
 	
 	
+	void WWindowsWindow::MessageHanding()
+	{
+		MSG msg;
+		m_inputSystem.Tick();
+		if (::PeekMessageW(&msg, (HWND) this->hWindow.handle, 0, 0, PM_REMOVE))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessageW(&msg);
+		}
+	}
+	
 	LResult WWindowsWindow::DefaultWindowProc(HWindow hWnd, UInt msg, WParam wParam, LParam lParam)
 	{
 		return ::DefWindowProcW((HWND) hWnd.handle, msg, wParam, lParam);
 	}
 	
-	LResult WWindowsWindow::WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam)
+	LResult WWindowsWindow::WindowProc(void *hWnd, UInt msg, WParam wParam, LParam lParam) noexcept
 	{
 		WWindowsWindow *pThis;
 		
@@ -112,7 +123,14 @@ namespace Whale
 			pThis = reinterpret_cast<WWindowsWindow *>(::GetWindowLongPtrW((HWND) hWnd, GWLP_USERDATA));
 		}
 		
-		if (pThis) return pThis->OnMessage(msg, wParam, lParam);
+		try
+		{
+			if (pThis) return pThis->OnMessage(msg, wParam, lParam);
+		}
+		catch (FException &e)
+		{
+			FDebug::Log<Char>(Error, logTag, FString(WTEXT("Exception::")) + e.What());
+		}
 		
 		return DefaultWindowProc({hWnd}, msg, wParam, lParam);
 	}
@@ -122,11 +140,11 @@ namespace Whale
 		switch (msg)
 		{
 			case WM_KEYDOWN:
-				m_inputSystem.onKey.Press({.x=static_cast<int32>(wParam)});
-				return OnKeyDown(EventKeyArgs{wParam});
+				m_inputSystem.PressKey(EKeyType(wParam));
+				return 0;
 			case WM_KEYUP:
-				m_inputSystem.onKey.Release({.x=static_cast<int32>(wParam)});
-				return OnKeyUp(EventKeyArgs{wParam});
+				m_inputSystem.ReleaseKey(EKeyType(wParam));
+				return 0;
 			case WM_MOUSEMOVE:
 			{
 				int32 newMouseX = GET_X_LPARAM(lParam);
@@ -135,7 +153,6 @@ namespace Whale
 				int32 deltaY    = newMouseY - mousePosition.y();
 				mousePosition.x() = newMouseX;
 				mousePosition.y() = newMouseY;
-				m_inputSystem.onKey.Press({.x=mousePosition.x(), .y=mousePosition.y(), .z=deltaX, .w=deltaY});
 				return OnMouseMoved(
 					EventOnMouseMoveArgs{mousePosition.x(), mousePosition.y(), deltaX, deltaY}
 				);
@@ -252,8 +269,9 @@ namespace Whale
 				// 禁用 alt-enter.
 				return MAKELRESULT(0, MNC_CLOSE);
 			case WM_CLOSE:
-				m_inputSystem.onClose.Call(this);
-				return OnClose();
+				m_inputSystem.PressCloseButton();
+				m_inputSystem.ReleaseCloseButton();
+				return 0;
 			case WM_QUERYENDSESSION:
 				return OnQueryEndSession();
 			case WM_ENDSESSION:
