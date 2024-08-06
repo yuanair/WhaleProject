@@ -2,10 +2,12 @@
 
 #include "CommandManager.hpp"
 #include "Whale/Container/TFRange.hpp"
+#include "Whale/Container/TFDynamicArray.hpp"
 
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <random>
 
 Json::JsonT value(Json::ETypeObject);
 
@@ -107,6 +109,63 @@ int WhaleMain()
 	IO::FileStreamT &out = console.out;
 	
 	MyCommandManager commandManager{in, out};
+	
+	Container::TFDynamicArray<int> arr;
+	std::vector<int>               vec;
+	std::random_device             rd;
+	std::mt19937                   gen(rd());
+	int                            y = 100, oldC = 0, count = 0;
+
+//	while (y--)
+//	{
+//		while (true)
+//		{
+//			vec.push_back(gen());
+//			if (vec.capacity() != oldC)
+//			{
+//				console.Write(
+//					std::format(
+//						WTEXT("y_{{{0}}} = ({0}, {3})"),
+//						++count,
+//						(UIntPointer) vec.data(),
+//						vec.size(),
+//						log((double) vec.capacity())
+//					).c_str());
+//				oldC = vec.capacity();
+//				break;
+//			}
+//		}
+//		FString _;
+//		console.ReadLine(_);
+//	}
+	
+	while (y--)
+	{
+		while (true)
+		{
+			arr += gen();
+			if (arr.GetCapacity() != oldC)
+			{
+				console.Write(
+					std::format(
+						WTEXT("x_{{{0}}} = ({0}, {3})"),
+						++count,
+						(UIntPointer) arr.GetData(),
+						arr.GetLength(),
+						log((double) arr.GetCapacity())
+					).c_str());
+				oldC = arr.GetCapacity();
+				break;
+			}
+		}
+		FString _;
+		console.ReadLine(_);
+	}
+
+//	for (auto &item: arr)
+//	{
+//		console.WriteLine(std::format(WTEXT("0x{:016X}: {}"), (UIntPointer) &item, item).c_str());
+//	}
 	
 	commandManager.commands.insert(
 		{

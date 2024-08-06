@@ -7,84 +7,269 @@
 #include "../Utility.hpp"
 #include "TIIterator.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	
-	template<class ElemT>
-	class WHALE_API TIPointerIterator : public TIIterator<ElemT>
+	template<class ElemT, class OffsetT>
+	class WHALE_API TIConstPointerIterator : public TIIterator<ElemT>
 	{
 	public:
 		
-		explicit TIPointerIterator(ElemT *ptr) : ptr(ptr) {}
+		using OffsetType = OffsetT;
+		
+		using Base = TIIterator<ElemT>;
 	
 	public:
 		
-		TIPointerIterator &operator++();
+		explicit TIConstPointerIterator(const ElemT *ptr) noexcept: ptr(ptr) {}
 		
-		TIPointerIterator operator++(int);
+		~TIConstPointerIterator() noexcept = default;
+	
+	public:
 		
-		TIPointerIterator &operator--();
+		TIConstPointerIterator &operator++() noexcept;
 		
-		TIPointerIterator operator--(int);
+		TIConstPointerIterator operator++(int) noexcept;
 		
-		Bool operator==(const TIPointerIterator &other) const;
+		TIConstPointerIterator &operator--() noexcept;
 		
-		Bool operator!=(const TIPointerIterator &other) const;
+		TIConstPointerIterator operator--(int) noexcept;
 		
-		ElemT &operator*();
+		TIConstPointerIterator &operator+=(OffsetT offset) noexcept;
+		
+		TIConstPointerIterator operator+(OffsetT offset) noexcept;
+		
+		TIConstPointerIterator &operator-=(OffsetT offset) noexcept;
+		
+		TIConstPointerIterator operator-(OffsetT offset) noexcept;
+		
+		Bool operator==(const TIConstPointerIterator &other) const noexcept;
+		
+		Bool operator!=(const TIConstPointerIterator &other) const noexcept;
+		
+		std::strong_ordering operator<=>(const TIConstPointerIterator &other) const noexcept;
+		
+		const ElemT &operator*() const noexcept;
+		
+		const ElemT &operator[](OffsetT offset) const noexcept;
+		
+		const ElemT *operator->() const noexcept;
 	
 	private:
 		
-		ElemT *ptr;
+		const ElemT *ptr;
 		
 	};
 	
-	template<class ElemT>
-	TIPointerIterator<ElemT> &TIPointerIterator<ElemT>::operator++()
+	template<class ElemT, class OffsetT>
+	class WHALE_API TIPointerIterator : public TIConstPointerIterator<ElemT, OffsetT>
+	{
+	public:
+		
+		using Base = TIConstPointerIterator<ElemT, OffsetT>;
+	
+	public:
+		
+		explicit TIPointerIterator(ElemT *ptr) noexcept: TIConstPointerIterator<ElemT, OffsetT>(ptr) {}
+	
+	public:
+		
+		TIPointerIterator &operator++() noexcept;
+		
+		TIPointerIterator operator++(int) noexcept;
+		
+		TIPointerIterator &operator--() noexcept;
+		
+		TIPointerIterator operator--(int) noexcept;
+		
+		TIPointerIterator &operator+=(OffsetT offset) noexcept;
+		
+		TIPointerIterator operator+(OffsetT offset) noexcept;
+		
+		TIPointerIterator &operator-=(OffsetT offset) noexcept;
+		
+		TIPointerIterator operator-(OffsetT offset) noexcept;
+		
+		ElemT &operator*() noexcept;
+		
+		ElemT &operator[](OffsetT offset) noexcept;
+		
+		ElemT *operator->() noexcept;
+		
+	};
+	
+	
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> &TIConstPointerIterator<ElemT, OffsetT>::operator++() noexcept
 	{
 		++ptr;
 		return *this;
 	}
 	
-	template<class ElemT>
-	TIPointerIterator<ElemT> TIPointerIterator<ElemT>::operator++(int)
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> TIConstPointerIterator<ElemT, OffsetT>::operator++(int) noexcept
 	{
-		TIPointerIterator iterator = *this;
+		TIConstPointerIterator iterator = *this;
 		++(*this);
 		return iterator;
 	}
 	
-	template<class ElemT>
-	TIPointerIterator<ElemT> &TIPointerIterator<ElemT>::operator--()
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> &TIConstPointerIterator<ElemT, OffsetT>::operator--() noexcept
 	{
 		--ptr;
 		return *this;
 	}
 	
-	template<class ElemT>
-	TIPointerIterator<ElemT> TIPointerIterator<ElemT>::operator--(int)
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> TIConstPointerIterator<ElemT, OffsetT>::operator--(int) noexcept
 	{
-		TIPointerIterator iterator = *this;
+		TIConstPointerIterator iterator = *this;
 		--(*this);
 		return iterator;
 	}
 	
-	template<class ElemT>
-	Bool TIPointerIterator<ElemT>::operator==(const TIPointerIterator &other) const
+	
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> &TIConstPointerIterator<ElemT, OffsetT>::operator+=(OffsetT offset) noexcept
+	{
+		ptr += offset;
+		return *this;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> TIConstPointerIterator<ElemT, OffsetT>::operator+(OffsetT offset) noexcept
+	{
+		return TIConstPointerIterator(ptr + offset);
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> &TIConstPointerIterator<ElemT, OffsetT>::operator-=(OffsetT offset) noexcept
+	{
+		ptr -= offset;
+		return *this;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIConstPointerIterator<ElemT, OffsetT> TIConstPointerIterator<ElemT, OffsetT>::operator-(OffsetT offset) noexcept
+	{
+		return TIConstPointerIterator(ptr - offset);
+	}
+	
+	template<class ElemT, class OffsetT>
+	Bool TIConstPointerIterator<ElemT, OffsetT>::operator==(const TIConstPointerIterator &other) const noexcept
 	{
 		return ptr == other.ptr;
 	}
 	
-	template<class ElemT>
-	Bool TIPointerIterator<ElemT>::operator!=(const TIPointerIterator &other) const
+	template<class ElemT, class OffsetT>
+	Bool TIConstPointerIterator<ElemT, OffsetT>::operator!=(const TIConstPointerIterator &other) const noexcept
 	{
 		return ptr != other.ptr;
 	}
 	
-	template<class ElemT>
-	ElemT &TIPointerIterator<ElemT>::operator*()
+	template<class ElemT, class OffsetT>
+	std::strong_ordering
+	TIConstPointerIterator<ElemT, OffsetT>::operator<=>(const TIConstPointerIterator &other) const noexcept
+	{
+		return ptr <=> other.ptr;
+	}
+	
+	template<class ElemT, class OffsetT>
+	const ElemT &TIConstPointerIterator<ElemT, OffsetT>::operator*() const noexcept
 	{
 		return *ptr;
+	}
+	
+	template<class ElemT, class OffsetT>
+	const ElemT &TIConstPointerIterator<ElemT, OffsetT>::operator[](OffsetT offset) const noexcept
+	{
+		return ptr[offset];
+	}
+	
+	template<class ElemT, class OffsetT>
+	const ElemT *TIConstPointerIterator<ElemT, OffsetT>::operator->() const noexcept
+	{
+		return ptr;
+	}
+	
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> &TIPointerIterator<ElemT, OffsetT>::operator++() noexcept
+	{
+		Base::operator++();
+		return *this;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> TIPointerIterator<ElemT, OffsetT>::operator++(int) noexcept
+	{
+		TIPointerIterator result = *this;
+		Base::operator++();
+		return result;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> &TIPointerIterator<ElemT, OffsetT>::operator--() noexcept
+	{
+		Base::operator--();
+		return *this;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> TIPointerIterator<ElemT, OffsetT>::operator--(int) noexcept
+	{
+		TIPointerIterator result = *this;
+		Base::operator--();
+		return result;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> &TIPointerIterator<ElemT, OffsetT>::operator+=(OffsetT offset) noexcept
+	{
+		Base::operator+=(offset);
+		return *this;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> TIPointerIterator<ElemT, OffsetT>::operator+(OffsetT offset) noexcept
+	{
+		TIPointerIterator result = *this;
+		Base::operator+=(offset);
+		return result;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> &TIPointerIterator<ElemT, OffsetT>::operator-=(OffsetT offset) noexcept
+	{
+		Base::operator-=(offset);
+		return *this;
+	}
+	
+	template<class ElemT, class OffsetT>
+	TIPointerIterator<ElemT, OffsetT> TIPointerIterator<ElemT, OffsetT>::operator-(OffsetT offset) noexcept
+	{
+		TIPointerIterator result = *this;
+		Base::operator-=(offset);
+		return result;
+	}
+	
+	template<class ElemT, class OffsetT>
+	ElemT &TIPointerIterator<ElemT, OffsetT>::operator*() noexcept
+	{
+		return const_cast<ElemT &>(Base::operator*());
+	}
+	
+	template<class ElemT, class OffsetT>
+	ElemT &TIPointerIterator<ElemT, OffsetT>::operator[](OffsetT offset) noexcept
+	{
+		return const_cast<ElemT &>(Base::operator[](offset));
+	}
+	
+	template<class ElemT, class OffsetT>
+	ElemT *TIPointerIterator<ElemT, OffsetT>::operator->() noexcept
+	{
+		return const_cast<ElemT &>(Base::operator->());
 	}
 	
 } // Whale

@@ -4,6 +4,6 @@
 
 #include "TFQueue.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 } // Whale

@@ -321,4 +321,115 @@ namespace Whale
 		b = Move(temp);
 	}
 	
+	template<>
+	inline WHALE_API void Swap(int8 &a, int8 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(uint8 &a, uint8 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(int16 &a, int16 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(uint16 &a, uint16 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(int32 &a, int32 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(uint32 &a, uint32 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(int64 &a, int64 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	template<>
+	inline WHALE_API void Swap(uint64 &a, uint64 &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(Float &a, Float &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(Double &a, Double &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(LongDouble &a, LongDouble &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(Bool &a, Bool &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(Char &a, Char &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
+	template<>
+	inline WHALE_API void Swap(void* &a, void* &b) noexcept
+	{
+		auto temp = a;
+		a = b;
+		b = temp;
+	}
+	
 } // Whale

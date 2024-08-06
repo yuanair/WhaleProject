@@ -24,52 +24,22 @@ namespace Whale::Container
 	
 	public:
 		
-		constexpr TFAllocator() noexcept {} // NOLINT(*-use-equals-default)
+		inline ElemT *Allocate(SizeT count) noexcept;
 		
-		constexpr TFAllocator(const TFAllocator &) noexcept = default;
+		inline void Deallocate(ElemT *ptr, SizeT count) noexcept;
 		
-		template<class Other>
-		constexpr TFAllocator(const TFAllocator<Other> &) noexcept // NOLINT(*-explicit-constructor)
-		{}
-		
-		inline ~TFAllocator() noexcept = default;
-	
-	public:
-		
-		inline TFAllocator &operator=(const TFAllocator &) = default;
-	
-	public:
-		
-		inline void Deallocate(ElemT *const ptr, const SizeT count)
-		{
-			WHALE_ASSERT(ptr != nullptr || count == 0, L"null pointer cannot point to a block of non-zero size");
-			PrivateDeallocate(ptr, sizeof(ElemT) * count);
-		}
-		
-		inline ElemT *Allocate(const SizeT count)
-		{
-			static_assert(sizeof(ElemT) > 0, "ElemT must be complete before calling allocate.");
-			return static_cast<ElemT *>(PrivateAllocate(sizeof(ElemT) * count));
-		}
+		inline void Swap(TFAllocator &other) noexcept {}
 	
 	private:
 		
-		static inline void *PrivateAllocate(const SizeT bytes)
-		{
-			return ::operator new(bytes);
-		}
+		static inline void *PrivateAllocate(SizeT bytes) noexcept;
 		
-		static inline void PrivateDeallocate(void *ptr, const SizeT bytes) noexcept
-		{
-			::operator delete(ptr);
-		}
-	
-	private:
-		
-		ElemT *m_ptr;
+		static inline void PrivateDeallocate(void *ptr, SizeT bytes) noexcept;
 		
 	};
 	
+	template<class ElemT>
+	void WHALE_API Swap(TFAllocator<ElemT> &a, TFAllocator<ElemT> &b) noexcept { a.Swap(b); }
 	
 } // Whale
 

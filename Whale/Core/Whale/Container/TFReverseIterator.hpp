@@ -7,7 +7,7 @@
 #include "../Utility.hpp"
 #include "TIIterator.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	
 	template<class Base>
@@ -15,7 +15,7 @@ namespace Whale
 	{
 	public:
 		
-		explicit TFReverseIterator(Base base) : m_base(base) {}
+		explicit TFReverseIterator(Base base) : m_base(Whale::Move(base)) {}
 	
 	public:
 		

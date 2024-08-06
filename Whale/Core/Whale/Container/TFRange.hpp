@@ -7,7 +7,7 @@
 #include "../Utility.hpp"
 #include "TIIterator.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	/// 范围
 	template<class ElemT, ElemT Start, ElemT End>

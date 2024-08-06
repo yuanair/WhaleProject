@@ -6,7 +6,7 @@
 
 #include "../Utility.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	
 	/// 迭代器

@@ -4,24 +4,31 @@
 
 #include "TypeDef.hpp"
 
-#if defined(DEBUG) || defined(_DEBUG)
-
-#include <cassert>
-
-#else
-
-#include "Whale/Core/FDebug.hpp"
-
-#endif
+#include <Windows.h>
 
 namespace Whale
 {
-	WHALE_API void FatalMessage(const CharW *message, const CharW *file, uint64 line, const CharW *function)
+	void Assert(const CharA *message, const CharA *file, uint64 line, const CharA *function)
 	{
-#if defined(DEBUG) || defined(_DEBUG)
-		_wassert(message, file, (uint32) line);
-#else
-		FDebug::LogFatal(WhaleTagW, message);
-#endif
+		int result = ::MessageBoxA(
+			nullptr, "Press Retry to debug the application", WHALE_STRING(WHALE_ASSERT),
+			MB_ABORTRETRYIGNORE | MB_ICONSTOP | MB_DEFBUTTON2
+		);
+		if (result == IDRETRY) throw;
+		if (result == IDABORT) exit(3);
+		if (result == IDIGNORE) return;
+		throw;
+	}
+	
+	void Assert(const CharW *message, const CharW *file, uint64 line, const CharW *function)
+	{
+		int result = ::MessageBoxW(
+			nullptr, WTEXT("Press Retry to debug the application"), WHALE_WIDE(WHALE_STRING(WHALE_ASSERT)),
+			MB_ABORTRETRYIGNORE | MB_ICONSTOP | MB_DEFBUTTON2
+		);
+		if (result == IDRETRY) throw;
+		if (result == IDABORT) exit(3);
+		if (result == IDIGNORE) return;
+		throw;
 	}
 } // Whale

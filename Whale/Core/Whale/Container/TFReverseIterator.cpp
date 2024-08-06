@@ -4,6 +4,6 @@
 
 #include "TFReverseIterator.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 } // Whale

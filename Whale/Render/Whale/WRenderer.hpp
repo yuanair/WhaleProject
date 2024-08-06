@@ -54,20 +54,16 @@ namespace Whale
 	
 	public:
 		
+		static constexpr Char logTag[] = WTEXT("WhaleRender::WRenderer");
+	
+	public:
+		
 		///
 		/// 创建渲染器
 		/// \param type 类型
 		static TFUniquePtr<WRenderer> CreateRenderer(ERendererType type);
 		
-		///
-		/// \param type
-		/// \return
-		static StringA ToStringA(ERendererType type);
-		
-		///
-		/// \param type
-		/// \return
-		static StringW ToStringW(ERendererType type);
+		static FString ToString(ERendererType type);
 	
 	public:
 		

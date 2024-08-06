@@ -8,7 +8,7 @@
 #include "../CRT.hpp"
 #include "InitList.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	
 	///

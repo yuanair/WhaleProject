@@ -4,6 +4,6 @@
 
 #include "TFPair.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 } // Whale

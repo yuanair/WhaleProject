@@ -19,44 +19,29 @@ namespace Whale
 		switch (type)
 		{
 			case ERendererTypeDirectX:
-				FDebug::Log<CharW>(Info, WhaleTagW, ToStringW(type));
+				FDebug::Log<Char>(Info, logTag, ToString(type));
 				return MakeUnique<DirectX::WRendererDirectX>();
 			case ERendererTypeOpenGL:
-				FDebug::Log<CharW>(Info, WhaleTagW, ToStringW(type));
+				FDebug::Log<Char>(Info, logTag, ToString(type));
 				return MakeUnique<OpenGL::WRendererOpenGL>();
 			default:
-				FDebug::Log<CharW>(Info, WhaleTagW, ToStringW(type));
+				FDebug::Log<Char>(Info, logTag, ToString(type));
 				return nullptr;
 		}
 	}
 	
-	StringA WRenderer::ToStringA(ERendererType type)
+	FString WRenderer::ToString(ERendererType type)
 	{
 		switch (type)
 		{
 			case ERendererTypeNone:
-				return "None";
+				return WTEXT("None");
 			case ERendererTypeDirectX:
-				return "DirectX";
+				return WTEXT("DirectX");
 			case ERendererTypeOpenGL:
-				return "OpenGL";
+				return WTEXT("OpenGL");
 			default:
-				return "<unknown-type>";
-		}
-	}
-	
-	StringW WRenderer::ToStringW(ERendererType type)
-	{
-		switch (type)
-		{
-			case ERendererTypeNone:
-				return L"None";
-			case ERendererTypeDirectX:
-				return L"DirectX";
-			case ERendererTypeOpenGL:
-				return L"OpenGL";
-			default:
-				return L"<unknown-type>";
+				return WTEXT("<unknown-type>");
 		}
 	}
 	

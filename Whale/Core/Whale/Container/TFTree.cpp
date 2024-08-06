@@ -4,6 +4,6 @@
 
 #include "TFTree.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 } // Whale

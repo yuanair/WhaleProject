@@ -55,6 +55,7 @@
 // UNICODE
 
 #define WHALE_WIDE_(s) L ## s
+#define WHALE_STRING(s) #s
 #define WHALE_WIDE(s) WHALE_WIDE_(s)
 
 #define WTEXT(s) WHALE_WIDE_(s)
@@ -73,9 +74,9 @@
 // assert
 
 #if defined(DEBUG) || defined(_DEBUG)
-#define WHALE_ASSERT(expression, message) ((!!(expression)) || (::Whale::FatalMessage(message, WHALE_WIDE(__FILE__), __LINE__, WHALE_WIDE(__FUNCSIG__)), 0))
+#define WHALE_ASSERT(expression) ((!!(expression)) || (::Whale::Assert(WHALE_STRING(expression), __FILE__, __LINE__, __FUNCSIG__), 0))
 #else
-#define WHALE_ASSERT(expression, message) ((void)0)
+#define WHALE_ASSERT(expression) ((void)0)
 #endif
 
 // WHALE_API
@@ -143,6 +144,8 @@ namespace Whale
 	using Float = float;
 	
 	using Double = double;
+	
+	using LongDouble = long double;
 	
 	using Bool = bool;
 	
@@ -217,14 +220,11 @@ namespace Whale
 	using CharT = CharA;
 #endif
 	
-	constexpr const CharA WhaleTagA[] = "Whale";
-	constexpr const CharW WhaleTagW[] = L"Whale";
-	constexpr const Char  WhaleTag[]  = WTEXT("Whale");
-	
-	
+	// 致命消息
+	WHALE_API void Assert(const CharA *message, const CharA *file, uint64 line, const CharA *function);
 	
 	// 致命消息
-	WHALE_API void FatalMessage(const CharW *message, const CharW *file, uint64 line, const CharW *function);
+	WHALE_API void Assert(const CharW *message, const CharW *file, uint64 line, const CharW *function);
 	
 	
 } // Whale
