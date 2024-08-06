@@ -23,8 +23,8 @@ namespace Whale::Container
 		
 		using FIterator = TIPointerIterator<ElemT, OffsetType>;
 		using FConstIterator = TIConstPointerIterator<ElemT, OffsetType>;
-		using FReverseIterator = TFReverseIterator<FIterator>;
-		using FConstReverseIterator = TFReverseIterator<FConstIterator>;
+		using FReverseIterator = TFReverseIterator<FIterator, OffsetType>;
+		using FConstReverseIterator = TFReverseIterator<FConstIterator, OffsetType>;
 		
 		using FAllocator = AllocatorT;
 		
@@ -52,19 +52,15 @@ namespace Whale::Container
 		
 		TFDynamicArray &operator=(TFDynamicArray other) noexcept;
 		
-		TFDynamicArray &operator+=(ElemT elem)
-		{
-			Append(Whale::Move(elem));
-			return *this;
-		}
+		TFDynamicArray &operator+=(ElemT elem);
 		
-		ElemT &operator[](SizeT index) { return At(index); }
+		ElemT &operator[](SizeT index);
 		
-		const ElemT &operator[](SizeT index) const { return At(index); }
+		const ElemT &operator[](SizeT index) const;
 		
-		Bool operator==(TFDynamicArray other) const;
+		Bool operator==(const TFDynamicArray &other) const { return Equal(other); }
 		
-		Bool operator!=(TFDynamicArray other) const;
+		Bool operator!=(const TFDynamicArray &other) const { return !Equal(other); }
 	
 	public:
 		
@@ -106,8 +102,14 @@ namespace Whale::Container
 		/// 添加元素
 		ElemT &Append(ElemT elem);
 		
+		/// 弹出最后一个元素
+		ElemT PopBack();
+		
 		/// 插入元素
 		ElemT &Insert(ElemT elem);
+		
+		/// 清空数组
+		void Clear();
 		
 		/// 删除所有
 		void RemoveAll(const ElemT &elem);
@@ -120,9 +122,6 @@ namespace Whale::Container
 		
 		/// 计算扩容容量
 		[[nodiscard]] SizeT CalculateGrowth(SizeT newSize) const;
-		
-		/// 计算扩容容量
-		[[nodiscard]] SizeT CalculateGrowth() const;
 		
 		/// 扩容
 		void Expansion();
@@ -152,6 +151,9 @@ namespace Whale::Container
 		
 		/// 获取数据
 		[[nodiscard]] ElemT *GetData() const noexcept { return m_data; }
+		
+		/// 是否为空数组
+		[[nodiscard]] Bool IsEmpty() const noexcept { return m_length == 0; }
 	
 	private:
 		
@@ -164,6 +166,7 @@ namespace Whale::Container
 		ElemT *m_data;
 		
 	};
+	
 	
 	template<class ElemT>
 	inline WHALE_API void Swap(TFDynamicArray<ElemT> &a, TFDynamicArray<ElemT> &b) noexcept { a.Swap(b); }

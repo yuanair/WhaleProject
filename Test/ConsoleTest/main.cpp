@@ -101,71 +101,96 @@ void ListColors(MyCommandManager &commandManager)
 	commandManager.out.WriteLine();
 }
 
+ConsoleT &GetConsole()
+{
+	static ConsoleT console;
+	return console;
+}
+
+class DebugCLass
+{
+public:
+	
+	DebugCLass()
+		: bIsMoved(false)
+	{
+		static uint64 count = 0;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("default"), ++count).c_str());
+	}
+	
+	DebugCLass(const DebugCLass &a)
+		: bIsMoved(false)
+	{
+		static uint64 count = 0;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("copy"), ++count).c_str());
+	}
+	
+	DebugCLass(DebugCLass &&a)
+		: bIsMoved(false)
+	{
+		static uint64 count = 0;
+		if (a.bIsMoved) throw;
+		a.bIsMoved = true;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("move"), ++count).c_str());
+	}
+	
+	~DebugCLass()
+	{
+		static uint64 count = 0;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("destroy"), ++count).c_str());
+	}
+
+public:
+	
+	DebugCLass &operator=(DebugCLass a)
+	{
+		static uint64 count = 0;
+		this->bIsMoved = false;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("assin"), ++count).c_str());
+		return *this;
+	}
+
+private:
+	
+	Bool bIsMoved;
+	
+};
+
+#include <memory>
+
 int WhaleMain()
 {
 	
-	ConsoleT        console;
-	IO::FileStreamT &in  = console.in;
-	IO::FileStreamT &out = console.out;
+	IO::FileStreamT &in  = GetConsole().in;
+	IO::FileStreamT &out = GetConsole().out;
 	
 	MyCommandManager commandManager{in, out};
 	
-	Container::TFDynamicArray<int> arr;
-	std::vector<int>               vec;
-	std::random_device             rd;
-	std::mt19937                   gen(rd());
-	int                            y = 100, oldC = 0, count = 0;
-
-//	while (y--)
-//	{
-//		while (true)
-//		{
-//			vec.push_back(gen());
-//			if (vec.capacity() != oldC)
-//			{
-//				console.Write(
-//					std::format(
-//						WTEXT("y_{{{0}}} = ({0}, {3})"),
-//						++count,
-//						(UIntPointer) vec.data(),
-//						vec.size(),
-//						log((double) vec.capacity())
-//					).c_str());
-//				oldC = vec.capacity();
-//				break;
-//			}
-//		}
-//		FString _;
-//		console.ReadLine(_);
-//	}
+	Container::TFDynamicArray<DebugCLass> arr;
+	std::random_device                    rd;
+	std::mt19937                          gen(rd());
+	int                                   y = 100, oldC = 0, count = 0;
 	
 	while (y--)
 	{
-		while (true)
-		{
-			arr += gen();
-			if (arr.GetCapacity() != oldC)
-			{
-				console.Write(
-					std::format(
-						WTEXT("x_{{{0}}} = ({0}, {3})"),
-						++count,
-						(UIntPointer) arr.GetData(),
-						arr.GetLength(),
-						log((double) arr.GetCapacity())
-					).c_str());
-				oldC = arr.GetCapacity();
-				break;
-			}
-		}
-		FString _;
-		console.ReadLine(_);
+		arr += {};
 	}
 
-//	for (auto &item: arr)
+//	while (!arr.IsEmpty())
 //	{
-//		console.WriteLine(std::format(WTEXT("0x{:016X}: {}"), (UIntPointer) &item, item).c_str());
+//		arr.PopBack();
+//		GetConsole().WriteLine(
+//			std::format(
+//				WTEXT("x_{{{0}}} = {1}"),
+//				++count,
+//				arr.GetLength()
+//			).c_str());
 //	}
+	
+	for (auto iter = arr.rbegin(); iter < arr.rend(); iter += 5)
+	{
+		GetConsole().WriteLine(std::format(WTEXT("{:}"), (UIntPointer) ((iter - arr.rbegin()))).c_str());
+	}
 	
 	commandManager.commands.insert(
 		{
@@ -191,8 +216,8 @@ int WhaleMain()
 		}
 		
 		commandManager.errors.Clear();
-		// console.ClearError();
-		console.ClearInBuffer();
+		// GetConsole().ClearError();
+		GetConsole().ClearInBuffer();
 	}
 	out.WriteLine(WHALE_TEXT("Thanks for using"));
 	

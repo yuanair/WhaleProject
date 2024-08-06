@@ -83,7 +83,7 @@
 
 #ifndef WHALE_API
 	
-	#ifdef _WIN32
+	#ifdef WHALE_TARGET_WINDOWS
 
 #define WHALE_API __declspec(dllexport)
 	

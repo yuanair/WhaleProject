@@ -138,7 +138,7 @@ namespace Whale::Container
 	
 	template<class ElemT>
 	TFString<ElemT>::TFString()
-		: TFArray<ElemT>{}
+		: TFArray<ElemT>{{0}}
 	{
 	
 	}
