@@ -6,6 +6,8 @@
 #include "WRendererDirectX.hpp"
 #include "WCommandListDirectX.hpp"
 
+#include <Whale/XMemory.hpp>
+
 namespace Whale::DirectX
 {
 	
@@ -57,7 +59,7 @@ namespace Whale::DirectX
 		
 		CD3DX12_RANGE readRange(0, 0);
 		THROW_IF_FAILED(this->m_pID3D12VertexBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, GetVertexes().GetPtr(), GetByteSize());
+		MemoryCopy(pVertexDataBegin, GetVertexes().GetPtr(), GetByteSize());
 		this->m_pID3D12VertexBuffer->Unmap(0, nullptr);
 		
 		this->m_vertexBufferView.BufferLocation = this->m_pID3D12VertexBuffer->GetGPUVirtualAddress();

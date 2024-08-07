@@ -63,6 +63,8 @@ namespace Whale::Container
 	
 	public:
 		
+		[[nodiscard]] auto *GetPtr() const { return m_base.GetPtr(); }
+		
 		[[nodiscard]]Base GetBase() const { return m_base; }
 	
 	private:

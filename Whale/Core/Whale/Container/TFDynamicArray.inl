@@ -1,11 +1,13 @@
 
+#include "../XMemory.hpp"
+
 namespace Whale::Container
 {
 	
 	
 	template<class ElemT, class AllocatorT>
 	TFDynamicArray<ElemT, AllocatorT>::TFDynamicArray(const TFDynamicArray &other)
-		: m_allocator(), m_capacity(other.m_capacity), m_length(other.m_length),
+		: m_allocator(), m_capacity(other.m_length), m_length(other.m_length),
 		  m_data(m_allocator.Allocate(m_capacity))
 	{
 		for (ElemT *curr = m_data, *source = other.m_data, *pEnd = m_data + m_length; curr < pEnd; ++curr, ++source)
@@ -16,13 +18,9 @@ namespace Whale::Container
 	
 	template<class ElemT, class AllocatorT>
 	TFDynamicArray<ElemT, AllocatorT>::TFDynamicArray(TFDynamicArray &&other) noexcept
-		: m_allocator(), m_capacity(other.m_capacity), m_length(other.m_length),
-		  m_data(m_allocator.Allocate(m_capacity))
+		: TFDynamicArray()
 	{
-		for (ElemT *curr = m_data, *source = other.m_data, *pEnd = m_data + m_length; curr < pEnd; ++curr, ++source)
-		{
-			ConstructAt(curr, Whale::Move(source));
-		}
+		Swap(other);
 	}
 	
 	template<class ElemT, class AllocatorT>
@@ -127,6 +125,15 @@ namespace Whale::Container
 		WHALE_ASSERT(m_length != 0);
 		if (m_length != 0) --m_length;
 		return Whale::Move(m_data[m_length]);
+	}
+	
+	template<class ElemT, class AllocatorT>
+	ElemT &TFDynamicArray<ElemT, AllocatorT>::Insert(ElemT elem, const FConstIterator &where)
+	{
+		WHALE_ASSERT(IsIn(where));
+		if (m_length >= m_capacity) Expansion();
+		ConstructAt(m_data + m_length, Whale::Move(elem));
+		return;
 	}
 	
 	template<class ElemT, class AllocatorT>

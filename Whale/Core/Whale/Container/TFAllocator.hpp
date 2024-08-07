@@ -53,18 +53,6 @@ namespace Whale::Container
 		location->~T();
 	}
 	
-	/// 内存移动
-	WHALE_API inline void MemoryMove(void *dest, void *source, SizeT size) noexcept
-	{
-		::memmove(dest, source, size);
-	}
-	
-	/// 内存拷贝
-	WHALE_API inline void MemoryCopy(void *dest, void *source, SizeT size) noexcept
-	{
-		::memcpy(dest, source, size);
-	}
-	
 	template<class ElemT>
 	WHALE_API void Swap(TFAllocator<ElemT> &a, TFAllocator<ElemT> &b) noexcept { a.Swap(b); }
 	

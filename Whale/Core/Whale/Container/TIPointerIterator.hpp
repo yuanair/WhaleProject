@@ -59,6 +59,10 @@ namespace Whale::Container
 		
 		const ElemT *operator->() const noexcept;
 	
+	public:
+		
+		[[nodiscard]] const ElemT *GetPtr() const { return ptr; }
+	
 	private:
 		
 		const ElemT *ptr;
@@ -309,7 +313,7 @@ namespace Whale::Container
 	template<class ElemT, class OffsetT>
 	ElemT *TIPointerIterator<ElemT, OffsetT>::operator->() noexcept
 	{
-		return const_cast<ElemT &>(Base::operator->());
+		return const_cast<ElemT *>(Base::operator->());
 	}
 	
 	template<class ElemT, class OffsetT>

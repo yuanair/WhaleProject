@@ -6,6 +6,7 @@
 #include "WRendererDirectX.hpp"
 #include "WCommandListDirectX.hpp"
 
+#include <Whale/XMemory.hpp>
 #include <Whale/FPlatformManager.hpp>
 
 namespace Whale::DirectX
@@ -131,7 +132,7 @@ namespace Whale::DirectX
 		{
 			for (UINT y = 0, d = nTextureRowNum - 1; y < nTextureRowNum; ++y, --d)
 			{
-				memcpy(
+				MemoryCopy(
 					pDestSlice + static_cast<SIZE_T>(m_stTxtLayouts.Footprint.RowPitch) * d,
 					pSrcSlice + static_cast<SIZE_T>(nPicRowPitch) * y, nPicRowPitch
 				);
@@ -141,7 +142,7 @@ namespace Whale::DirectX
 		{
 			for (UINT y = 0; y < nTextureRowNum; ++y)
 			{
-				memcpy(
+				MemoryCopy(
 					pDestSlice + static_cast<SIZE_T>(m_stTxtLayouts.Footprint.RowPitch) * y,
 					pSrcSlice + static_cast<SIZE_T>(nPicRowPitch) * y, nPicRowPitch
 				);

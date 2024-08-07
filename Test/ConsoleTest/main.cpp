@@ -107,36 +107,46 @@ ConsoleT &GetConsole()
 	return console;
 }
 
+template<class ElemT>
 class DebugCLass
 {
 public:
 	
 	DebugCLass()
-		: bIsMoved(false)
+		: bIsMoved(false), m_elem()
 	{
 		static uint64 count = 0;
 		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("default"), ++count).c_str());
 	}
 	
+	DebugCLass(ElemT elem)
+		: bIsMoved(false), m_elem(Whale::Move(elem))
+	{
+		static uint64 count = 0;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("elem"), ++count).c_str());
+	}
+	
 	DebugCLass(const DebugCLass &a)
-		: bIsMoved(false)
+		: bIsMoved(false), m_elem(a.m_elem)
 	{
 		static uint64 count = 0;
 		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("copy"), ++count).c_str());
 	}
 	
 	DebugCLass(DebugCLass &&a)
-		: bIsMoved(false)
+		: bIsMoved(false), m_elem(a.m_elem)
 	{
 		static uint64 count = 0;
 		if (a.bIsMoved) throw;
 		a.bIsMoved = true;
+		a.m_elem   = 0xddccbb;
 		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("move"), ++count).c_str());
 	}
 	
 	~DebugCLass()
 	{
 		static uint64 count = 0;
+		this->m_elem = 0xddccbb;
 		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("destroy"), ++count).c_str());
 	}
 
@@ -146,17 +156,27 @@ public:
 	{
 		static uint64 count = 0;
 		this->bIsMoved = false;
-		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("assin"), ++count).c_str());
+		this->m_elem   = a.m_elem;
+		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("assign"), ++count).c_str());
 		return *this;
 	}
+
+public:
+	
+	operator ElemT() const { return m_elem; }
+	
+	operator ElemT() { return m_elem; }
 
 private:
 	
 	Bool bIsMoved;
 	
+	ElemT m_elem;
+	
 };
 
 #include <memory>
+#include <string>
 
 int WhaleMain()
 {
@@ -166,14 +186,18 @@ int WhaleMain()
 	
 	MyCommandManager commandManager{in, out};
 	
-	Container::TFDynamicArray<DebugCLass> arr;
-	std::random_device                    rd;
-	std::mt19937                          gen(rd());
-	int                                   y = 100, oldC = 0, count = 0;
+	using ElemType = DebugCLass<std::wstring>;
+	
+	Container::TFDynamicArray<ElemType> arr;
+	std::vector<ElemType>               vec;
+	std::random_device                  rd;
+	std::mt19937                        gen(rd());
+	int                                 y = 100, oldC = 0, count = 0;
 	
 	while (y--)
 	{
-		arr += {};
+		//arr += std::to_wstring(y);
+		vec.emplace_back(std::to_wstring(y));
 	}
 
 //	while (!arr.IsEmpty())
@@ -187,9 +211,16 @@ int WhaleMain()
 //			).c_str());
 //	}
 	
+	for (auto iter = vec.rbegin(); iter < vec.rend(); iter += 5)
+	{
+		GetConsole().WriteLine(std::format(WTEXT("{:}"), iter->operator std::wstring()).c_str());
+		// GetConsole().WriteLine(std::format(WTEXT("{:}"), (UIntPointer) ((iter - arr.rbegin()))).c_str());
+	}
+	
 	for (auto iter = arr.rbegin(); iter < arr.rend(); iter += 5)
 	{
-		GetConsole().WriteLine(std::format(WTEXT("{:}"), (UIntPointer) ((iter - arr.rbegin()))).c_str());
+		GetConsole().WriteLine(std::format(WTEXT("{:}"), iter->operator std::wstring()).c_str());
+		// GetConsole().WriteLine(std::format(WTEXT("{:}"), (UIntPointer) ((iter - arr.rbegin()))).c_str());
 	}
 	
 	commandManager.commands.insert(

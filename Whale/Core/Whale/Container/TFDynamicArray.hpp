@@ -13,7 +13,7 @@
 namespace Whale::Container
 {
 	
-	/// 非侵入式动态内存连续数组
+	/// 非侵入式内存连续动态数组
 	template<class ElemT, class AllocatorT = TFAllocator<ElemT>>
 	class WHALE_API TFDynamicArray
 	{
@@ -76,17 +76,19 @@ namespace Whale::Container
 		
 		inline FConstIterator cend() const { return end(); }
 		
-		inline FReverseIterator rbegin() { return FReverseIterator{end()}; }
+		inline FReverseIterator rbegin() { return FReverseIterator{--end()}; }
 		
-		inline FReverseIterator rend() { return FReverseIterator{begin()}; }
+		inline FReverseIterator rend() { return FReverseIterator{--begin()}; }
 		
-		inline FConstReverseIterator rbegin() const { return FConstReverseIterator{end()}; }
+		inline FConstReverseIterator rbegin() const { return FConstReverseIterator{--end()}; }
 		
-		inline FConstReverseIterator rend() const { return FConstReverseIterator{begin()}; }
+		inline FConstReverseIterator rend() const { return FConstReverseIterator{--begin()}; }
 		
 		inline FConstReverseIterator crbegin() const { return rbegin(); }
 		
 		inline FConstReverseIterator crend() const { return rend(); }
+		
+		inline Bool IsIn(const FConstIterator &iter) const { return begin() <= iter && iter <= end(); }
 	
 	public:
 		
@@ -106,7 +108,7 @@ namespace Whale::Container
 		ElemT PopBack();
 		
 		/// 插入元素
-		ElemT &Insert(ElemT elem);
+		ElemT &Insert(ElemT elem, const FConstIterator &where);
 		
 		/// 清空数组
 		void Clear();
