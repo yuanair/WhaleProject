@@ -31,7 +31,6 @@ namespace Whale
 		do
 		{
 			program.Tick();
-			Sleep(100);
 		}
 		while (!IsCalledExit());
 		

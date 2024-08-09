@@ -196,8 +196,8 @@ int WhaleMain()
 	
 	while (y--)
 	{
-		//arr += std::to_wstring(y);
-		vec.emplace_back(std::to_wstring(y));
+		arr += std::to_wstring(y);
+		//vec.emplace_back(std::to_wstring(y));
 	}
 
 //	while (!arr.IsEmpty())

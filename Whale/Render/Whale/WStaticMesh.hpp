@@ -5,7 +5,7 @@
 #pragma once
 
 #include "WRenderObject.hpp"
-#include <Whale/TFMath.hpp>
+#include <Whale/FMath.hpp>
 #include <Whale/Memory.hpp>
 #include <Whale/Container/TFArray.hpp>
 #include "WMaterial.hpp"

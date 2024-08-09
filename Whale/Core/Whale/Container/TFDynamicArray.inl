@@ -1,5 +1,6 @@
 
 #include "../XMemory.hpp"
+#include "../FMath.hpp"
 
 namespace Whale::Container
 {
@@ -46,13 +47,9 @@ namespace Whale::Container
 	template<class ElemT, class AllocatorT>
 	TFDynamicArray<ElemT, AllocatorT>::~TFDynamicArray() noexcept
 	{
-		for (ElemT *iter = m_data, *pEnd = m_data + m_length; iter < pEnd; ++iter)
-		{
-			DestroyAt(iter);
-		}
+		DestroyAll();
 		m_allocator.Deallocate(m_data, m_capacity);
 		m_data     = nullptr;
-		m_length   = 0;
 		m_capacity = 0;
 	}
 	
@@ -143,29 +140,60 @@ namespace Whale::Container
 	}
 	
 	template<class ElemT, class AllocatorT>
-	SizeT TFDynamicArray<ElemT, AllocatorT>::CalculateGrowth(SizeT newSize) const
+	void TFDynamicArray<ElemT, AllocatorT>::DestroyAll()
 	{
-		const SizeT oldCapacity = GetCapacity();
-		const SizeT geometric   = oldCapacity + oldCapacity / 2;
-		if (geometric < newSize) return newSize;
-		return geometric;
+		for (ElemT *iter = m_data, *pEnd = m_data + m_length; iter < pEnd; ++iter)
+		{
+			DestroyAt(iter);
+		}
+		m_length = 0;
 	}
 	
 	template<class ElemT, class AllocatorT>
-	void TFDynamicArray<ElemT, AllocatorT>::Expansion()
+	void TFDynamicArray<ElemT, AllocatorT>::Erase(const TFDynamicArray::FConstIterator &where)
 	{
-		ElemT *oldData    = m_data;
-//		ElemT *oldEnd     = m_data + m_length;
-		SizeT oldCapacity = m_capacity;
-		m_capacity = CalculateGrowth(m_capacity + 1);
-		m_data     = m_allocator.Allocate(m_capacity);
+		WHALE_ASSERT(IsIn(where) && where != end());
+		DestroyAt(where.GetPtr());
+		for (const ElemT *curr = where.GetPtr(); curr < end(); ++curr)
+		{
+		
+		}
+	}
+	
+	template<class ElemT, class AllocatorT>
+	void TFDynamicArray<ElemT, AllocatorT>::Erase(const TFDynamicArray::FConstIterator &startIter,
+	                                              const TFDynamicArray::FConstIterator &endIter)
+	{
+		WHALE_ASSERT(IsIn(startIter) && IsIn(endIter));
+		
+	}
+	
+	template<class ElemT, class AllocatorT>
+	void TFDynamicArray<ElemT, AllocatorT>::AdjustCapacity(Whale::SizeT capacity)
+	{
+		ElemT *pOldEnd = m_data + m_length;
+		/* m_length ^^^ old ^^^ // vvv new vvv */
+		m_length = FMath::Min(m_length, capacity);
+		
+		ElemT *oldData = m_data;
+		/* m_data ^^^ old ^^^ // vvv new vvv */
+		m_data = m_allocator.Allocate(capacity);
+		for (ElemT *curr = oldData + m_length; curr < pOldEnd; ++curr)
+		{
+			DestroyAt(curr);
+		}
 		MemoryCopy(m_data, oldData, sizeof(ElemT) * m_length);
-//		for (ElemT *curr = m_data, *source = oldData; source < oldEnd; ++source, ++curr)
-//		{
-//			ConstructAt(curr, Whale::Move(*source));
-//			DestroyAt(source);
-//		}
-		m_allocator.Deallocate(oldData, oldCapacity);
+		m_allocator.Deallocate(oldData, m_capacity);
+		
+		/* m_capacity ^^^ old ^^^ // vvv new vvv */
+		m_capacity = capacity;
+	}
+	
+	template<class ElemT, class AllocatorT>
+	SizeT TFDynamicArray<ElemT, AllocatorT>::CalculateGrowth(SizeT newSize) const
+	{
+		const SizeT geometric = m_capacity + m_capacity / 2;
+		return FMath::Max(geometric, newSize);
 	}
 	
 	template<class ElemT, class AllocatorT>
@@ -183,11 +211,7 @@ namespace Whale::Container
 	template<class IterT>
 	void TFDynamicArray<ElemT, AllocatorT>::CopyFrom(const IterT &beginIt, const IterT &endIt)
 	{
-		for (ElemT *iter = m_data, *pEnd = m_data + m_length; iter < pEnd; ++iter)
-		{
-			DestroyAt(iter);
-		}
-		m_length = 0;
+		DestroyAll();
 		for (IterT iter = beginIt; iter != endIt; ++iter)
 		{
 			Append(*iter);

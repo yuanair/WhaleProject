@@ -6,7 +6,7 @@
 
 #include "../TypeDef.hpp"
 #include "../FCString.hpp"
-#include "../TFMath.hpp"
+#include "../FMath.hpp"
 #include "TFArray.hpp"
 
 namespace Whale::Container
@@ -105,7 +105,7 @@ namespace Whale::Container
 		[[nodiscard]]
 		inline SizeT GetLength() const noexcept override
 		{
-			return TFMath<SizeT>::Max(TFArray<ElemT>::GetLength(), 1) - 1;
+			return FMath::Max<SizeT>(TFArray<ElemT>::GetLength(), 1) - 1;
 		}
 		
 		inline const ElemT *CStr() const noexcept
@@ -217,7 +217,7 @@ namespace Whale::Container
 	Bool TFString<ElemT>::operator<(const TFString &other) const
 	{
 		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		SizeT      minSize    = FMath::Min(thisLength, otherLength);
 		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
@@ -232,7 +232,7 @@ namespace Whale::Container
 	Bool TFString<ElemT>::operator<=(const TFString &other) const
 	{
 		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		SizeT      minSize    = FMath::Min(thisLength, otherLength);
 		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
@@ -247,7 +247,7 @@ namespace Whale::Container
 	Bool TFString<ElemT>::operator>(const TFString &other) const
 	{
 		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		SizeT      minSize    = FMath::Min(thisLength, otherLength);
 		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);
@@ -262,7 +262,7 @@ namespace Whale::Container
 	Bool TFString<ElemT>::operator>=(const TFString &other) const
 	{
 		SizeT      thisLength = GetLength(), otherLength = other.GetLength();
-		SizeT      minSize    = TFMath<SizeT>::Min(thisLength, otherLength);
+		SizeT      minSize    = FMath::Min(thisLength, otherLength);
 		for (SizeT index      = 0; index < minSize; index++)
 		{
 			ElemT thisChar = this->At(index), otherChar = other.At(index);

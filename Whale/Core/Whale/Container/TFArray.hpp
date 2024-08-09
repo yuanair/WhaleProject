@@ -6,7 +6,7 @@
 
 #include "../Utility.hpp"
 #include "../CRT.hpp"
-#include "../TFMath.hpp"
+#include "../FMath.hpp"
 #include "InitList.hpp"
 #include "Whale/SourceLocation.hpp"
 
@@ -329,7 +329,7 @@ namespace Whale::Container
 	void TFArray<ElemT>::Relength(SizeT newLength, const FSourceLocation &sourceLocation) noexcept
 	{
 		auto       newPtr    = WHALE_NEW_S(sourceLocation) ElemT[newLength];
-		auto       minLength = TFMath<SizeT>::Min(this->length, newLength);
+		auto       minLength = FMath::Min(this->length, newLength);
 		for (SizeT index     = 0; index < minLength; index++)
 		{
 			newPtr[index] = Whale::Move(this->ptr[index]);

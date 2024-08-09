@@ -108,28 +108,43 @@ namespace Whale::Container
 		ElemT PopBack();
 		
 		/// 插入元素
+		[[deprecated("unrealized")]]
 		ElemT &Insert(ElemT elem, const FConstIterator &where);
 		
 		/// 清空数组
 		void Clear();
 		
-		/// 删除所有
-		void RemoveAll(const ElemT &elem);
+		/// 清空数组，但不清除分配的空间
+		void DestroyAll();
 		
 		/// 删除
+		[[deprecated("unrealized")]]
 		void Erase(const FConstIterator &where);
 		
 		/// 删除
+		[[deprecated("unrealized")]]
 		void Erase(const FConstIterator &startIter, const FConstIterator &endIter);
+		
+		/// 改变容量（不应该频繁调用）
+		void AdjustCapacity(SizeT capacity);
 		
 		/// 计算扩容容量
 		[[nodiscard]] SizeT CalculateGrowth(SizeT newSize) const;
 		
-		/// 扩容
-		void Expansion();
-		
 		/// 交换数据
 		void Swap(TFDynamicArray &other) noexcept;
+	
+	public:
+		
+		/// 扩容到最少还可容下一个元素
+		inline void Expansion() { AdjustCapacity(CalculateGrowth(m_capacity + 1)); }
+		
+		/// 保证容量
+		inline void Reserve(SizeT size)
+		{
+			if (m_capacity >= size) return;
+			AdjustCapacity(CalculateGrowth(size));
+		}
 	
 	public:
 		

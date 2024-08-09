@@ -25,29 +25,6 @@ namespace Whale
 	{
 		Destroy();
 	}
-
-//	void WWindowsWindow::Init(
-//		const WWindowClass &windowClass, const StringA &windowName,
-//		int32 x, int32 y, int32 w, int32 h, HWindow hWndParent
-//	)
-//	{
-//		WWindowsWindow desktop;
-//		desktop.Bind(DesktopWindow());
-//		this->maxSize = desktop.GetRect().GetSize();
-//		this->hWindow.handle = ::CreateWindowExA(
-//			WS_EX_ACCEPTFILES,
-//			windowClass.GetName().CStr(), windowName.CStr(),
-//			WS_OVERLAPPEDWINDOW,
-//			x,
-//			y,
-//			w,
-//			h,
-//			(HWND) hWndParent.handle,
-//			nullptr,
-//			(HINSTANCE) windowClass.GetHInstance().handle,
-//			this
-//		);
-//	}
 	
 	void WWindowsWindow::Create(const FWindowCreateArg &arg)
 	{
