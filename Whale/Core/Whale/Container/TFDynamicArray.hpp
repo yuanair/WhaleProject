@@ -96,7 +96,13 @@ namespace Whale::Container
 		ElemT &At(SizeT index);
 		
 		/// 获取索引上的元素
-		ElemT &At(SizeT index) const;
+		const ElemT &At(SizeT index) const;
+		
+		/// 获取倒数索引上的元素
+		ElemT &AtBack(SizeT index);
+		
+		/// 获取倒数索引上的元素
+		const ElemT &AtBack(SizeT index) const;
 		
 		/// 是否相等
 		Bool Equal(const TFDynamicArray &other) const;
@@ -159,10 +165,10 @@ namespace Whale::Container
 	public:
 		
 		/// 获取分配器
-		[[nodiscard]] const FAllocator &GetAllocator() const noexcept { return m_allocator; }
+		[[nodiscard]] FAllocator &GetAllocator() noexcept { return m_allocator; }
 		
 		/// 获取分配器
-		[[nodiscard]] FAllocator &GetAllocator() noexcept { return m_allocator; }
+		[[nodiscard]] const FAllocator &GetAllocator() const noexcept { return m_allocator; }
 		
 		/// 获取容量
 		[[nodiscard]] SizeT GetCapacity() const noexcept { return m_capacity; }
@@ -171,7 +177,10 @@ namespace Whale::Container
 		[[nodiscard]] SizeT GetLength() const noexcept { return m_length; }
 		
 		/// 获取数据
-		[[nodiscard]] ElemT *GetData() const noexcept { return m_data; }
+		[[nodiscard]] ElemT *GetData() noexcept { return m_data; }
+		
+		/// 获取数据
+		[[nodiscard]] const ElemT *GetData() const noexcept { return m_data; }
 		
 		/// 是否为空数组
 		[[nodiscard]] Bool IsEmpty() const noexcept { return m_length == 0; }

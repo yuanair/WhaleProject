@@ -91,10 +91,24 @@ namespace Whale::Container
 	}
 	
 	template<class ElemT, class AllocatorT>
-	ElemT &TFDynamicArray<ElemT, AllocatorT>::At(SizeT index) const
+	const ElemT &TFDynamicArray<ElemT, AllocatorT>::At(SizeT index) const
 	{
 		WHALE_ASSERT(index < m_length);
 		return m_data[index];
+	}
+	
+	template<class ElemT, class AllocatorT>
+	ElemT &TFDynamicArray<ElemT, AllocatorT>::AtBack(Whale::SizeT index)
+	{
+		WHALE_ASSERT(index < m_length);
+		return m_data[m_length - index - 1];
+	}
+	
+	template<class ElemT, class AllocatorT>
+	const ElemT &TFDynamicArray<ElemT, AllocatorT>::AtBack(Whale::SizeT index) const
+	{
+		WHALE_ASSERT(index < m_length);
+		return m_data[m_length - index - 1];
 	}
 	
 	template<class ElemT, class AllocatorT>
