@@ -114,7 +114,6 @@ namespace Whale::Container
 		ElemT PopBack();
 		
 		/// 插入元素
-		[[deprecated("unrealized")]]
 		ElemT &Insert(ElemT elem, const FConstIterator &where);
 		
 		/// 清空数组
@@ -141,9 +140,6 @@ namespace Whale::Container
 		void Swap(TFDynamicArray &other) noexcept;
 	
 	public:
-		
-		/// 扩容到最少还可容下一个元素
-		inline void Expansion() { AdjustCapacity(CalculateGrowth(m_capacity + 1)); }
 		
 		/// 保证容量
 		inline void Reserve(SizeT capacity)

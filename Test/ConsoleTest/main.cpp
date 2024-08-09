@@ -134,12 +134,11 @@ public:
 	}
 	
 	DebugCLass(DebugCLass &&a)
-		: bIsMoved(false), m_elem(a.m_elem)
+		: bIsMoved(false), m_elem(Whale::Move(a.m_elem))
 	{
 		static uint64 count = 0;
 		if (a.bIsMoved) throw;
 		a.bIsMoved = true;
-		a.m_elem   = 0xddccbb;
 		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("move"), ++count).c_str());
 	}
 	
@@ -156,7 +155,7 @@ public:
 	{
 		static uint64 count = 0;
 		this->bIsMoved = false;
-		this->m_elem   = a.m_elem;
+		this->m_elem   = Whale::Move(a.m_elem);
 		GetConsole().WriteLine(std::format(WTEXT("{}::{}"), WHALE_WIDE("assign"), ++count).c_str());
 		return *this;
 	}
@@ -200,7 +199,7 @@ int WhaleMain()
 		//vec.emplace_back(std::to_wstring(y));
 	}
 	
-	arr.AdjustLength(6);
+	arr.Insert(ElemType(L"Hello"), arr.begin());
 
 //	while (!arr.IsEmpty())
 //	{

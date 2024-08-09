@@ -63,7 +63,7 @@ namespace Whale::Container
 	template<class ElemT, class AllocatorT>
 	TFDynamicArray<ElemT, AllocatorT> &TFDynamicArray<ElemT, AllocatorT>::operator+=(ElemT elem)
 	{
-		if (m_length >= m_capacity) Expansion();
+		Reserve(m_capacity + 1);
 		ConstructAt(m_data + m_length, Whale::Move(elem));
 		++m_length;
 		return *this;
@@ -125,7 +125,7 @@ namespace Whale::Container
 	template<class ElemT, class AllocatorT>
 	ElemT &TFDynamicArray<ElemT, AllocatorT>::Append(ElemT elem)
 	{
-		if (m_length >= m_capacity) Expansion();
+		Reserve(m_capacity + 1);
 		ConstructAt(m_data + m_length, Whale::Move(elem));
 		return m_data[m_length++];
 	}
@@ -142,9 +142,19 @@ namespace Whale::Container
 	ElemT &TFDynamicArray<ElemT, AllocatorT>::Insert(ElemT elem, const FConstIterator &where)
 	{
 		WHALE_ASSERT(IsIn(where));
-		if (m_length >= m_capacity) Expansion();
-		ConstructAt(m_data + m_length, Whale::Move(elem));
-		throw;
+		const ElemT *pWhere = where.GetPtr();
+		SizeT       pos     = static_cast<SizeT>(pWhere - m_data);
+		Reserve(m_capacity + 1);
+		// pWhere is bad
+		ConstructAt(m_data + m_length, Whale::Move(m_data[m_length - 1]));
+		for (SizeT index = m_length - 1; index > pos; --index)
+		{
+			m_data[index] = Whale::Move(m_data[index - 1]);
+		}
+		//MemoryMove(m_data + pos + 1, m_data + pos, m_length - pos);
+		m_data[pos]      = Whale::Move(elem);
+		++m_length;
+		return m_data[pos];
 	}
 	
 	template<class ElemT, class AllocatorT>
