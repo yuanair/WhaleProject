@@ -13,7 +13,7 @@ namespace Whale::Container
 	{
 		for (ElemT *curr = m_data, *source = other.m_data, *pEnd = m_data + m_length; curr < pEnd; ++curr, ++source)
 		{
-			ConstructAt(curr, source);
+			ConstructAt(curr, *source);
 		}
 	}
 	
@@ -40,7 +40,7 @@ namespace Whale::Container
 		WHALE_ASSERT(start <= end);
 		for (ElemT *curr = m_data; start < end; ++curr, ++start)
 		{
-			ConstructAt(curr, start);
+			ConstructAt(curr, *start);
 		}
 	}
 	
@@ -130,7 +130,7 @@ namespace Whale::Container
 		WHALE_ASSERT(IsIn(where));
 		if (m_length >= m_capacity) Expansion();
 		ConstructAt(m_data + m_length, Whale::Move(elem));
-		return;
+		throw;
 	}
 	
 	template<class ElemT, class AllocatorT>
@@ -158,6 +158,7 @@ namespace Whale::Container
 		{
 		
 		}
+		throw;
 	}
 	
 	template<class ElemT, class AllocatorT>
@@ -165,7 +166,7 @@ namespace Whale::Container
 	                                              const TFDynamicArray::FConstIterator &endIter)
 	{
 		WHALE_ASSERT(IsIn(startIter) && IsIn(endIter));
-		
+		throw;
 	}
 	
 	template<class ElemT, class AllocatorT>
@@ -205,6 +206,30 @@ namespace Whale::Container
 		Swap(m_capacity, other.m_capacity);
 		Swap(m_length, other.m_length);
 		Swap(m_data, other.m_data);
+	}
+	
+	template<class ElemT, class AllocatorT>
+	template<class... Args>
+	void TFDynamicArray<ElemT, AllocatorT>::AdjustLength(SizeT length, Args &&... args)
+	{
+		if (m_length < length)
+		{
+			ElemT *curr = m_data + m_length;
+			Reserve(length);
+			for (ElemT *pEnd = m_data + length; curr < pEnd; ++curr)
+			{
+				ConstructAt(curr, Whale::Forward<Args>(args)...);
+			}
+			m_length = length;
+		}
+		else if (m_length > length)
+		{
+			for (ElemT *curr = m_data + length, *pEnd = m_data + m_length; curr < pEnd; ++curr)
+			{
+				DestroyAt(curr);
+			}
+			m_length = length;
+		}
 	}
 	
 	template<class ElemT, class AllocatorT>

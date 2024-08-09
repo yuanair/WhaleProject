@@ -140,13 +140,17 @@ namespace Whale::Container
 		inline void Expansion() { AdjustCapacity(CalculateGrowth(m_capacity + 1)); }
 		
 		/// 保证容量
-		inline void Reserve(SizeT size)
+		inline void Reserve(SizeT capacity)
 		{
-			if (m_capacity >= size) return;
-			AdjustCapacity(CalculateGrowth(size));
+			if (m_capacity >= capacity) return;
+			AdjustCapacity(CalculateGrowth(capacity));
 		}
 	
 	public:
+		
+		/// 改变长度
+		template<class... Args>
+		void AdjustLength(SizeT length, Args &&... args);
 		
 		/// 从迭代器拷贝
 		template<class IterT>

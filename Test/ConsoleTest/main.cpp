@@ -192,13 +192,15 @@ int WhaleMain()
 	std::vector<ElemType>               vec;
 	std::random_device                  rd;
 	std::mt19937                        gen(rd());
-	int                                 y = 100, oldC = 0, count = 0;
+	int                                 y = 5, oldC = 0, count = 0;
 	
 	while (y--)
 	{
 		arr += std::to_wstring(y);
 		//vec.emplace_back(std::to_wstring(y));
 	}
+	
+	arr.AdjustLength(6);
 
 //	while (!arr.IsEmpty())
 //	{
@@ -211,13 +213,13 @@ int WhaleMain()
 //			).c_str());
 //	}
 	
-	for (auto iter = vec.rbegin(); iter < vec.rend(); iter += 5)
+	for (auto iter = vec.rbegin(); iter < vec.rend(); iter += 1)
 	{
 		GetConsole().WriteLine(std::format(WTEXT("{:}"), iter->operator std::wstring()).c_str());
 		// GetConsole().WriteLine(std::format(WTEXT("{:}"), (UIntPointer) ((iter - arr.rbegin()))).c_str());
 	}
 	
-	for (auto iter = arr.rbegin(); iter < arr.rend(); iter += 5)
+	for (auto iter = arr.rbegin(); iter < arr.rend(); iter += 1)
 	{
 		GetConsole().WriteLine(std::format(WTEXT("{:}"), iter->operator std::wstring()).c_str());
 		// GetConsole().WriteLine(std::format(WTEXT("{:}"), (UIntPointer) ((iter - arr.rbegin()))).c_str());
