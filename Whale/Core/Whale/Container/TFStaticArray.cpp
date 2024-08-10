@@ -4,6 +4,6 @@
 
 #include "TFStaticArray.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 } // Whale

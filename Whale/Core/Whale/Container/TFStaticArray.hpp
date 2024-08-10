@@ -6,7 +6,7 @@
 
 #include "../Utility.hpp"
 
-namespace Whale
+namespace Whale::Container
 {
 	
 	/// 静态数组
@@ -42,6 +42,10 @@ namespace Whale
 		ElemT &operator[](SizeT index);
 		
 		const ElemT &operator[](SizeT index) const;
+		
+		Bool operator==(const TFStaticArray &other) const { return Equal(other); }
+		
+		Bool operator!=(const TFStaticArray &other) const { return !Equal(other); }
 	
 	public:
 		
@@ -52,6 +56,8 @@ namespace Whale
 		ElemT &AtBack(SizeT index);
 		
 		const ElemT &AtBack(SizeT index) const;
+		
+		Bool Equal(const TFStaticArray &other) const;
 		
 		void Swap(TFStaticArray &other);
 	
