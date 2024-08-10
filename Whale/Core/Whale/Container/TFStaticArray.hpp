@@ -31,7 +31,7 @@ namespace Whale::Container
 		
 		TFStaticArray(const std::initializer_list<ElemT> &initializerList);
 		
-		~TFStaticArray() noexcept;
+		~TFStaticArray() noexcept {}
 	
 	public:
 		
