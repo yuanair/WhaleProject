@@ -39,13 +39,13 @@ namespace Whale::Container
 		
 		TFStaticArray &operator=(TFStaticArray &&other);
 		
-		ElemT &operator[](SizeT index);
+		ElemT &operator[](SizeT index) { return At(index); }
 		
-		const ElemT &operator[](SizeT index) const;
+		const ElemT &operator[](SizeT index) const { return At(index); }
 		
-		Bool operator==(const TFStaticArray &other) const { return Equal(other); }
+		inline Bool operator==(const TFStaticArray &other) const { return Equal(other); }
 		
-		Bool operator!=(const TFStaticArray &other) const { return !Equal(other); }
+		inline Bool operator!=(const TFStaticArray &other) const { return !Equal(other); }
 	
 	public:
 		
@@ -70,5 +70,33 @@ namespace Whale::Container
 		ElemT m_arr[TheLength];
 		
 	};
+	
+	template<class ElemT, SizeT TheLength>
+	ElemT &TFStaticArray<ElemT, TheLength>::At(SizeT index)
+	{
+		WHALE_ASSERT(index < TheLength);
+		return m_arr[index];
+	}
+	
+	template<class ElemT, SizeT TheLength>
+	const ElemT &TFStaticArray<ElemT, TheLength>::At(SizeT index) const
+	{
+		WHALE_ASSERT(index < TheLength);
+		return m_arr[index];
+	}
+	
+	template<class ElemT, SizeT TheLength>
+	ElemT &TFStaticArray<ElemT, TheLength>::AtBack(SizeT index)
+	{
+		WHALE_ASSERT(index < TheLength);
+		return m_arr[TheLength - index - 1];
+	}
+	
+	template<class ElemT, SizeT TheLength>
+	const ElemT &TFStaticArray<ElemT, TheLength>::AtBack(SizeT index) const
+	{
+		WHALE_ASSERT(index < TheLength);
+		return m_arr[TheLength - index - 1];
+	}
 	
 } // Whale
