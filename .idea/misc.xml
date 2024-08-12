@@ -11,6 +11,7 @@
       <file path="$PROJECT_DIR$/DirectX-Headers-main" />
       <file path="$PROJECT_DIR$/GLAD/include" />
       <file path="$PROJECT_DIR$/GLAD/src" />
+      <file path="$PROJECT_DIR$/bin" />
       <file path="$PROJECT_DIR$/out" />
     </excludeRoots>
   </component>
