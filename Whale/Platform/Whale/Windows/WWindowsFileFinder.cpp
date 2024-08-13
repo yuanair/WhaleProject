@@ -22,6 +22,7 @@ namespace Whale
 		WWindowsTime::FileTimeToFTime(target.createTime, source.ftCreationTime);
 		WWindowsTime::FileTimeToFTime(target.lastAccessTime, source.ftLastAccessTime);
 		WWindowsTime::FileTimeToFTime(target.lastWriteTime, source.ftLastWriteTime);
+		target.fileSize = ULARGE_INTEGER{.HighPart = source.nFileSizeHigh, .LowPart=source.nFileSizeLow}.QuadPart;
 	}
 	
 	Bool WWindowsFileFinder::FindFirst(const FString &string, FFindData &find)
