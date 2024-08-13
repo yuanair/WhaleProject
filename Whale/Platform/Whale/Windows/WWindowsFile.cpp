@@ -15,10 +15,11 @@ namespace Whale
 	
 	}
 	
-	WWindowsFile::WWindowsFile(const FString &fileName, EFileOpenMode openMode)
+	WWindowsFile::WWindowsFile(const FString &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode,
+	                           EFileCreateMode createMode)
 		: WWindowsFile()
 	{
-		Open(fileName, openMode);
+		Open(fileName, openMode, sharedMode, createMode);
 	}
 	
 	WWindowsFile::~WWindowsFile()

@@ -6,6 +6,8 @@
 
 // #include "boost/locale.hpp"
 
+#include <cstdio>
+
 namespace Whale
 {
 	

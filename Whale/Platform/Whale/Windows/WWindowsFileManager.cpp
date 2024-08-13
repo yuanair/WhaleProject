@@ -4,6 +4,7 @@
 
 #include "WWindowsFileManager.hpp"
 #include "WWindowsFile.hpp"
+#include "WWindowsFileFinder.hpp"
 
 #include <Windows.h>
 
@@ -18,9 +19,16 @@ namespace Whale
 		return WHALE_NEW_CLIENT WWindowsFile();
 	}
 	
-	WGenericFile *WWindowsFileManager::OpenFile(const FString &fileName, EFileOpenMode openMode)
+	WGenericFile *
+	WWindowsFileManager::OpenFile(const FString &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode,
+	                              EFileCreateMode createMode)
 	{
-		return WHALE_NEW_CLIENT WWindowsFile(fileName, openMode);
+		return WHALE_NEW_CLIENT WWindowsFile(fileName, openMode, sharedMode, createMode);
+	}
+	
+	WGenericFileFinder *WWindowsFileManager::PreFindFile()
+	{
+		return WHALE_NEW_CLIENT WWindowsFileFinder();
 	}
 	
 	Bool WWindowsFileManager::CreateDirectory(const FString &directoryName)

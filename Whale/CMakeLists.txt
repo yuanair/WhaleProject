@@ -1,4 +1,5 @@
 
+add_subdirectory(Build)
 add_subdirectory(Core)
 add_subdirectory(Language)
 add_subdirectory(Platform)

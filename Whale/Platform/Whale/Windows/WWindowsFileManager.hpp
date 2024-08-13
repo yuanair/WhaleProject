@@ -6,6 +6,7 @@
 
 #include "HWinDef.hpp"
 #include "../WGenericFileManager.hpp"
+#include "../WGenericFileFinder.hpp"
 
 namespace Whale
 {
@@ -20,7 +21,10 @@ namespace Whale
 		
 		WGenericFile *PreOpenFile() override;
 		
-		WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode) override;
+		WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode,
+		                       EFileCreateMode createMode) override;
+		
+		WGenericFileFinder *PreFindFile() override;
 		
 		Bool CreateDirectory(const FString &directoryName) override;
 		

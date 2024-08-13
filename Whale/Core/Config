@@ -1,0 +1,4 @@
+
+Name = "WhaleCore";
+Type = "SHARED";
+Depends = [ ];

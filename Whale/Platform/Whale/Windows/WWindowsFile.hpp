@@ -16,7 +16,8 @@ namespace Whale
 		
 		WWindowsFile();
 		
-		WWindowsFile(const FString &fileName, EFileOpenMode openMode);
+		WWindowsFile(const FString &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode,
+		             EFileCreateMode createMode);
 		
 		~WWindowsFile() override;
 	
@@ -26,14 +27,14 @@ namespace Whale
 		
 		void Open(
 			const FString &fileName, EFileOpenMode openMode,
-			EFileSharedMode sharedMode = EFileSharedModeNone,
-			EFileCreateMode createMode = EFileCreateModeNone
+			EFileSharedMode sharedMode,
+			EFileCreateMode createMode
 		) override;
 		
 		void Open(
 			const StringA &fileName, EFileOpenMode openMode,
-			EFileSharedMode sharedMode = EFileSharedModeNone,
-			EFileCreateMode createMode = EFileCreateModeNone
+			EFileSharedMode sharedMode,
+			EFileCreateMode createMode
 		) override;
 		
 		Bool Write(Char ch) override;

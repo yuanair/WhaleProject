@@ -1,0 +1,4 @@
+
+Name = "WhaleBuild";
+Type = "SHARED";
+Depends = [ "WhaleCore", "WhalePlatform" ];

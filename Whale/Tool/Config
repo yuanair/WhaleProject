@@ -1,0 +1,4 @@
+
+Name = "WhaleTool";
+Type = "SHARED";
+Depends = [ "WhaleCore" ];

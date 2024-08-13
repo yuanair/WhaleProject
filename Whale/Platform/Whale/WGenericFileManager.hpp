@@ -18,10 +18,15 @@ namespace Whale
 	public:
 		
 		/// 新建文件
-		virtual WGenericFile *PreOpenFile() = 0;
+		virtual class WGenericFile *PreOpenFile() = 0;
 		
 		/// 打开文件
-		virtual WGenericFile *OpenFile(const FString &fileName, EFileOpenMode openMode) = 0;
+		virtual class WGenericFile *
+		OpenFile(const FString &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode,
+		         EFileCreateMode createMode) = 0;
+		
+		/// 新建文件
+		virtual class WGenericFileFinder *PreFindFile() = 0;
 		
 		/// 创建文件夹
 		virtual Bool CreateDirectory(const FString &directoryName) = 0;

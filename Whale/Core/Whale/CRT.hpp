@@ -21,5 +21,6 @@
 #define WHALE_NEW_NORMAL new
 #define WHALE_NEW_CLIENT new
 #define WHALE_NEW_IGNORE new
+#define WHALE_NEW_S(sourceLocation) new
 
 #endif

@@ -69,49 +69,49 @@ namespace Whale::Json
 	NullPtrT TFValue<CharT>::AsNull() const
 	{
 		if (IsNull()) return nullptr;
-		throw FInvalidCastException("can not cast to Null");
+		throw FInvalidCastException(WTEXT("can not cast to Null"));
 	}
 	
 	template<class CharT>
 	Bool TFValue<CharT>::AsBool() const
 	{
 		if (IsBool()) return value.boolValue;
-		throw FInvalidCastException("can not cast to Bool");
+		throw FInvalidCastException(WTEXT("can not cast to Bool"));
 	}
 	
 	template<class CharT>
 	int64 TFValue<CharT>::AsInt() const
 	{
 		if (IsInt()) return value.intValue;
-		throw FInvalidCastException("can not cast to Int");
+		throw FInvalidCastException(WTEXT("can not cast to Int"));
 	}
 	
 	template<class CharT>
 	Double TFValue<CharT>::AsDouble() const
 	{
 		if (IsDouble()) return value.doubleValue;
-		throw FInvalidCastException("can not cast to Double");
+		throw FInvalidCastException(WTEXT("can not cast to Double"));
 	}
 	
 	template<class CharT>
 	const typename TFValue<CharT>::String &TFValue<CharT>::AsString() const
 	{
 		if (IsString()) return *value.pString;
-		throw FInvalidCastException("can not cast to String");
+		throw FInvalidCastException(WTEXT("can not cast to String"));
 	}
 	
 	template<class CharT>
 	const typename TFValue<CharT>::Array &TFValue<CharT>::AsArray() const
 	{
 		if (IsArray()) return *value.pArray;
-		throw FInvalidCastException("can not cast to Array");
+		throw FInvalidCastException(WTEXT("can not cast to Array"));
 	}
 	
 	template<class CharT>
 	const typename TFValue<CharT>::Object &TFValue<CharT>::AsObject() const
 	{
 		if (IsObject()) return *value.pObject;
-		throw FInvalidCastException("can not cast to Object");
+		throw FInvalidCastException(WTEXT("can not cast to Object"));
 	}
 	
 	template<class CharT>
@@ -168,7 +168,7 @@ namespace Whale::Json
 	template<class CharT>
 	const TFValue<CharT> &TFValue<CharT>::At(SizeT index) const
 	{
-		if (!IsArray()) throw FInvalidCastException("this json is not a array");
+		if (!IsArray()) throw FInvalidCastException(WTEXT("this json is not a array"));
 		auto length = value.pArray->GetLength();
 		if (index >= length)
 		{
@@ -441,7 +441,7 @@ namespace Whale::Json
 	{
 		if (!IsArray()) return false;
 		if (index >= this->value.pArray->GetLength()) return false;
-		throw FException("TFValue<CharT>::Remove(SizeT) const failed");
+		throw FException(WTEXT("TFValue<CharT>::Remove(SizeT) const failed"));
 	}
 	
 	template<class CharT>

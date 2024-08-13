@@ -72,16 +72,12 @@ namespace Whale
 		
 		/// 打开文件
 		virtual void Open(
-			const FString &fileName, EFileOpenMode openMode,
-			EFileSharedMode sharedMode = EFileSharedModeNone,
-			EFileCreateMode createMode = EFileCreateModeNone
+			const FString &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode, EFileCreateMode createMode
 		) = 0;
 		
 		/// 打开文件
 		virtual void Open(
-			const StringA &fileName, EFileOpenMode openMode,
-			EFileSharedMode sharedMode = EFileSharedModeNone,
-			EFileCreateMode createMode = EFileCreateModeNone
+			const StringA &fileName, EFileOpenMode openMode, EFileSharedMode sharedMode, EFileCreateMode createMode
 		) = 0;
 		
 		/// 写入字符

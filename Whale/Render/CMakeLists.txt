@@ -1,8 +1,7 @@
 
-file(GLOB WhaleRenderHeader "./*/*.hpp" "./*/*/*.hpp")
-file(GLOB WhaleRenderSource "./*/*.cpp" "./*/*/*.cpp")
+file(GLOB Source "./*/*.cpp" "./*/*/*.cpp" "./*/*.hpp" "./*/*/*.hpp")
 
-add_library(WhaleRender SHARED ${WhaleRenderSource})
+add_library(WhaleRender SHARED ${Source})
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 

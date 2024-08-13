@@ -1,8 +1,7 @@
 
-file(GLOB WhaleToolHeader "./*/*.hpp" "./*/*/*.hpp")
-file(GLOB WhaleToolSource "./*/*.cpp" "./*/*/*.cpp")
+file(GLOB Source "./*/*.cpp" "./*/*/*.cpp" "./*/*.hpp" "./*/*/*.hpp")
 
-add_library(WhaleTool SHARED ${WhaleToolSource})
+add_library(WhaleTool SHARED ${Source})
 
 target_include_directories(WhaleTool PUBLIC ".")
 

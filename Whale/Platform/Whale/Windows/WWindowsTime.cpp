@@ -9,17 +9,13 @@
 namespace Whale
 {
 	
-	void SystemTimeToFTime(FTime &fTime, const ::SYSTEMTIME &systemTime);
-	
-	void SystemTimeToFTime(::SYSTEMTIME &systemTime, const class FTime &fTime);
-	
 	WWindowsTime &WWindowsTime::Get()
 	{
 		static WWindowsTime windowsTime;
 		return windowsTime;
 	}
 	
-	void SystemTimeToFTime(FTime &fTime, const ::SYSTEMTIME &systemTime)
+	void WWindowsTime::SystemTimeToFTime(FTime &fTime, const ::SYSTEMTIME &systemTime)
 	{
 		fTime.year         = systemTime.wYear;
 		fTime.month        = systemTime.wMonth;
@@ -31,7 +27,7 @@ namespace Whale
 		fTime.milliseconds = systemTime.wMilliseconds;
 	}
 	
-	void SystemTimeToFTime(::SYSTEMTIME &systemTime, const FTime &fTime)
+	void WWindowsTime::FTimeToSystemTime(::SYSTEMTIME &systemTime, const FTime &fTime)
 	{
 		systemTime.wYear         = fTime.year;
 		systemTime.wMonth        = fTime.month;
@@ -41,6 +37,22 @@ namespace Whale
 		systemTime.wMinute       = fTime.minute;
 		systemTime.wSecond       = fTime.second;
 		systemTime.wMilliseconds = fTime.milliseconds;
+	}
+	
+	Bool WWindowsTime::FileTimeToFTime(FTime &fTime, const ::FILETIME &fileTime)
+	{
+		::SYSTEMTIME systemTime;
+		if (!::FileTimeToSystemTime(&fileTime, &systemTime)) return false;
+		SystemTimeToFTime(fTime, systemTime);
+		return true;
+	}
+	
+	Bool WWindowsTime::FTimeToFileTime(::FILETIME &fileTime, const FTime &fTime)
+	{
+		::SYSTEMTIME systemTime;
+		FTimeToSystemTime(systemTime, fTime);
+		if (!::SystemTimeToFileTime(&systemTime, &fileTime)) return false;
+		return true;
 	}
 	
 	void WWindowsTime::GetSystemTime(FTime &time) const

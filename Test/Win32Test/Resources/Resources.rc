@@ -1,7 +1,8 @@
-
-#include <winver.h>
 #include "./Resources.h"
+
+//IDM_MANIFEST RT_MANIFEST "./Resources.manifest"
 
 IDI_APP_ICON ICON "./Icon.ico"
 IDI_APP_ICON_SM ICON "./IconSm.ico"
+
 

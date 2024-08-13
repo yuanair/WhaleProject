@@ -1,8 +1,7 @@
 
-file(GLOB WhaleCoreHeader "./*/*.hpp" "./*/*/*.hpp")
-file(GLOB WhaleCoreSource "./*/*.cpp" "./*/*/*.cpp")
+file(GLOB Source "./*/*.cpp" "./*/*/*.cpp" "./*/*.hpp" "./*/*/*.hpp")
 
-add_library(WhaleCore SHARED ${WhaleCoreSource})
+add_library(WhaleCore SHARED ${Source})
 
 target_include_directories(WhaleCore PUBLIC ".")
 

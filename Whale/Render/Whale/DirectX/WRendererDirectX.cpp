@@ -105,7 +105,7 @@ namespace Whale::DirectX
 		m_pCommandList = MakeUnique<WCommandListDirectX>(this);
 		if (!m_pCommandList->Init())
 		{
-			FDebug::Log<CharA>(Error, TagA, "WCommandListDirectX::Init() error");
+			FDebug::Log<CharA>(Error, TagA, "WCommandListDirectX::FindFirst() error");
 			return;
 		}
 		

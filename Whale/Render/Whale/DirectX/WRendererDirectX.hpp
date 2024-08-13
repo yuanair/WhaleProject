@@ -62,7 +62,11 @@ namespace Whale::DirectX
 	
 	public:
 		
+		#if defined(DEBUG) || defined(_DEBUG)
+		
 		[[nodiscard]] auto &GetPid3D12Debug() const noexcept { return m_pID3D12Debug; }
+		
+		#endif
 		
 		[[nodiscard]] auto &GetPidxgiFactory() const noexcept { return m_pIDXGIFactory; }
 		

@@ -1,8 +1,7 @@
 
-file(GLOB WhalePlatformHeader "./*/*.hpp" "./*/*/*.hpp")
-file(GLOB WhalePlatformSource "./*/*.cpp" "./*/*/*.cpp")
+file(GLOB Source "./*/*.cpp" "./*/*/*.cpp" "./*/*.hpp" "./*/*/*.hpp")
 
-add_library(WhalePlatform SHARED ${WhalePlatformSource})
+add_library(WhalePlatform SHARED ${Source})
 
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
